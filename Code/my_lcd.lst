@@ -212,7 +212,7 @@
                                     212 	.globl _lcd_init
                                     213 	.globl _cmd_write
                                     214 	.globl _letter_write
-                                    215 	.globl _string_write
+                                    215 	.globl _lcd_string
                                     216 ;--------------------------------------------------------
                                     217 ; special function registers
                                     218 ;--------------------------------------------------------
@@ -580,16 +580,16 @@
                                     580 ;	my_lcd.c:34: }
       00003A 22               [24]  581 	ret
                                     582 ;------------------------------------------------------------
-                                    583 ;Allocation info for local variables in function 'string_write'
+                                    583 ;Allocation info for local variables in function 'lcd_string'
                                     584 ;------------------------------------------------------------
                                     585 ;str           Allocated to registers r5 r6 r7 
                                     586 ;i             Allocated to registers r3 r4 
                                     587 ;------------------------------------------------------------
-                                    588 ;	my_lcd.c:36: void string_write(char* str){
+                                    588 ;	my_lcd.c:36: void lcd_string(char* str){
                                     589 ;	-----------------------------------------
-                                    590 ;	 function string_write
+                                    590 ;	 function lcd_string
                                     591 ;	-----------------------------------------
-      00003B                        592 _string_write:
+      00003B                        592 _lcd_string:
       00003B AD 82            [24]  593 	mov	r5, dpl
       00003D AE 83            [24]  594 	mov	r6, dph
       00003F AF F0            [24]  595 	mov	r7, b

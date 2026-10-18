@@ -212,7 +212,7 @@
                                     212 	.globl _lcd_init
                                     213 	.globl _cmd_write
                                     214 	.globl _letter_write
-                                    215 	.globl _string_write
+                                    215 	.globl _lcd_string
                                     216 ;--------------------------------------------------------
                                     217 ; special function registers
                                     218 ;--------------------------------------------------------
@@ -497,7 +497,7 @@
                                     497 ;	-----------------------------------------
                                     498 ;	 function lcd_init
                                     499 ;	-----------------------------------------
-      0000EE                        500 _lcd_init:
+      0000F7                        500 _lcd_init:
                            000007   501 	ar7 = 0x07
                            000006   502 	ar6 = 0x06
                            000005   503 	ar5 = 0x05
@@ -507,20 +507,20 @@
                            000001   507 	ar1 = 0x01
                            000000   508 	ar0 = 0x00
                                     509 ;	my_lcd.c:7: delay();
-      0000EE 12 00 AF         [24]  510 	lcall	_delay
+      0000F7 12 00 B8         [24]  510 	lcall	_delay
                                     511 ;	my_lcd.c:8: cmd_write(0x38); /* 8-bit mode, 2 lines */
-      0000F1 75 82 38         [24]  512 	mov	dpl, #0x38
-      0000F4 12 01 09         [24]  513 	lcall	_cmd_write
+      0000FA 75 82 38         [24]  512 	mov	dpl, #0x38
+      0000FD 12 01 12         [24]  513 	lcall	_cmd_write
                                     514 ;	my_lcd.c:9: cmd_write(0x0C); /* Display ON, Cursor off */
-      0000F7 75 82 0C         [24]  515 	mov	dpl, #0x0c
-      0000FA 12 01 09         [24]  516 	lcall	_cmd_write
+      000100 75 82 0C         [24]  515 	mov	dpl, #0x0c
+      000103 12 01 12         [24]  516 	lcall	_cmd_write
                                     517 ;	my_lcd.c:10: cmd_write(0x01); /* Clear Display */
-      0000FD 75 82 01         [24]  518 	mov	dpl, #0x01
-      000100 12 01 09         [24]  519 	lcall	_cmd_write
+      000106 75 82 01         [24]  518 	mov	dpl, #0x01
+      000109 12 01 12         [24]  519 	lcall	_cmd_write
                                     520 ;	my_lcd.c:11: cmd_write(0x06); /* Auto Increment Cursor after Writing*/
-      000103 75 82 06         [24]  521 	mov	dpl, #0x06
+      00010C 75 82 06         [24]  521 	mov	dpl, #0x06
                                     522 ;	my_lcd.c:13: }
-      000106 02 01 09         [24]  523 	ljmp	_cmd_write
+      00010F 02 01 12         [24]  523 	ljmp	_cmd_write
                                     524 ;------------------------------------------------------------
                                     525 ;Allocation info for local variables in function 'cmd_write'
                                     526 ;------------------------------------------------------------
@@ -530,26 +530,26 @@
                                     530 ;	-----------------------------------------
                                     531 ;	 function cmd_write
                                     532 ;	-----------------------------------------
-      000109                        533 _cmd_write:
-      000109 AF 82            [24]  534 	mov	r7, dpl
+      000112                        533 _cmd_write:
+      000112 AF 82            [24]  534 	mov	r7, dpl
                                     535 ;	my_lcd.c:17: RS=0; /* Cmd Register */
                                     536 ;	assignBit
-      00010B C2 80            [12]  537 	clr	_P0_0
+      000114 C2 80            [12]  537 	clr	_P0_0
                                     538 ;	my_lcd.c:18: RW=0; /* Write */
                                     539 ;	assignBit
-      00010D C2 81            [12]  540 	clr	_P0_1
+      000116 C2 81            [12]  540 	clr	_P0_1
                                     541 ;	my_lcd.c:19: DATA=cmd;
-      00010F 8F A0            [24]  542 	mov	_P2,r7
+      000118 8F A0            [24]  542 	mov	_P2,r7
                                     543 ;	my_lcd.c:20: EN=1;
                                     544 ;	assignBit
-      000111 D2 82            [12]  545 	setb	_P0_2
+      00011A D2 82            [12]  545 	setb	_P0_2
                                     546 ;	my_lcd.c:21: delay();
-      000113 12 00 AF         [24]  547 	lcall	_delay
+      00011C 12 00 B8         [24]  547 	lcall	_delay
                                     548 ;	my_lcd.c:22: EN=0;
                                     549 ;	assignBit
-      000116 C2 82            [12]  550 	clr	_P0_2
+      00011F C2 82            [12]  550 	clr	_P0_2
                                     551 ;	my_lcd.c:24: }
-      000118 22               [24]  552 	ret
+      000121 22               [24]  552 	ret
                                     553 ;------------------------------------------------------------
                                     554 ;Allocation info for local variables in function 'letter_write'
                                     555 ;------------------------------------------------------------
@@ -559,78 +559,78 @@
                                     559 ;	-----------------------------------------
                                     560 ;	 function letter_write
                                     561 ;	-----------------------------------------
-      000119                        562 _letter_write:
-      000119 AF 82            [24]  563 	mov	r7, dpl
+      000122                        562 _letter_write:
+      000122 AF 82            [24]  563 	mov	r7, dpl
                                     564 ;	my_lcd.c:28: RS=1; /* Data Register */
                                     565 ;	assignBit
-      00011B D2 80            [12]  566 	setb	_P0_0
+      000124 D2 80            [12]  566 	setb	_P0_0
                                     567 ;	my_lcd.c:29: RW=0; /* Write */
                                     568 ;	assignBit
-      00011D C2 81            [12]  569 	clr	_P0_1
+      000126 C2 81            [12]  569 	clr	_P0_1
                                     570 ;	my_lcd.c:30: DATA=letter;
-      00011F 8F A0            [24]  571 	mov	_P2,r7
+      000128 8F A0            [24]  571 	mov	_P2,r7
                                     572 ;	my_lcd.c:31: EN=1;
                                     573 ;	assignBit
-      000121 D2 82            [12]  574 	setb	_P0_2
+      00012A D2 82            [12]  574 	setb	_P0_2
                                     575 ;	my_lcd.c:32: delay();
-      000123 12 00 AF         [24]  576 	lcall	_delay
+      00012C 12 00 B8         [24]  576 	lcall	_delay
                                     577 ;	my_lcd.c:33: EN=0;
                                     578 ;	assignBit
-      000126 C2 82            [12]  579 	clr	_P0_2
+      00012F C2 82            [12]  579 	clr	_P0_2
                                     580 ;	my_lcd.c:34: }
-      000128 22               [24]  581 	ret
+      000131 22               [24]  581 	ret
                                     582 ;------------------------------------------------------------
-                                    583 ;Allocation info for local variables in function 'string_write'
+                                    583 ;Allocation info for local variables in function 'lcd_string'
                                     584 ;------------------------------------------------------------
                                     585 ;str           Allocated to registers r5 r6 r7 
                                     586 ;i             Allocated to registers r3 r4 
                                     587 ;------------------------------------------------------------
-                                    588 ;	my_lcd.c:36: void string_write(char* str){
+                                    588 ;	my_lcd.c:36: void lcd_string(char* str){
                                     589 ;	-----------------------------------------
-                                    590 ;	 function string_write
+                                    590 ;	 function lcd_string
                                     591 ;	-----------------------------------------
-      000129                        592 _string_write:
-      000129 AD 82            [24]  593 	mov	r5, dpl
-      00012B AE 83            [24]  594 	mov	r6, dph
-      00012D AF F0            [24]  595 	mov	r7, b
+      000132                        592 _lcd_string:
+      000132 AD 82            [24]  593 	mov	r5, dpl
+      000134 AE 83            [24]  594 	mov	r6, dph
+      000136 AF F0            [24]  595 	mov	r7, b
                                     596 ;	my_lcd.c:40: for(i=0;str[i]!='\0';i++){
-      00012F 7B 00            [12]  597 	mov	r3,#0x00
-      000131 7C 00            [12]  598 	mov	r4,#0x00
-      000133                        599 00103$:
-      000133 EB               [12]  600 	mov	a,r3
-      000134 2D               [12]  601 	add	a, r5
-      000135 F8               [12]  602 	mov	r0,a
-      000136 EC               [12]  603 	mov	a,r4
-      000137 3E               [12]  604 	addc	a, r6
-      000138 F9               [12]  605 	mov	r1,a
-      000139 8F 02            [24]  606 	mov	ar2,r7
-      00013B 88 82            [24]  607 	mov	dpl,r0
-      00013D 89 83            [24]  608 	mov	dph,r1
-      00013F 8A F0            [24]  609 	mov	b,r2
-      000141 12 01 68         [24]  610 	lcall	__gptrget
-      000144 FA               [12]  611 	mov	r2,a
-      000145 60 20            [24]  612 	jz	00105$
+      000138 7B 00            [12]  597 	mov	r3,#0x00
+      00013A 7C 00            [12]  598 	mov	r4,#0x00
+      00013C                        599 00103$:
+      00013C EB               [12]  600 	mov	a,r3
+      00013D 2D               [12]  601 	add	a, r5
+      00013E F8               [12]  602 	mov	r0,a
+      00013F EC               [12]  603 	mov	a,r4
+      000140 3E               [12]  604 	addc	a, r6
+      000141 F9               [12]  605 	mov	r1,a
+      000142 8F 02            [24]  606 	mov	ar2,r7
+      000144 88 82            [24]  607 	mov	dpl,r0
+      000146 89 83            [24]  608 	mov	dph,r1
+      000148 8A F0            [24]  609 	mov	b,r2
+      00014A 12 01 71         [24]  610 	lcall	__gptrget
+      00014D FA               [12]  611 	mov	r2,a
+      00014E 60 20            [24]  612 	jz	00105$
                                     613 ;	my_lcd.c:41: letter_write(str[i]);
-      000147 8A 82            [24]  614 	mov	dpl, r2
-      000149 C0 07            [24]  615 	push	ar7
-      00014B C0 06            [24]  616 	push	ar6
-      00014D C0 05            [24]  617 	push	ar5
-      00014F C0 04            [24]  618 	push	ar4
-      000151 C0 03            [24]  619 	push	ar3
-      000153 12 01 19         [24]  620 	lcall	_letter_write
-      000156 D0 03            [24]  621 	pop	ar3
-      000158 D0 04            [24]  622 	pop	ar4
-      00015A D0 05            [24]  623 	pop	ar5
-      00015C D0 06            [24]  624 	pop	ar6
-      00015E D0 07            [24]  625 	pop	ar7
+      000150 8A 82            [24]  614 	mov	dpl, r2
+      000152 C0 07            [24]  615 	push	ar7
+      000154 C0 06            [24]  616 	push	ar6
+      000156 C0 05            [24]  617 	push	ar5
+      000158 C0 04            [24]  618 	push	ar4
+      00015A C0 03            [24]  619 	push	ar3
+      00015C 12 01 22         [24]  620 	lcall	_letter_write
+      00015F D0 03            [24]  621 	pop	ar3
+      000161 D0 04            [24]  622 	pop	ar4
+      000163 D0 05            [24]  623 	pop	ar5
+      000165 D0 06            [24]  624 	pop	ar6
+      000167 D0 07            [24]  625 	pop	ar7
                                     626 ;	my_lcd.c:40: for(i=0;str[i]!='\0';i++){
-      000160 0B               [12]  627 	inc	r3
-      000161 BB 00 CF         [24]  628 	cjne	r3,#0x00,00103$
-      000164 0C               [12]  629 	inc	r4
-      000165 80 CC            [24]  630 	sjmp	00103$
-      000167                        631 00105$:
+      000169 0B               [12]  627 	inc	r3
+      00016A BB 00 CF         [24]  628 	cjne	r3,#0x00,00103$
+      00016D 0C               [12]  629 	inc	r4
+      00016E 80 CC            [24]  630 	sjmp	00103$
+      000170                        631 00105$:
                                     632 ;	my_lcd.c:43: }
-      000167 22               [24]  633 	ret
+      000170 22               [24]  633 	ret
                                     634 	.area CSEG    (CODE)
                                     635 	.area CONST   (CODE)
                                     636 	.area XINIT   (CODE)

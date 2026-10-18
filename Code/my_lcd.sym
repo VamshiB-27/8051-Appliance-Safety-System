@@ -417,13 +417,13 @@ Symbol Table
  16 _cmd_write                                                     00001B GR
     _delay                                                         ****** GX
  16 _lcd_init                                                      000000 GR
- 16 _letter_write                                                  00002B GR
+ 16 _lcd_string                                                    00003B GR
 ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)          Page 8
 Hexadecimal [24-Bits]
 
 Symbol Table
 
- 16 _string_write                                                  00003B GR
+ 16 _letter_write                                                  00002B GR
     a                                                           =  0000E0 L
     a.0                                                         =  0000E0 L
     a.1                                                         =  0000E1 L

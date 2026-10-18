@@ -33,7 +33,7 @@ void letter_write(char letter){
 	EN=0;
 }
 
-void string_write(char* str){
+void lcd_string(char* str){
 
 	unsigned short int i;
 

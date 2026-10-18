@@ -9,6 +9,7 @@
 ; Public variables in this module
 ;--------------------------------------------------------
 	.globl _main
+	.globl _lcd_string
 	.globl _lcd_init
 	.globl _EP6INT
 	.globl _EP5INT
@@ -594,9 +595,13 @@ _main:
 	ar0 = 0x00
 ;	main.c:7: lcd_init();
 	lcall	_lcd_init
-;	main.c:9: while(1){
+;	main.c:9: lcd_string("Hello World");
+	mov	dptr,#___str_0
+	mov	b, #0x80
+	lcall	_lcd_string
+;	main.c:11: while(1){
 00102$:
-;	main.c:12: }
+;	main.c:14: }
 	sjmp	00102$
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'delay'
@@ -604,23 +609,23 @@ _main:
 ;i             Allocated with name '_delay_i_10000_10'
 ;j             Allocated with name '_delay_j_10000_10'
 ;------------------------------------------------------------
-;	main.c:14: void delay(void){
+;	main.c:16: void delay(void){
 ;	-----------------------------------------
 ;	 function delay
 ;	-----------------------------------------
 _delay:
-;	main.c:18: for(i=0;i<10;i++){
+;	main.c:20: for(i=0;i<50;i++){
 	clr	a
 	mov	_delay_i_10000_10,a
 	mov	(_delay_i_10000_10 + 1),a
 00107$:
 	clr	c
 	mov	a,_delay_i_10000_10
-	subb	a,#0x0a
+	subb	a,#0x32
 	mov	a,(_delay_i_10000_10 + 1)
 	subb	a,#0x00
 	jnc	00109$
-;	main.c:19: for(j = 0; j < 120; j++){
+;	main.c:21: for(j = 0; j < 120; j++){
 	clr	a
 	mov	_delay_j_10000_10,a
 	mov	(_delay_j_10000_10 + 1),a
@@ -641,7 +646,7 @@ _delay:
 	mov	(_delay_j_10000_10 + 1),a
 	sjmp	00104$
 00108$:
-;	main.c:18: for(i=0;i<10;i++){
+;	main.c:20: for(i=0;i<50;i++){
 	mov	r6,_delay_i_10000_10
 	mov	r7,(_delay_i_10000_10 + 1)
 	mov	a,#0x01
@@ -652,9 +657,14 @@ _delay:
 	mov	(_delay_i_10000_10 + 1),a
 	sjmp	00107$
 00109$:
-;	main.c:23: }
+;	main.c:25: }
 	ret
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
+	.area CONST   (CODE)
+___str_0:
+	.ascii "Hello World"
+	.db 0x00
+	.area CSEG    (CODE)
 	.area XINIT   (CODE)
 	.area CABS    (ABS,CODE)

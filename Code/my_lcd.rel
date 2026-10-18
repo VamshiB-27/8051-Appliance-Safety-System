@@ -228,7 +228,7 @@ A GSINIT5 size 0 flags 20 addr 0
 A GSINIT size 0 flags 20 addr 0
 A GSFINAL size 0 flags 20 addr 0
 A CSEG size 7A flags 20 addr 0
-S _string_write Def00003B
+S _lcd_string Def00003B
 S _cmd_write Def00001B
 S _lcd_init Def000000
 S _letter_write Def00002B

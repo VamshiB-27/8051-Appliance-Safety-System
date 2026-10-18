@@ -212,7 +212,7 @@
 	.globl _lcd_init
 	.globl _cmd_write
 	.globl _letter_write
-	.globl _string_write
+	.globl _lcd_string
 ;--------------------------------------------------------
 ; special function registers
 ;--------------------------------------------------------
@@ -580,16 +580,16 @@ _letter_write:
 ;	my_lcd.c:34: }
 	ret
 ;------------------------------------------------------------
-;Allocation info for local variables in function 'string_write'
+;Allocation info for local variables in function 'lcd_string'
 ;------------------------------------------------------------
 ;str           Allocated to registers r5 r6 r7 
 ;i             Allocated to registers r3 r4 
 ;------------------------------------------------------------
-;	my_lcd.c:36: void string_write(char* str){
+;	my_lcd.c:36: void lcd_string(char* str){
 ;	-----------------------------------------
-;	 function string_write
+;	 function lcd_string
 ;	-----------------------------------------
-_string_write:
+_lcd_string:
 	mov	r5, dpl
 	mov	r6, dph
 	mov	r7, b

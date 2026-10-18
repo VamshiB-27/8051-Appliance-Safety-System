@@ -6,8 +6,10 @@ void main(void){
 
 	lcd_init();
 
+	lcd_string("Hello World");
+	
 	while(1){
-
+		
 	}
 }
 
@@ -15,7 +17,7 @@ void delay(void){
 
 	volatile unsigned int i, j;
 
-	for(i=0;i<10;i++){
+	for(i=0;i<50;i++){
 		for(j = 0; j < 120; j++){
 			;
 	        }

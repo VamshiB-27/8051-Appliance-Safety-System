@@ -413,23 +413,25 @@ Symbol Table
     _USBINT                                                     =  0000BD G
     _WDTPRG                                                     =  0000A7 G
     _WDTRST                                                     =  0000A6 G
+ 18 ___str_0                                                       000000 R
   E __interrupt_vect                                               000000 R
     __mcs51_genRAMCLEAR                                            ****** GX
     __mcs51_genXINIT                                               ****** GX
     __mcs51_genXRAMCLEAR                                           ****** GX
-    __sdcc_gsinit_startup                                          ****** GX
 ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)          Page 8
 Hexadecimal [24-Bits]
 
 Symbol Table
 
+    __sdcc_gsinit_startup                                          ****** GX
   E __sdcc_program_exit                                            00004C R
   E __sdcc_program_startup                                         000049 GR
   6 __start__stack                                                 000000 GR
- 17 _delay                                                         000005 GR
+ 17 _delay                                                         00000E GR
   5 _delay_i_10000_10                                              000000 R
   5 _delay_j_10000_10                                              000002 R
     _lcd_init                                                      ****** GX
+    _lcd_string                                                    ****** GX
  17 _main                                                          000000 GR
     a                                                           =  0000E0 L
     a.0                                                         =  0000E0 L
@@ -476,13 +478,13 @@ Symbol Table
     es                                                          =  0000AC L
     et0                                                         =  0000A9 L
     et1                                                         =  0000AB L
-    et2                                                         =  0000AD L
-    ex0                                                         =  0000A8 L
 ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)          Page 9
 Hexadecimal [24-Bits]
 
 Symbol Table
 
+    et2                                                         =  0000AD L
+    ex0                                                         =  0000A8 L
     ex1                                                         =  0000AA L
     exen2                                                       =  0000CB L
     exf2                                                        =  0000CE L
@@ -536,13 +538,13 @@ Symbol Table
     p2.4                                                        =  0000A4 L
     p2.5                                                        =  0000A5 L
     p2.6                                                        =  0000A6 L
-    p2.7                                                        =  0000A7 L
-    p3                                                          =  0000B0 L
 ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 10
 Hexadecimal [24-Bits]
 
 Symbol Table
 
+    p2.7                                                        =  0000A7 L
+    p3                                                          =  0000B0 L
     p3.0                                                        =  0000B0 L
     p3.1                                                        =  0000B1 L
     p3.2                                                        =  0000B2 L
@@ -596,13 +598,13 @@ Symbol Table
   E sdcc_atomic_exchange_pdata_impl                                00000A R
   E sdcc_atomic_exchange_rollback_end                              00002F GR
   E sdcc_atomic_exchange_rollback_start                            000008 GR
-  E sdcc_atomic_exchange_xdata_impl                                000012 R
-    sm0                                                         =  00009F L
 ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 11
 Hexadecimal [24-Bits]
 
 Symbol Table
 
+  E sdcc_atomic_exchange_xdata_impl                                000012 R
+    sm0                                                         =  00009F L
     sm1                                                         =  00009E L
     sm2                                                         =  00009D L
     sp                                                          =  000081 L
@@ -642,6 +644,7 @@ Symbol Table
     tr2                                                         =  0000CA L
     txd                                                         =  0000B1 L
 
+
 ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 12
 Hexadecimal [24-Bits]
 
@@ -670,8 +673,8 @@ Area Table
   14 GSINIT5                                    size      0   flags   20
   15 GSINIT                                     size      0   flags   20
   16 GSFINAL                                    size      3   flags   20
-  17 CSEG                                       size     44   flags   20
-  18 CONST                                      size      0   flags   20
+  17 CSEG                                       size     4D   flags   20
+  18 CONST                                      size      C   flags   20
   19 XINIT                                      size      0   flags   20
   1A CABS                                       size      0   flags   28
 
