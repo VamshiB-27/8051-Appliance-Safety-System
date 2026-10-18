@@ -8,6 +8,7 @@
 ;--------------------------------------------------------
 ; Public variables in this module
 ;--------------------------------------------------------
+	.globl _timer0_isr
 	.globl _main
 	.globl _lcd_string
 	.globl _lcd_init
@@ -211,7 +212,10 @@
 	.globl _DPL
 	.globl _SP
 	.globl _P0
-	.globl _delay
+	.globl _time_ms
+	.globl _delay_us
+	.globl _delay_ms
+	.globl _init_settings
 ;--------------------------------------------------------
 ; special function registers
 ;--------------------------------------------------------
@@ -431,9 +435,9 @@ _EP6INT	=	0x00fe
 ; internal ram data
 ;--------------------------------------------------------
 	.area DSEG    (DATA)
-_delay_i_10000_10:
-	.ds 2
-_delay_j_10000_10:
+_time_ms::
+	.ds 4
+_timer0_isr_value_10000_18:
 	.ds 2
 ;--------------------------------------------------------
 ; overlayable items in internal ram
@@ -490,8 +494,11 @@ __start__stack:
 	.area HOME    (CODE)
 __interrupt_vect:
 	ljmp	__sdcc_gsinit_startup
+	reti
+	.ds	7
+	ljmp	_timer0_isr
 ; restartable atomic support routines
-	.ds	5
+	.ds	2
 sdcc_atomic_exchange_rollback_start::
 	nop
 	nop
@@ -561,6 +568,15 @@ sdcc_atomic_compare_exchange_gptr_impl::
 	.globl __mcs51_genXINIT
 	.globl __mcs51_genXRAMCLEAR
 	.globl __mcs51_genRAMCLEAR
+;------------------------------------------------------------
+;Allocation info for local variables in function 'timer0_isr'
+;------------------------------------------------------------
+;value         Allocated with name '_timer0_isr_value_10000_18'
+;------------------------------------------------------------
+;	main.c:38: static int value=0;
+	clr	a
+	mov	_timer0_isr_value_10000_18,a
+	mov	(_timer0_isr_value_10000_18 + 1),a
 	.area GSFINAL (CODE)
 	ljmp	__sdcc_program_startup
 ;--------------------------------------------------------
@@ -580,7 +596,7 @@ __sdcc_program_exit:
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'main'
 ;------------------------------------------------------------
-;	main.c:5: void main(void){
+;	main.c:7: void main(void){
 ;	-----------------------------------------
 ;	 function main
 ;	-----------------------------------------
@@ -593,77 +609,188 @@ _main:
 	ar2 = 0x02
 	ar1 = 0x01
 	ar0 = 0x00
-;	main.c:7: lcd_init();
+;	main.c:9: time_ms=0;
+	clr	a
+	mov	_time_ms,a
+	mov	(_time_ms + 1),a
+	mov	(_time_ms + 2),a
+	mov	(_time_ms + 3),a
+;	main.c:10: init_settings();
+	lcall	_init_settings
+;	main.c:11: lcd_init();
 	lcall	_lcd_init
-;	main.c:9: lcd_string("Hello World");
+;	main.c:13: lcd_string("Hello Vamshi!");
 	mov	dptr,#___str_0
 	mov	b, #0x80
 	lcall	_lcd_string
-;	main.c:11: while(1){
+;	main.c:15: while(1){
 00102$:
-;	main.c:14: }
+;	main.c:18: }
 	sjmp	00102$
 ;------------------------------------------------------------
-;Allocation info for local variables in function 'delay'
+;Allocation info for local variables in function 'delay_us'
 ;------------------------------------------------------------
-;i             Allocated with name '_delay_i_10000_10'
-;j             Allocated with name '_delay_j_10000_10'
+;value         Allocated to registers r6 r7 
+;i             Allocated to registers r5 
 ;------------------------------------------------------------
-;	main.c:16: void delay(void){
+;	main.c:20: void delay_us(unsigned int value){
 ;	-----------------------------------------
-;	 function delay
+;	 function delay_us
 ;	-----------------------------------------
-_delay:
-;	main.c:20: for(i=0;i<50;i++){
-	clr	a
-	mov	_delay_i_10000_10,a
-	mov	(_delay_i_10000_10 + 1),a
+_delay_us:
+	mov	r6, dpl
+	mov	r7, dph
+;	main.c:24: while(value--){
+00102$:
+	mov	ar4,r6
+	mov	ar5,r7
+	dec	r6
+	cjne	r6,#0xff,00138$
+	dec	r7
+00138$:
+	mov	a,r4
+	orl	a,r5
+	jz	00108$
+;	main.c:25: for(i=0;i<4;i++);   /* This is around 1us */
+	mov	r5,#0x04
 00107$:
-	clr	c
-	mov	a,_delay_i_10000_10
-	subb	a,#0x32
-	mov	a,(_delay_i_10000_10 + 1)
-	subb	a,#0x00
-	jnc	00109$
-;	main.c:21: for(j = 0; j < 120; j++){
-	clr	a
-	mov	_delay_j_10000_10,a
-	mov	(_delay_j_10000_10 + 1),a
-00104$:
-	clr	c
-	mov	a,_delay_j_10000_10
-	subb	a,#0x78
-	mov	a,(_delay_j_10000_10 + 1)
-	subb	a,#0x00
-	jnc	00108$
-	mov	r6,_delay_j_10000_10
-	mov	r7,(_delay_j_10000_10 + 1)
-	mov	a,#0x01
-	add	a, r6
-	mov	_delay_j_10000_10,a
-	clr	a
-	addc	a, r7
-	mov	(_delay_j_10000_10 + 1),a
-	sjmp	00104$
+	djnz	r5,00107$
+	sjmp	00102$
 00108$:
-;	main.c:20: for(i=0;i<50;i++){
-	mov	r6,_delay_i_10000_10
-	mov	r7,(_delay_i_10000_10 + 1)
-	mov	a,#0x01
-	add	a, r6
-	mov	_delay_i_10000_10,a
+;	main.c:27: }
+	ret
+;------------------------------------------------------------
+;Allocation info for local variables in function 'delay_ms'
+;------------------------------------------------------------
+;value         Allocated to registers r4 r5 r6 r7 
+;------------------------------------------------------------
+;	main.c:29: void delay_ms(unsigned long int value){
+;	-----------------------------------------
+;	 function delay_ms
+;	-----------------------------------------
+_delay_ms:
+	mov	r4,dpl
+	mov	r5,dph
+	mov	r6,b
+	mov	r7,a
+;	main.c:31: time_ms=0;
+	clr	a
+	mov	_time_ms,a
+	mov	(_time_ms + 1),a
+	mov	(_time_ms + 2),a
+	mov	(_time_ms + 3),a
+;	main.c:32: while(time_ms<value);
+00101$:
+	clr	c
+	mov	a,_time_ms
+	subb	a,r4
+	mov	a,(_time_ms + 1)
+	subb	a,r5
+	mov	a,(_time_ms + 2)
+	subb	a,r6
+	mov	a,(_time_ms + 3)
+	subb	a,r7
+	jc	00101$
+;	main.c:34: }
+	ret
+;------------------------------------------------------------
+;Allocation info for local variables in function 'timer0_isr'
+;------------------------------------------------------------
+;value         Allocated with name '_timer0_isr_value_10000_18'
+;------------------------------------------------------------
+;	main.c:36: void timer0_isr(void) __interrupt(1){
+;	-----------------------------------------
+;	 function timer0_isr
+;	-----------------------------------------
+_timer0_isr:
+	push	acc
+	push	ar7
+	push	ar6
+	push	ar5
+	push	ar4
+	push	psw
+	mov	psw,#0x00
+;	main.c:39: TF0=0;
+;	assignBit
+	clr	_TF0
+;	main.c:40: value++;
+	inc	_timer0_isr_value_10000_18
+	clr	a
+	cjne	a,_timer0_isr_value_10000_18,00112$
+	inc	(_timer0_isr_value_10000_18 + 1)
+00112$:
+;	main.c:41: if(value==10){
+	mov	a,#0x0a
+	cjne	a,_timer0_isr_value_10000_18,00113$
+	clr	a
+	cjne	a,(_timer0_isr_value_10000_18 + 1),00113$
+	sjmp	00114$
+00113$:
+	sjmp	00103$
+00114$:
+;	main.c:42: value=0;
+	clr	a
+	mov	_timer0_isr_value_10000_18,a
+	mov	(_timer0_isr_value_10000_18 + 1),a
+;	main.c:43: time_ms++;
+	mov	r4,_time_ms
+	mov	r5,(_time_ms + 1)
+	mov	r6,(_time_ms + 2)
+	mov	r7,(_time_ms + 3)
+	inc	a
+	add	a, r4
+	mov	_time_ms,a
+	clr	a
+	addc	a, r5
+	mov	(_time_ms + 1),a
+	clr	a
+	addc	a, r6
+	mov	(_time_ms + 2),a
 	clr	a
 	addc	a, r7
-	mov	(_delay_i_10000_10 + 1),a
-	sjmp	00107$
-00109$:
-;	main.c:25: }
+	mov	(_time_ms + 3),a
+00103$:
+;	main.c:45: }
+	pop	psw
+	pop	ar4
+	pop	ar5
+	pop	ar6
+	pop	ar7
+	pop	acc
+	reti
+;	eliminated unneeded push/pop dpl
+;	eliminated unneeded push/pop dph
+;	eliminated unneeded push/pop b
+;------------------------------------------------------------
+;Allocation info for local variables in function 'init_settings'
+;------------------------------------------------------------
+;	main.c:47: void init_settings(void){
+;	-----------------------------------------
+;	 function init_settings
+;	-----------------------------------------
+_init_settings:
+;	main.c:50: TMOD=0x02;
+	mov	_TMOD,#0x02
+;	main.c:51: TH0=0x38;     /* auto reload value for 100us */
+	mov	_TH0,#0x38
+;	main.c:52: TL0=0x38;     /* initize timer with start value */
+	mov	_TL0,#0x38
+;	main.c:53: ET0=1;        /* Enable timer interrupt */
+;	assignBit
+	setb	_ET0
+;	main.c:54: EA=1;         /* Enable global interrupt */
+;	assignBit
+	setb	_EA
+;	main.c:55: TR0=1;        /* Start Timer 0 */
+;	assignBit
+	setb	_TR0
+;	main.c:56: }
 	ret
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
 	.area CONST   (CODE)
 ___str_0:
-	.ascii "Hello World"
+	.ascii "Hello Vamshi!"
 	.db 0x00
 	.area CSEG    (CODE)
 	.area XINIT   (CODE)

@@ -424,15 +424,18 @@ Hexadecimal [24-Bits]
 Symbol Table
 
     __sdcc_gsinit_startup                                          ****** GX
-  E __sdcc_program_exit                                            00004C R
-  E __sdcc_program_startup                                         000049 GR
+  E __sdcc_program_exit                                            000054 R
+  E __sdcc_program_startup                                         000051 GR
   6 __start__stack                                                 000000 GR
- 17 _delay                                                         00000E GR
-  5 _delay_i_10000_10                                              000000 R
-  5 _delay_j_10000_10                                              000002 R
+ 17 _delay_ms                                                      000032 GR
+ 17 _delay_us                                                      00001A GR
+ 17 _init_settings                                                 0000A2 GR
     _lcd_init                                                      ****** GX
     _lcd_string                                                    ****** GX
  17 _main                                                          000000 GR
+  5 _time_ms                                                       000000 GR
+ 17 _timer0_isr                                                    000052 GR
+  5 _timer0_isr_value_10000_18                                     000004 R
     a                                                           =  0000E0 L
     a.0                                                         =  0000E0 L
     a.1                                                         =  0000E1 L
@@ -475,14 +478,14 @@ Symbol Table
     dph                                                         =  000083 L
     dpl                                                         =  000082 L
     ea                                                          =  0000AF L
-    es                                                          =  0000AC L
-    et0                                                         =  0000A9 L
-    et1                                                         =  0000AB L
 ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)          Page 9
 Hexadecimal [24-Bits]
 
 Symbol Table
 
+    es                                                          =  0000AC L
+    et0                                                         =  0000A9 L
+    et1                                                         =  0000AB L
     et2                                                         =  0000AD L
     ex0                                                         =  0000A8 L
     ex1                                                         =  0000AA L
@@ -535,14 +538,14 @@ Symbol Table
     p2.1                                                        =  0000A1 L
     p2.2                                                        =  0000A2 L
     p2.3                                                        =  0000A3 L
-    p2.4                                                        =  0000A4 L
-    p2.5                                                        =  0000A5 L
-    p2.6                                                        =  0000A6 L
 ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 10
 Hexadecimal [24-Bits]
 
 Symbol Table
 
+    p2.4                                                        =  0000A4 L
+    p2.5                                                        =  0000A5 L
+    p2.6                                                        =  0000A6 L
     p2.7                                                        =  0000A7 L
     p3                                                          =  0000B0 L
     p3.0                                                        =  0000B0 L
@@ -588,22 +591,22 @@ Symbol Table
     scon.5                                                      =  00009D L
     scon.6                                                      =  00009E L
     scon.7                                                      =  00009F L
-  E sdcc_atomic_compare_exchange_gptr_impl                         00003F GR
-  E sdcc_atomic_compare_exchange_idata_impl                        000018 R
-  E sdcc_atomic_compare_exchange_pdata_impl                        000020 R
-  E sdcc_atomic_compare_exchange_xdata_impl                        000028 R
-  E sdcc_atomic_exchange_exit                                      00003C R
-  E sdcc_atomic_exchange_gptr_impl                                 00002F GR
-  E sdcc_atomic_exchange_idata_impl                                000037 R
-  E sdcc_atomic_exchange_pdata_impl                                00000A R
-  E sdcc_atomic_exchange_rollback_end                              00002F GR
-  E sdcc_atomic_exchange_rollback_start                            000008 GR
+  E sdcc_atomic_compare_exchange_gptr_impl                         000047 GR
+  E sdcc_atomic_compare_exchange_idata_impl                        000020 R
+  E sdcc_atomic_compare_exchange_pdata_impl                        000028 R
+  E sdcc_atomic_compare_exchange_xdata_impl                        000030 R
+  E sdcc_atomic_exchange_exit                                      000044 R
+  E sdcc_atomic_exchange_gptr_impl                                 000037 GR
+  E sdcc_atomic_exchange_idata_impl                                00003F R
 ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 11
 Hexadecimal [24-Bits]
 
 Symbol Table
 
-  E sdcc_atomic_exchange_xdata_impl                                000012 R
+  E sdcc_atomic_exchange_pdata_impl                                000012 R
+  E sdcc_atomic_exchange_rollback_end                              000037 GR
+  E sdcc_atomic_exchange_rollback_start                            000010 GR
+  E sdcc_atomic_exchange_xdata_impl                                00001A R
     sm0                                                         =  00009F L
     sm1                                                         =  00009E L
     sm2                                                         =  00009D L
@@ -655,7 +658,7 @@ Area Table
    2 RSEG0                                      size      0   flags    8
    3 RSEG1                                      size      0   flags    8
    4 REG_BANK_0                                 size      8   flags    4
-   5 DSEG                                       size      4   flags    0
+   5 DSEG                                       size      6   flags    0
    6 SSEG                                       size      1   flags    0
    7 ISEG                                       size      0   flags    0
    8 IABS                                       size      0   flags    8
@@ -664,17 +667,17 @@ Area Table
    B XSEG                                       size      0   flags   40
    C XABS                                       size      0   flags   48
    D XISEG                                      size      0   flags   40
-   E HOME                                       size     4E   flags   20
+   E HOME                                       size     56   flags   20
    F GSINIT0                                    size      0   flags   20
   10 GSINIT1                                    size      0   flags   20
   11 GSINIT2                                    size      0   flags   20
   12 GSINIT3                                    size      0   flags   20
   13 GSINIT4                                    size      0   flags   20
   14 GSINIT5                                    size      0   flags   20
-  15 GSINIT                                     size      0   flags   20
+  15 GSINIT                                     size      5   flags   20
   16 GSFINAL                                    size      3   flags   20
-  17 CSEG                                       size     4D   flags   20
-  18 CONST                                      size      C   flags   20
+  17 CSEG                                       size     B2   flags   20
+  18 CONST                                      size      E   flags   20
   19 XINIT                                      size      0   flags   20
   1A CABS                                       size      0   flags   28
 

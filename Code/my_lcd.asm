@@ -8,7 +8,8 @@
 ;--------------------------------------------------------
 ; Public variables in this module
 ;--------------------------------------------------------
-	.globl _delay
+	.globl _delay_us
+	.globl _delay_ms
 	.globl _EP6INT
 	.globl _EP5INT
 	.globl _EP4INT
@@ -506,8 +507,11 @@ _lcd_init:
 	ar2 = 0x02
 	ar1 = 0x01
 	ar0 = 0x00
-;	my_lcd.c:7: delay();
-	lcall	_delay
+;	my_lcd.c:7: delay_ms(15);     /* LCD displays need 10ms for giving 1st cmd*/
+	mov	dptr,#0x000f
+	clr	a
+	mov	b,a
+	lcall	_delay_ms
 ;	my_lcd.c:8: cmd_write(0x38); /* 8-bit mode, 2 lines */
 	mov	dpl, #0x38
 	lcall	_cmd_write
@@ -517,75 +521,86 @@ _lcd_init:
 ;	my_lcd.c:10: cmd_write(0x01); /* Clear Display */
 	mov	dpl, #0x01
 	lcall	_cmd_write
-;	my_lcd.c:11: cmd_write(0x06); /* Auto Increment Cursor after Writing*/
+;	my_lcd.c:11: delay_ms(2);
+	mov	dptr,#0x0002
+	clr	a
+	mov	b,a
+	lcall	_delay_ms
+;	my_lcd.c:12: cmd_write(0x06); /* Auto Increment Cursor after Writing*/
 	mov	dpl, #0x06
-;	my_lcd.c:13: }
+;	my_lcd.c:14: }
 	ljmp	_cmd_write
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'cmd_write'
 ;------------------------------------------------------------
 ;cmd           Allocated to registers r7 
 ;------------------------------------------------------------
-;	my_lcd.c:15: void cmd_write(char cmd){
+;	my_lcd.c:16: void cmd_write(char cmd){
 ;	-----------------------------------------
 ;	 function cmd_write
 ;	-----------------------------------------
 _cmd_write:
 	mov	r7, dpl
-;	my_lcd.c:17: RS=0; /* Cmd Register */
+;	my_lcd.c:18: RS=0; /* Cmd Register */
 ;	assignBit
 	clr	_P0_0
-;	my_lcd.c:18: RW=0; /* Write */
+;	my_lcd.c:19: RW=0; /* Write */
 ;	assignBit
 	clr	_P0_1
-;	my_lcd.c:19: DATA=cmd;
+;	my_lcd.c:20: DATA=cmd;
 	mov	_P2,r7
-;	my_lcd.c:20: EN=1;
+;	my_lcd.c:21: EN=1;
 ;	assignBit
 	setb	_P0_2
-;	my_lcd.c:21: delay();
-	lcall	_delay
-;	my_lcd.c:22: EN=0;
+;	my_lcd.c:22: delay_us(1);
+	mov	dptr,#0x0001
+	lcall	_delay_us
+;	my_lcd.c:23: EN=0;
 ;	assignBit
 	clr	_P0_2
-;	my_lcd.c:24: }
-	ret
+;	my_lcd.c:24: delay_us(50);
+	mov	dptr,#0x0032
+;	my_lcd.c:26: }
+	ljmp	_delay_us
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'letter_write'
 ;------------------------------------------------------------
 ;letter        Allocated to registers r7 
 ;------------------------------------------------------------
-;	my_lcd.c:26: void letter_write(char letter){
+;	my_lcd.c:28: void letter_write(char letter){
 ;	-----------------------------------------
 ;	 function letter_write
 ;	-----------------------------------------
 _letter_write:
 	mov	r7, dpl
-;	my_lcd.c:28: RS=1; /* Data Register */
+;	my_lcd.c:30: RS=1; /* Data Register */
 ;	assignBit
 	setb	_P0_0
-;	my_lcd.c:29: RW=0; /* Write */
+;	my_lcd.c:31: RW=0; /* Write */
 ;	assignBit
 	clr	_P0_1
-;	my_lcd.c:30: DATA=letter;
+;	my_lcd.c:32: DATA=letter;
 	mov	_P2,r7
-;	my_lcd.c:31: EN=1;
+;	my_lcd.c:33: EN=1;
 ;	assignBit
 	setb	_P0_2
-;	my_lcd.c:32: delay();
-	lcall	_delay
-;	my_lcd.c:33: EN=0;
+;	my_lcd.c:34: delay_us(1);
+	mov	dptr,#0x0001
+	lcall	_delay_us
+;	my_lcd.c:35: EN=0;
 ;	assignBit
 	clr	_P0_2
-;	my_lcd.c:34: }
-	ret
+;	my_lcd.c:36: delay_us(50);
+	mov	dptr,#0x0032
+;	my_lcd.c:37: }
+	ljmp	_delay_us
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'lcd_string'
 ;------------------------------------------------------------
 ;str           Allocated to registers r5 r6 r7 
 ;i             Allocated to registers r3 r4 
 ;------------------------------------------------------------
-;	my_lcd.c:36: void lcd_string(char* str){
+;	my_lcd.c:39: void lcd_string(char* str){
 ;	-----------------------------------------
 ;	 function lcd_string
 ;	-----------------------------------------
@@ -593,7 +608,7 @@ _lcd_string:
 	mov	r5, dpl
 	mov	r6, dph
 	mov	r7, b
-;	my_lcd.c:40: for(i=0;str[i]!='\0';i++){
+;	my_lcd.c:43: for(i=0;str[i]!='\0';i++){
 	mov	r3,#0x00
 	mov	r4,#0x00
 00103$:
@@ -610,7 +625,7 @@ _lcd_string:
 	lcall	__gptrget
 	mov	r2,a
 	jz	00105$
-;	my_lcd.c:41: letter_write(str[i]);
+;	my_lcd.c:44: letter_write(str[i]);
 	mov	dpl, r2
 	push	ar7
 	push	ar6
@@ -623,13 +638,13 @@ _lcd_string:
 	pop	ar5
 	pop	ar6
 	pop	ar7
-;	my_lcd.c:40: for(i=0;str[i]!='\0';i++){
+;	my_lcd.c:43: for(i=0;str[i]!='\0';i++){
 	inc	r3
 	cjne	r3,#0x00,00103$
 	inc	r4
 	sjmp	00103$
 00105$:
-;	my_lcd.c:43: }
+;	my_lcd.c:46: }
 	ret
 	.area CSEG    (CODE)
 	.area CONST   (CODE)

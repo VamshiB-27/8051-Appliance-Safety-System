@@ -2,26 +2,56 @@
 #include "main.h"
 #include "my_lcd.h"
 
+volatile unsigned long int time_ms;
+
 void main(void){
 
+	time_ms=0;
+	init_settings();
 	lcd_init();
 
-	lcd_string("Hello World");
-	
+	lcd_string("Hello Vamshi!");
+
 	while(1){
-		
+
 	}
 }
 
-void delay(void){
+void delay_us(unsigned int value){
 
-	volatile unsigned int i, j;
+    /* It is software delay not accuraate */
+    unsigned int i;
+    while(value--){
+        for(i=0;i<4;i++);   /* This is around 1us */
+    }
+}
 
-	for(i=0;i<50;i++){
-		for(j = 0; j < 120; j++){
-			;
-	        }
+void delay_ms(unsigned long int value){
+
+	time_ms=0;
+	while(time_ms<value);
+	
+}
+
+void timer0_isr(void) __interrupt(1){
+
+	static int value=0;
+	TF0=0;
+	value++;
+	if(value==10){
+		value=0;
+		time_ms++;
 	}
 }
 
+void init_settings(void){
+
+        /* Timer 0 COnfig for 24Mhz fosc and ftimer0=2Mhz */
+	TMOD=0x02;
+	TH0=0x38;     /* auto reload value for 100us */
+	TL0=0x38;     /* initize timer with start value */
+	ET0=1;        /* Enable timer interrupt */
+	EA=1;         /* Enable global interrupt */
+	TR0=1;        /* Start Timer 0 */
+}
 

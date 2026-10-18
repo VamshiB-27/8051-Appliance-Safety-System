@@ -4,10 +4,10 @@
 
 void lcd_init(void){
 
-	delay();
 	cmd_write(0x38); /* 8-bit mode, 2 lines */
 	cmd_write(0x0C); /* Display ON, Cursor off */
 	cmd_write(0x01); /* Clear Display */
+	delay(10);
 	cmd_write(0x06); /* Auto Increment Cursor after Writing*/
 
 }
@@ -18,7 +18,7 @@ void cmd_write(char cmd){
 	RW=0; /* Write */
 	DATA=cmd;
 	EN=1;
-	delay();
+	delay(1);
 	EN=0;
 
 }
@@ -29,7 +29,7 @@ void letter_write(char letter){
 	RW=0; /* Write */
 	DATA=letter;
 	EN=1;
-	delay();
+	delay(1);
 	EN=0;
 }
 
