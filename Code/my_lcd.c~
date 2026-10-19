@@ -4,10 +4,11 @@
 
 void lcd_init(void){
 
+	delay_ms(15);     /* LCD displays need 10ms for giving 1st cmd*/
 	cmd_write(0x38); /* 8-bit mode, 2 lines */
 	cmd_write(0x0C); /* Display ON, Cursor off */
 	cmd_write(0x01); /* Clear Display */
-	delay(10);
+	delay_ms(2);
 	cmd_write(0x06); /* Auto Increment Cursor after Writing*/
 
 }
@@ -18,8 +19,9 @@ void cmd_write(char cmd){
 	RW=0; /* Write */
 	DATA=cmd;
 	EN=1;
-	delay(1);
+	delay_us(1);
 	EN=0;
+	delay_us(50);
 
 }
 
@@ -29,8 +31,9 @@ void letter_write(char letter){
 	RW=0; /* Write */
 	DATA=letter;
 	EN=1;
-	delay(1);
+	delay_us(1);
 	EN=0;
+	delay_us(50);
 }
 
 void lcd_string(char* str){

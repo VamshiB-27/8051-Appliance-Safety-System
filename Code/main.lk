@@ -16,6 +16,8 @@
 -l liblong
 -l libfloat
 main.rel
+mcu_config.rel
 my_lcd.rel
+my_oled.rel
 
 -e

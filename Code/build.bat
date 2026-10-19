@@ -1,4 +1,3 @@
-
 @echo off
 setlocal EnableDelayedExpansion
 cd /d "%~dp0"
@@ -68,6 +67,8 @@ echo ========================================
 echo BUILD AND PROGRAM SUCCESSFUL
 echo Firmware: main.hex
 echo ========================================
+echo.
+pause
 exit /b 0
 
 :error
@@ -76,4 +77,6 @@ echo ========================================
 echo BUILD OR PROGRAMMING FAILED
 echo Check the error messages above.
 echo ========================================
+echo.
+pause
 exit /b 1

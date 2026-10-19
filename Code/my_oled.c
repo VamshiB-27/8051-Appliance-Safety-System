@@ -1,0 +1,153 @@
+#include <AT89C513xA.h>
+#include "main.h"
+#include "mcu_config.h"
+#include "my_oled.h"
+
+static const unsigned char font5x7[][5] = {
+    {0x7E,0x11,0x11,0x11,0x7E},
+    {0x7F,0x49,0x49,0x49,0x36},
+    {0x7F,0x09,0x19,0x29,0x46},
+    {0x3E,0x41,0x41,0x41,0x22},
+    {0x7F,0x41,0x41,0x22,0x1C},
+    {0x7F,0x49,0x49,0x49,0x41},
+    {0x7F,0x09,0x09,0x09,0x01},
+    {0x3E,0x41,0x49,0x49,0x7A},
+    {0x7F,0x08,0x08,0x08,0x7F},
+    {0x00,0x41,0x7F,0x41,0x00},
+    {0x20,0x40,0x41,0x3F,0x01},
+    {0x7F,0x08,0x14,0x22,0x41},
+    {0x7F,0x40,0x40,0x40,0x40},
+    {0x7F,0x02,0x0C,0x02,0x7F},
+    {0x7F,0x04,0x08,0x10,0x7F},
+    {0x3E,0x41,0x41,0x41,0x3E},
+    {0x7F,0x09,0x09,0x09,0x06},
+    {0x3E,0x41,0x51,0x21,0x5E},
+    {0x7F,0x09,0x19,0x29,0x46},
+    {0x26,0x49,0x49,0x49,0x32},
+    {0x01,0x01,0x7F,0x01,0x01},
+    {0x3F,0x40,0x40,0x40,0x3F},
+    {0x1F,0x20,0x40,0x20,0x1F},
+    {0x3F,0x40,0x38,0x40,0x3F},
+    {0x63,0x14,0x08,0x14,0x63},
+    {0x07,0x08,0x70,0x08,0x07},
+    {0x61,0x51,0x49,0x45,0x43}
+};
+
+unsigned char init_oled(void){
+
+	unsigned char page;
+   	unsigned char column;
+    	unsigned char count;
+    	unsigned char i;
+    	unsigned char data[32];
+
+	if(!oled_command(0xAE)) return 0;
+	if(!oled_command(0xD5)) return 0;
+	if(!oled_command(0x80)) return 0;
+	if(!oled_command(0xA8)) return 0;
+	if(!oled_command(0x3F)) return 0;
+	if(!oled_command(0xD3)) return 0;
+	if(!oled_command(0x00)) return 0;
+	if(!oled_command(0x40)) return 0;
+	if(!oled_command(0x8D)) return 0;
+	if(!oled_command(0x14)) return 0;
+	if(!oled_command(0x20)) return 0;
+	if(!oled_command(0x02)) return 0;
+	if(!oled_command(0xA1)) return 0;
+	if(!oled_command(0xC8)) return 0;
+	if(!oled_command(0xDA)) return 0;
+	if(!oled_command(0x12)) return 0;
+	if(!oled_command(0x81)) return 0;
+	if(!oled_command(0x7F)) return 0;
+	if(!oled_command(0xD9)) return 0;
+	if(!oled_command(0xF1)) return 0;
+	if(!oled_command(0xDB)) return 0;
+	if(!oled_command(0x40)) return 0;
+	if(!oled_command(0xA4)) return 0;
+	if(!oled_command(0xA6)) return 0;
+
+
+	/* oled clear */
+
+	data[0] = 0x40;
+
+	for(i = 1; i < 32; i++)
+        	data[i] = 0x00;
+
+    	for(page = 0; page < 8; page++){
+	        column = 0;
+
+        	while(column < 128){
+
+	   		if(!oled_command(0xB0 + page)) return 0;
+            		if(!oled_command(column & 0x0F)) return 0;
+            		if(!oled_command(0x10 | (column >> 4))) return 0;
+
+            		count = 128 - column;
+
+            		if(count > 31)
+                		count = 31;
+
+            		if(!i2c_write(data, count + 1)) return 0;
+
+            		column += count;
+        	}
+    	}
+
+	if(!oled_command(0xAF)) return 0;
+
+	return 1;
+}
+
+unsigned char oled_command(unsigned char command){
+
+	unsigned char data[2];
+
+	data[0] = 0x00;
+	data[1] = command;
+
+	return i2c_write(data, 2);
+}
+
+void oled_write_char(unsigned char character){
+
+	unsigned char data[7];
+	unsigned char i;
+	unsigned char index;
+
+	if(character >= 'A' && character <= 'Z'){
+	    	index = character - 'A';
+	}else{
+	    	data[0] = 0x40;
+	    	for(i = 1; i < 7; i++)
+	        	data[i] = 0x00;
+
+	    	i2c_write(data, 7);
+	    	return;
+	}
+
+	data[0] = 0x40;
+
+	for(i = 0; i < 5; i++)
+	    	data[i + 1] = font5x7[index][i];
+	
+	data[6] = 0x00;
+	
+	i2c_write(data, 7);
+}
+
+void oled_write_string(const char *text){
+
+	unsigned char column;
+	
+	oled_command(0xB0);
+	oled_command(0x00);
+	oled_command(0x10);
+	
+	column = 0;
+	
+	while(*text && column <= 122){
+	    	oled_write_char((unsigned char)*text++);
+	    	column += 6;
+	}
+}

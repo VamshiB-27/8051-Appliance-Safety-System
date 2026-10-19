@@ -1,0 +1,13 @@
+#include <AT89C513xA.h>
+
+
+void timer0_isr(void) __interrupt(1){
+
+	static int value=0;
+	TF0=0;
+	value++;
+	if(value==10){
+		value=0;
+		time_ms++;
+	}
+}
