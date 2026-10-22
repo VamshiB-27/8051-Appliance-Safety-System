@@ -8,17 +8,12 @@
 ;--------------------------------------------------------
 ; Public variables in this module
 ;--------------------------------------------------------
-	.globl _i2c_isr
 	.globl _timer0_isr
 	.globl _main
-	.globl _lcd_write_hex
-	.globl _letter_write
-	.globl _cmd_write
-	.globl _lcd_init
-	.globl _i2c_init
+	.globl _oled_string
+	.globl _oled_set_position
+	.globl _oled_init
 	.globl _timer0_init
-	.globl _oled_write_string
-	.globl _init_oled
 	.globl _EP6INT
 	.globl _EP5INT
 	.globl _EP4INT
@@ -219,13 +214,6 @@
 	.globl _DPL
 	.globl _SP
 	.globl _P0
-	.globl _oled_status
-	.globl _i2c_done
-	.globl _i2c_busy
-	.globl _i2c_error
-	.globl _i2c_tx_index
-	.globl _i2c_tx_length
-	.globl _i2c_tx_buffer
 	.globl _time_ms
 	.globl _delay_time_ms
 	.globl _delay_us
@@ -453,21 +441,7 @@ _delay_time_ms::
 	.ds 4
 _time_ms::
 	.ds 2
-_i2c_tx_buffer::
-	.ds 32
-_i2c_tx_length::
-	.ds 1
-_i2c_tx_index::
-	.ds 1
-_i2c_error::
-	.ds 1
-_i2c_busy::
-	.ds 1
-_i2c_done::
-	.ds 1
-_oled_status::
-	.ds 1
-_timer0_isr_value_10000_31:
+_timer0_isr_value_10000_24:
 	.ds 2
 ;--------------------------------------------------------
 ; overlayable items in internal ram
@@ -527,22 +501,6 @@ __interrupt_vect:
 	reti
 	.ds	7
 	ljmp	_timer0_isr
-	.ds	5
-	reti
-	.ds	7
-	reti
-	.ds	7
-	reti
-	.ds	7
-	reti
-	.ds	7
-	reti
-	.ds	7
-	reti
-	.ds	7
-	reti
-	.ds	7
-	ljmp	_i2c_isr
 ; restartable atomic support routines
 	.ds	2
 sdcc_atomic_exchange_rollback_start::
@@ -617,33 +575,20 @@ sdcc_atomic_compare_exchange_gptr_impl::
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'timer0_isr'
 ;------------------------------------------------------------
-;value         Allocated with name '_timer0_isr_value_10000_31'
+;value         Allocated with name '_timer0_isr_value_10000_24'
 ;------------------------------------------------------------
-;	main.c:115: static int value=0;
+;	main.c:46: static int value=0;
 	clr	a
-	mov	_timer0_isr_value_10000_31,a
-	mov	(_timer0_isr_value_10000_31 + 1),a
-;	main.c:7: volatile unsigned long int delay_time_ms = 0;
-	clr	a
+	mov	_timer0_isr_value_10000_24,a
+	mov	(_timer0_isr_value_10000_24 + 1),a
+;	main.c:6: volatile unsigned long int delay_time_ms = 0;
 	mov	_delay_time_ms,a
 	mov	(_delay_time_ms + 1),a
 	mov	(_delay_time_ms + 2),a
 	mov	(_delay_time_ms + 3),a
-;	main.c:8: volatile unsigned short int time_ms = 0;
+;	main.c:7: volatile unsigned short int time_ms = 0;
 	mov	_time_ms,a
 	mov	(_time_ms + 1),a
-;	main.c:11: volatile unsigned char i2c_tx_length = 0;
-	mov	_i2c_tx_length,a
-;	main.c:12: volatile unsigned char i2c_tx_index = 0;
-	mov	_i2c_tx_index,a
-;	main.c:13: volatile unsigned char i2c_error = 0;
-	mov	_i2c_error,a
-;	main.c:14: volatile unsigned char i2c_busy = 0;
-	mov	_i2c_busy,a
-;	main.c:15: volatile unsigned char i2c_done = 0;
-	mov	_i2c_done,a
-;	main.c:17: volatile unsigned char oled_status = 0;
-	mov	_oled_status,a
 	.area GSFINAL (CODE)
 	ljmp	__sdcc_program_startup
 ;--------------------------------------------------------
@@ -661,16 +606,13 @@ __sdcc_program_exit:
 ;--------------------------------------------------------
 	.area CSEG    (CODE)
 ;------------------------------------------------------------
-;Allocation info for local variables in function 'lcd_write_hex'
+;Allocation info for local variables in function 'main'
 ;------------------------------------------------------------
-;value         Allocated to registers r7 
-;digit         Allocated to registers r7 
-;------------------------------------------------------------
-;	main.c:19: void lcd_write_hex(unsigned char value)
+;	main.c:10: void main(void){
 ;	-----------------------------------------
-;	 function lcd_write_hex
+;	 function main
 ;	-----------------------------------------
-_lcd_write_hex:
+_main:
 	ar7 = 0x07
 	ar6 = 0x06
 	ar5 = 0x05
@@ -679,204 +621,42 @@ _lcd_write_hex:
 	ar2 = 0x02
 	ar1 = 0x01
 	ar0 = 0x00
-;	main.c:23: digit = (value >> 4) & 0x0F;
-	mov	a,dpl
-	mov	r7,a
-	swap	a
-	anl	a,#0x0f
-	mov	r6,a
-	anl	ar6,#0x0f
-;	main.c:24: if(digit < 10)
-	cjne	r6,#0x0a,00125$
-00125$:
-	jnc	00102$
-;	main.c:25: letter_write('0' + digit);
-	mov	ar5,r6
-	mov	a,#0x30
-	add	a, r5
-	mov	dpl,a
-	push	ar7
-	lcall	_letter_write
-	pop	ar7
-	sjmp	00103$
-00102$:
-;	main.c:27: letter_write('A' + digit - 10);
-	mov	a,#0x37
-	add	a, r6
-	mov	dpl,a
-	push	ar7
-	lcall	_letter_write
-	pop	ar7
-00103$:
-;	main.c:29: digit = value & 0x0F;
-	anl	ar7,#0x0f
-;	main.c:30: if(digit < 10)
-	cjne	r7,#0x0a,00127$
-00127$:
-	jnc	00105$
-;	main.c:31: letter_write('0' + digit);
-	mov	ar6,r7
-	mov	a,#0x30
-	add	a, r6
-	mov	dpl,a
-	ljmp	_letter_write
-00105$:
-;	main.c:33: letter_write('A' + digit - 10);
-	mov	a,#0x37
-	add	a, r7
-	mov	dpl,a
-;	main.c:34: }
-	ljmp	_letter_write
-;------------------------------------------------------------
-;Allocation info for local variables in function 'main'
-;------------------------------------------------------------
-;	main.c:36: void main(void){
-;	-----------------------------------------
-;	 function main
-;	-----------------------------------------
-_main:
-;	main.c:38: timer0_init();
+;	main.c:12: EA = 0;
+;	assignBit
+	clr	_EA
+;	main.c:13: timer0_init();
 	lcall	_timer0_init
-;	main.c:39: i2c_init();
-	lcall	_i2c_init
-;	main.c:41: EA=1;         /* Enable global interrupt */
+;	main.c:14: EA=1;         /* Enable global interrupt */
 ;	assignBit
 	setb	_EA
-;	main.c:43: delay_ms(100);
-	mov	dptr,#0x0064
-	clr	a
-	mov	b,a
-	lcall	_delay_ms
-;	main.c:45: lcd_init();
-	lcall	_lcd_init
-;	main.c:47: oled_status = init_oled();
-	lcall	_init_oled
-	mov	_oled_status,dpl
-;	main.c:49: cmd_write(0x80);
-	mov	dpl, #0x80
-	lcall	_cmd_write
-;	main.c:50: letter_write('L');
-	mov	dpl, #0x4c
-	lcall	_letter_write
-;	main.c:51: letter_write('C');
-	mov	dpl, #0x43
-	lcall	_letter_write
-;	main.c:52: letter_write('D');
-	mov	dpl, #0x44
-	lcall	_letter_write
-;	main.c:53: letter_write(' ');
-	mov	dpl, #0x20
-	lcall	_letter_write
-;	main.c:54: letter_write('O');
-	mov	dpl, #0x4f
-	lcall	_letter_write
-;	main.c:55: letter_write('K');
-	mov	dpl, #0x4b
-	lcall	_letter_write
-;	main.c:57: if(oled_status){
-	mov	a,_oled_status
-	jz	00102$
-;	main.c:58: oled_write_string("HELLO WORLD");
+;	main.c:16: oled_init();
+	lcall	_oled_init
+;	main.c:17: oled_set_position(0, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x00
+	lcall	_oled_set_position
+;	main.c:18: oled_string("!OLED OK!");
 	mov	dptr,#___str_0
 	mov	b, #0x80
-	lcall	_oled_write_string
-	ljmp	00105$
+	lcall	_oled_string
+;	main.c:20: while(1){
 00102$:
-;	main.c:61: P1_7=0;
-;	assignBit
-	clr	_P1_7
-;	main.c:62: delay_ms(1000);
-	mov	dptr,#0x03e8
-	clr	a
-	mov	b,a
-	lcall	_delay_ms
-;	main.c:63: P1_7=1;
-;	assignBit
-	setb	_P1_7
-;	main.c:64: delay_ms(1000);
-	mov	dptr,#0x03e8
-	clr	a
-	mov	b,a
-	lcall	_delay_ms
-;	main.c:65: P1_7=0;
-;	assignBit
-	clr	_P1_7
-;	main.c:66: delay_ms(1000);
-	mov	dptr,#0x03e8
-	clr	a
-	mov	b,a
-	lcall	_delay_ms
-;	main.c:67: P1_7=1;
-;	assignBit
-	setb	_P1_7
-;	main.c:68: delay_ms(1000);
-	mov	dptr,#0x03e8
-	clr	a
-	mov	b,a
-	lcall	_delay_ms
-;	main.c:69: P1_7=0;
-;	assignBit
-	clr	_P1_7
-;	main.c:71: cmd_write(0x80);
-	mov	dpl, #0x80
-	lcall	_cmd_write
-;	main.c:72: letter_write('E');
-	mov	dpl, #0x45
-	lcall	_letter_write
-;	main.c:73: letter_write('R');
-	mov	dpl, #0x52
-	lcall	_letter_write
-;	main.c:74: letter_write('R');
-	mov	dpl, #0x52
-	lcall	_letter_write
-;	main.c:75: letter_write(':');
-	mov	dpl, #0x3a
-	lcall	_letter_write
-;	main.c:76: lcd_write_hex(i2c_error);
-	mov	dpl, _i2c_error
-	lcall	_lcd_write_hex
-;	main.c:78: cmd_write(0xC0);
-	mov	dpl, #0xc0
-	lcall	_cmd_write
-;	main.c:79: letter_write('S');
-	mov	dpl, #0x53
-	lcall	_letter_write
-;	main.c:80: letter_write(':');
-	mov	dpl, #0x3a
-	lcall	_letter_write
-;	main.c:81: lcd_write_hex(SSCS);
-	mov	dpl, _SSCS
-	lcall	_lcd_write_hex
-;	main.c:83: cmd_write(0x94);
-	mov	dpl, #0x94
-	lcall	_cmd_write
-;	main.c:84: letter_write('C');
-	mov	dpl, #0x43
-	lcall	_letter_write
-;	main.c:85: letter_write(':');
-	mov	dpl, #0x3a
-	lcall	_letter_write
-;	main.c:86: lcd_write_hex(SSCON);
-	mov	dpl, _SSCON
-	lcall	_lcd_write_hex
-;	main.c:89: while(1){
-00105$:
-;	main.c:92: }
-	sjmp	00105$
+;	main.c:23: }
+	sjmp	00102$
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'delay_us'
 ;------------------------------------------------------------
 ;value         Allocated to registers r6 r7 
 ;i             Allocated to registers r5 
 ;------------------------------------------------------------
-;	main.c:95: void delay_us(unsigned int value){
+;	main.c:26: void delay_us(unsigned int value){
 ;	-----------------------------------------
 ;	 function delay_us
 ;	-----------------------------------------
 _delay_us:
 	mov	r6, dpl
 	mov	r7, dph
-;	main.c:99: while(value--){
+;	main.c:30: while(value--){
 00102$:
 	mov	ar4,r6
 	mov	ar5,r7
@@ -887,20 +667,20 @@ _delay_us:
 	mov	a,r4
 	orl	a,r5
 	jz	00108$
-;	main.c:100: for(i=0;i<4;i++);   /* This is around 1us */
+;	main.c:31: for(i=0;i<4;i++);   /* This is around 1us */
 	mov	r5,#0x04
 00107$:
 	djnz	r5,00107$
 	sjmp	00102$
 00108$:
-;	main.c:102: }
+;	main.c:33: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'delay_ms'
 ;------------------------------------------------------------
 ;value         Allocated to registers r4 r5 r6 r7 
 ;------------------------------------------------------------
-;	main.c:104: void delay_ms(unsigned long int value){
+;	main.c:35: void delay_ms(unsigned long int value){
 ;	-----------------------------------------
 ;	 function delay_ms
 ;	-----------------------------------------
@@ -909,13 +689,13 @@ _delay_ms:
 	mov	r5,dph
 	mov	r6,b
 	mov	r7,a
-;	main.c:106: delay_time_ms=0;
+;	main.c:37: delay_time_ms=0;
 	clr	a
 	mov	_delay_time_ms,a
 	mov	(_delay_time_ms + 1),a
 	mov	(_delay_time_ms + 2),a
 	mov	(_delay_time_ms + 3),a
-;	main.c:107: while(delay_time_ms<value);
+;	main.c:38: while(delay_time_ms<value);
 00101$:
 	clr	c
 	mov	a,_delay_time_ms
@@ -927,14 +707,14 @@ _delay_ms:
 	mov	a,(_delay_time_ms + 3)
 	subb	a,r7
 	jc	00101$
-;	main.c:109: }
+;	main.c:40: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'timer0_isr'
 ;------------------------------------------------------------
-;value         Allocated with name '_timer0_isr_value_10000_31'
+;value         Allocated with name '_timer0_isr_value_10000_24'
 ;------------------------------------------------------------
-;	main.c:113: void timer0_isr(void) __interrupt(1){
+;	main.c:44: void timer0_isr(void) __interrupt(1){
 ;	-----------------------------------------
 ;	 function timer0_isr
 ;	-----------------------------------------
@@ -946,28 +726,28 @@ _timer0_isr:
 	push	ar4
 	push	psw
 	mov	psw,#0x00
-;	main.c:116: TF0=0;
+;	main.c:47: TF0=0;
 ;	assignBit
 	clr	_TF0
-;	main.c:117: value++;
-	inc	_timer0_isr_value_10000_31
+;	main.c:48: value++;
+	inc	_timer0_isr_value_10000_24
 	clr	a
-	cjne	a,_timer0_isr_value_10000_31,00121$
-	inc	(_timer0_isr_value_10000_31 + 1)
+	cjne	a,_timer0_isr_value_10000_24,00121$
+	inc	(_timer0_isr_value_10000_24 + 1)
 00121$:
-;	main.c:118: if(value>=10){
+;	main.c:49: if(value>=10){
 	clr	c
-	mov	a,_timer0_isr_value_10000_31
+	mov	a,_timer0_isr_value_10000_24
 	subb	a,#0x0a
-	mov	a,(_timer0_isr_value_10000_31 + 1)
+	mov	a,(_timer0_isr_value_10000_24 + 1)
 	xrl	a,#0x80
 	subb	a,#0x80
 	jc	00105$
-;	main.c:120: value=0;
+;	main.c:51: value=0;
 	clr	a
-	mov	_timer0_isr_value_10000_31,a
-	mov	(_timer0_isr_value_10000_31 + 1),a
-;	main.c:121: delay_time_ms++;
+	mov	_timer0_isr_value_10000_24,a
+	mov	(_timer0_isr_value_10000_24 + 1),a
+;	main.c:52: delay_time_ms++;
 	mov	r4,_delay_time_ms
 	mov	r5,(_delay_time_ms + 1)
 	mov	r6,(_delay_time_ms + 2)
@@ -984,7 +764,7 @@ _timer0_isr:
 	clr	a
 	addc	a, r7
 	mov	(_delay_time_ms + 3),a
-;	main.c:122: time_ms++;
+;	main.c:53: time_ms++;
 	mov	r6,_time_ms
 	mov	r7,(_time_ms + 1)
 	mov	a,#0x01
@@ -993,7 +773,7 @@ _timer0_isr:
 	clr	a
 	addc	a, r7
 	mov	(_time_ms + 1),a
-;	main.c:124: if(time_ms>=1000){
+;	main.c:55: if(time_ms>=1000){
 	mov	r6,_time_ms
 	mov	r7,(_time_ms + 1)
 	clr	c
@@ -1002,12 +782,12 @@ _timer0_isr:
 	mov	a,r7
 	subb	a,#0x03
 	jc	00105$
-;	main.c:125: time_ms=0;
+;	main.c:56: time_ms=0;
 	clr	a
 	mov	_time_ms,a
 	mov	(_time_ms + 1),a
 00105$:
-;	main.c:128: }
+;	main.c:59: }
 	pop	psw
 	pop	ar4
 	pop	ar5
@@ -1018,141 +798,11 @@ _timer0_isr:
 ;	eliminated unneeded push/pop dpl
 ;	eliminated unneeded push/pop dph
 ;	eliminated unneeded push/pop b
-;------------------------------------------------------------
-;Allocation info for local variables in function 'i2c_isr'
-;------------------------------------------------------------
-;status        Allocated to registers r7 
-;------------------------------------------------------------
-;	main.c:130: void i2c_isr(void) __interrupt(9){
-;	-----------------------------------------
-;	 function i2c_isr
-;	-----------------------------------------
-_i2c_isr:
-	push	acc
-	push	ar7
-	push	ar1
-	push	psw
-	mov	psw,#0x00
-;	main.c:135: status=SSCS&0xf8;
-	mov	a,_SSCS
-	anl	a,#0xf8
-;	main.c:137: switch(status){
-	mov	r7,a
-	jz	00115$
-	cjne	r7,#0x08,00190$
-	sjmp	00102$
-00190$:
-	cjne	r7,#0x10,00191$
-	sjmp	00102$
-00191$:
-	cjne	r7,#0x18,00192$
-	sjmp	00103$
-00192$:
-	cjne	r7,#0x20,00193$
-	sjmp	00112$
-00193$:
-	cjne	r7,#0x28,00194$
-	sjmp	00107$
-00194$:
-	cjne	r7,#0x30,00195$
-	sjmp	00112$
-00195$:
-;	main.c:140: case 0x10: /* */
-	cjne	r7,#0x38,00115$
-	sjmp	00113$
-00102$:
-;	main.c:141: SSDAT=0x78;
-	mov	_SSDAT,#0x78
-;	main.c:142: break;
-;	main.c:144: case 0x18: /* Address transmitted,ack received */
-	sjmp	00116$
-00103$:
-;	main.c:145: if(i2c_tx_length>0){
-	mov	a,_i2c_tx_length
-	jz	00105$
-;	main.c:146: SSDAT=i2c_tx_buffer[0];
-	mov	_SSDAT,_i2c_tx_buffer
-;	main.c:147: i2c_tx_index=1;
-	mov	_i2c_tx_index,#0x01
-	sjmp	00116$
-00105$:
-;	main.c:149: i2c_error=0xFD;
-	mov	_i2c_error,#0xfd
-;	main.c:150: SSCON |= 0x10; /* Request stop bit */
-	orl	_SSCON,#0x10
-;	main.c:151: i2c_done=1;
-	mov	_i2c_done,#0x01
-;	main.c:153: break;
-;	main.c:155: case 0x28: /* Data transmitted,ACK received */
-	sjmp	00116$
-00107$:
-;	main.c:156: if(i2c_tx_index<i2c_tx_length){
-	clr	c
-	mov	a,_i2c_tx_index
-	subb	a,_i2c_tx_length
-	jnc	00109$
-;	main.c:157: SSDAT=i2c_tx_buffer[i2c_tx_index];
-	mov	a,_i2c_tx_index
-	add	a, #_i2c_tx_buffer
-	mov	r1,a
-	mov	_SSDAT,@r1
-;	main.c:158: i2c_tx_index++;
-	mov	a,_i2c_tx_index
-	inc	a
-	mov	_i2c_tx_index,a
-	sjmp	00116$
-00109$:
-;	main.c:160: SSCON |= 0x10; /* Request stop bit */
-	orl	_SSCON,#0x10
-;	main.c:161: i2c_done=1;
-	mov	_i2c_done,#0x01
-;	main.c:163: break;
-;	main.c:166: case 0x30: /* Data byte not acknowledged */
-	sjmp	00116$
-00112$:
-;	main.c:167: i2c_error=status;
-	mov	_i2c_error,r7
-;	main.c:168: SSCON |= 0x10; /* Request stop bit */
-	orl	_SSCON,#0x10
-;	main.c:169: i2c_done = 1;
-	mov	_i2c_done,#0x01
-;	main.c:170: break;
-;	main.c:172: case 0x38:
-	sjmp	00116$
-00113$:
-;	main.c:173: i2c_error=status;
-	mov	_i2c_error,r7
-;	main.c:174: i2c_done = 1;
-	mov	_i2c_done,#0x01
-;	main.c:175: break;
-;	main.c:178: default:
-	sjmp	00116$
-00115$:
-;	main.c:179: i2c_error=status;
-	mov	_i2c_error,r7
-;	main.c:180: SSCON |= 0x10; /* Request stop bit */
-	orl	_SSCON,#0x10
-;	main.c:181: i2c_done = 1;
-	mov	_i2c_done,#0x01
-;	main.c:183: }
-00116$:
-;	main.c:185: SSCON &= ~0x08; /* Clear interrupt flag */
-	anl	_SSCON,#0xf7
-;	main.c:187: }
-	pop	psw
-	pop	ar1
-	pop	ar7
-	pop	acc
-	reti
-;	eliminated unneeded push/pop ar0
-;	eliminated unneeded push/pop dpl
-;	eliminated unneeded push/pop dph
-;	eliminated unneeded push/pop b
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
 	.area CONST   (CODE)
 ___str_0:
-	.ascii "HELLO WORLD"
+	.ascii "!OLED OK!"
 	.db 0x00
 	.area CSEG    (CODE)
 	.area XINIT   (CODE)

@@ -208,522 +208,321 @@
                                     208 	.globl _DPL
                                     209 	.globl _SP
                                     210 	.globl _P0
-                                    211 	.globl _i2c_write_PARM_2
-                                    212 	.globl _timer0_init
-                                    213 	.globl _i2c_init
-                                    214 	.globl _i2c_write
-                                    215 ;--------------------------------------------------------
-                                    216 ; special function registers
-                                    217 ;--------------------------------------------------------
-                                    218 	.area RSEG    (ABS,DATA)
-      000000                        219 	.org 0x0000
-                           000080   220 _P0	=	0x0080
-                           000081   221 _SP	=	0x0081
-                           000082   222 _DPL	=	0x0082
-                           000083   223 _DPH	=	0x0083
-                           000087   224 _PCON	=	0x0087
-                           000088   225 _TCON	=	0x0088
-                           000089   226 _TMOD	=	0x0089
-                           008C8A   227 _TMR0	=	0x8c8a
-                           00008A   228 _TL0	=	0x008a
-                           00008C   229 _TH0	=	0x008c
-                           008D8B   230 _TMR1	=	0x8d8b
-                           00008B   231 _TL1	=	0x008b
-                           00008D   232 _TH1	=	0x008d
-                           00008E   233 _AUXR	=	0x008e
-                           00008F   234 _CKCON0	=	0x008f
-                           000090   235 _P1	=	0x0090
-                           000093   236 _SSCON	=	0x0093
-                           000094   237 _SSCS	=	0x0094
-                           000095   238 _SSDAT	=	0x0095
-                           000096   239 _SSADR	=	0x0096
-                           000098   240 _SCON	=	0x0098
-                           000099   241 _SBUF	=	0x0099
-                           00009A   242 _BRL	=	0x009a
-                           00009B   243 _BDRCON	=	0x009b
-                           00009C   244 _KBLS	=	0x009c
-                           00009D   245 _KBE	=	0x009d
-                           00009E   246 _KBF	=	0x009e
-                           0000A0   247 _P2	=	0x00a0
-                           0000A2   248 _AUXR1	=	0x00a2
-                           0000A3   249 _PLLCON	=	0x00a3
-                           0000A4   250 _PLLDIV	=	0x00a4
-                           0000A6   251 _WDTRST	=	0x00a6
-                           0000A7   252 _WDTPRG	=	0x00a7
-                           0000A8   253 _IE	=	0x00a8
-                           0000A8   254 _IEN0	=	0x00a8
-                           0000A9   255 _SADDR	=	0x00a9
-                           0000AF   256 _CKCON1	=	0x00af
-                           0000B0   257 _P3	=	0x00b0
-                           0000B1   258 _IEN1	=	0x00b1
-                           0000B2   259 _IPL1	=	0x00b2
-                           0000B3   260 _IPH1	=	0x00b3
-                           0000B7   261 _IPH0	=	0x00b7
-                           0000B8   262 _IPL0	=	0x00b8
-                           0000B9   263 _SADEN	=	0x00b9
-                           00BBBA   264 _UFNUM	=	0xbbba
-                           0000BA   265 _UFNUML	=	0x00ba
-                           0000BB   266 _UFNUMH	=	0x00bb
-                           0000BC   267 _USBCON	=	0x00bc
-                           0000BD   268 _USBINT	=	0x00bd
-                           0000BE   269 _USBIEN	=	0x00be
-                           0000C0   270 _P4	=	0x00c0
-                           0000C2   271 _UEPIEN	=	0x00c2
-                           0000C3   272 _SPCON	=	0x00c3
-                           0000C4   273 _SPSTA	=	0x00c4
-                           0000C5   274 _SPDAT	=	0x00c5
-                           0000C6   275 _USBADDR	=	0x00c6
-                           0000C7   276 _UEPNUM	=	0x00c7
-                           0000C8   277 _T2CON	=	0x00c8
-                           0000C9   278 _T2MOD	=	0x00c9
-                           00CBCA   279 _RCAP2	=	0xcbca
-                           0000CA   280 _RCAP2L	=	0x00ca
-                           0000CB   281 _RCAP2H	=	0x00cb
-                           00CDCC   282 _TMR2	=	0xcdcc
-                           0000CC   283 _TL2	=	0x00cc
-                           0000CD   284 _TH2	=	0x00cd
-                           0000CE   285 _UEPSTAX	=	0x00ce
-                           0000CF   286 _UEPDATX	=	0x00cf
-                           0000D0   287 _PSW	=	0x00d0
-                           0000D1   288 _FCON	=	0x00d1
-                           0000D2   289 _EECON	=	0x00d2
-                           0000D4   290 _UEPCONX	=	0x00d4
-                           0000D5   291 _UEPRST	=	0x00d5
-                           0000D8   292 _CCON	=	0x00d8
-                           0000D9   293 _CMOD	=	0x00d9
-                           0000DA   294 _CCAPM0	=	0x00da
-                           0000DB   295 _CCAPM1	=	0x00db
-                           0000DC   296 _CCAPM2	=	0x00dc
-                           0000DD   297 _CCAPM3	=	0x00dd
-                           0000DE   298 _CCAPM4	=	0x00de
-                           0000E0   299 _ACC	=	0x00e0
-                           00E3E2   300 _UBYCTX	=	0xe3e2
-                           0000E2   301 _UBYCTLX	=	0x00e2
-                           0000E3   302 _UBYCTHX	=	0x00e3
-                           00F9E9   303 _PCA	=	0xf9e9
-                           0000E9   304 _CL	=	0x00e9
-                           0000F9   305 _CH	=	0x00f9
-                           00FAEA   306 _CCAP0	=	0xfaea
-                           0000EA   307 _CCAP0L	=	0x00ea
-                           0000FA   308 _CCAP0H	=	0x00fa
-                           00FBEB   309 _CCAP1	=	0xfbeb
-                           0000EB   310 _CCAP1L	=	0x00eb
-                           0000FB   311 _CCAP1H	=	0x00fb
-                           00FCEC   312 _CCAP2	=	0xfcec
-                           0000EC   313 _CCAP2L	=	0x00ec
-                           0000FC   314 _CCAP2H	=	0x00fc
-                           00FDED   315 _CCAP3	=	0xfded
-                           0000ED   316 _CCAP3L	=	0x00ed
-                           0000FD   317 _CCAP3H	=	0x00fd
-                           00FEEE   318 _CCAP4	=	0xfeee
-                           0000EE   319 _CCAP4L	=	0x00ee
-                           0000FE   320 _CCAP4H	=	0x00fe
-                           0000F0   321 _B	=	0x00f0
-                           0000F1   322 _LEDCON	=	0x00f1
-                           0000F8   323 _UEPINT	=	0x00f8
-                                    324 ;--------------------------------------------------------
-                                    325 ; special function bits
-                                    326 ;--------------------------------------------------------
-                                    327 	.area RSEG    (ABS,DATA)
-      000000                        328 	.org 0x0000
-                           000080   329 _P0_0	=	0x0080
-                           000081   330 _P0_1	=	0x0081
-                           000082   331 _P0_2	=	0x0082
-                           000083   332 _P0_3	=	0x0083
-                           000084   333 _P0_4	=	0x0084
-                           000085   334 _P0_5	=	0x0085
-                           000086   335 _P0_6	=	0x0086
-                           000087   336 _P0_7	=	0x0087
-                           000088   337 _IT0	=	0x0088
-                           000089   338 _IE0	=	0x0089
-                           00008A   339 _IT1	=	0x008a
-                           00008B   340 _IE1	=	0x008b
-                           00008C   341 _TR0	=	0x008c
-                           00008D   342 _TF0	=	0x008d
-                           00008E   343 _TR1	=	0x008e
-                           00008F   344 _TF1	=	0x008f
-                           000090   345 _P1_0	=	0x0090
-                           000091   346 _P1_1	=	0x0091
-                           000092   347 _P1_2	=	0x0092
-                           000093   348 _P1_3	=	0x0093
-                           000094   349 _P1_4	=	0x0094
-                           000095   350 _P1_5	=	0x0095
-                           000096   351 _P1_6	=	0x0096
-                           000097   352 _P1_7	=	0x0097
-                           000098   353 _RI	=	0x0098
-                           000099   354 _TI	=	0x0099
-                           00009A   355 _RB8	=	0x009a
-                           00009B   356 _TB8	=	0x009b
-                           00009C   357 _REN	=	0x009c
-                           00009D   358 _SM2	=	0x009d
-                           00009E   359 _SM1	=	0x009e
-                           00009F   360 _SM0	=	0x009f
-                           00009F   361 _FE	=	0x009f
-                           0000A0   362 _P2_0	=	0x00a0
-                           0000A1   363 _P2_1	=	0x00a1
-                           0000A2   364 _P2_2	=	0x00a2
-                           0000A3   365 _P2_3	=	0x00a3
-                           0000A4   366 _P2_4	=	0x00a4
-                           0000A5   367 _P2_5	=	0x00a5
-                           0000A6   368 _P2_6	=	0x00a6
-                           0000A7   369 _P2_7	=	0x00a7
-                           0000A8   370 _EX0	=	0x00a8
-                           0000A9   371 _ET0	=	0x00a9
-                           0000AA   372 _EX1	=	0x00aa
-                           0000AB   373 _ET1	=	0x00ab
-                           0000AC   374 _ES	=	0x00ac
-                           0000AD   375 _ET2	=	0x00ad
-                           0000AE   376 _EC	=	0x00ae
-                           0000AF   377 _EA	=	0x00af
-                           0000B0   378 _P3_0	=	0x00b0
-                           0000B1   379 _P3_1	=	0x00b1
-                           0000B2   380 _P3_2	=	0x00b2
-                           0000B3   381 _P3_3	=	0x00b3
-                           0000B4   382 _P3_4	=	0x00b4
-                           0000B5   383 _P3_5	=	0x00b5
-                           0000B6   384 _P3_6	=	0x00b6
-                           0000B7   385 _P3_7	=	0x00b7
-                           0000B8   386 _PX0L	=	0x00b8
-                           0000B9   387 _PT0L	=	0x00b9
-                           0000BA   388 _PX1L	=	0x00ba
-                           0000BB   389 _PT1L	=	0x00bb
-                           0000BC   390 _PSL	=	0x00bc
-                           0000BD   391 _PT2L	=	0x00bd
-                           0000BE   392 _PPCL	=	0x00be
-                           0000C0   393 _P4_0	=	0x00c0
-                           0000C1   394 _P4_1	=	0x00c1
-                           0000C8   395 _CP_RL2	=	0x00c8
-                           0000C9   396 _C_T2	=	0x00c9
-                           0000CA   397 _TR2	=	0x00ca
-                           0000CB   398 _EXEN2	=	0x00cb
-                           0000CC   399 _TCLK	=	0x00cc
-                           0000CD   400 _RCLK	=	0x00cd
-                           0000CE   401 _EXF2	=	0x00ce
-                           0000CF   402 _TF2	=	0x00cf
-                           0000D0   403 _P	=	0x00d0
-                           0000D1   404 _F1	=	0x00d1
-                           0000D2   405 _OV	=	0x00d2
-                           0000D3   406 _RS0	=	0x00d3
-                           0000D4   407 _RS1	=	0x00d4
-                           0000D5   408 _F0	=	0x00d5
-                           0000D6   409 _AC	=	0x00d6
-                           0000D7   410 _CY	=	0x00d7
-                           0000D8   411 _CCF0	=	0x00d8
-                           0000D9   412 _CCF1	=	0x00d9
-                           0000DA   413 _CCF2	=	0x00da
-                           0000DB   414 _CCF3	=	0x00db
-                           0000DC   415 _CCF4	=	0x00dc
-                           0000DE   416 _CR	=	0x00de
-                           0000DF   417 _CF	=	0x00df
-                           0000F8   418 _EP0INT	=	0x00f8
-                           0000F9   419 _EP1INT	=	0x00f9
-                           0000FA   420 _EP2INT	=	0x00fa
-                           0000FB   421 _EP3INT	=	0x00fb
-                           0000FC   422 _EP4INT	=	0x00fc
-                           0000FD   423 _EP5INT	=	0x00fd
-                           0000FE   424 _EP6INT	=	0x00fe
-                                    425 ;--------------------------------------------------------
-                                    426 ; overlayable register banks
+                                    211 	.globl _timer0_init
+                                    212 ;--------------------------------------------------------
+                                    213 ; special function registers
+                                    214 ;--------------------------------------------------------
+                                    215 	.area RSEG    (ABS,DATA)
+      000000                        216 	.org 0x0000
+                           000080   217 _P0	=	0x0080
+                           000081   218 _SP	=	0x0081
+                           000082   219 _DPL	=	0x0082
+                           000083   220 _DPH	=	0x0083
+                           000087   221 _PCON	=	0x0087
+                           000088   222 _TCON	=	0x0088
+                           000089   223 _TMOD	=	0x0089
+                           008C8A   224 _TMR0	=	0x8c8a
+                           00008A   225 _TL0	=	0x008a
+                           00008C   226 _TH0	=	0x008c
+                           008D8B   227 _TMR1	=	0x8d8b
+                           00008B   228 _TL1	=	0x008b
+                           00008D   229 _TH1	=	0x008d
+                           00008E   230 _AUXR	=	0x008e
+                           00008F   231 _CKCON0	=	0x008f
+                           000090   232 _P1	=	0x0090
+                           000093   233 _SSCON	=	0x0093
+                           000094   234 _SSCS	=	0x0094
+                           000095   235 _SSDAT	=	0x0095
+                           000096   236 _SSADR	=	0x0096
+                           000098   237 _SCON	=	0x0098
+                           000099   238 _SBUF	=	0x0099
+                           00009A   239 _BRL	=	0x009a
+                           00009B   240 _BDRCON	=	0x009b
+                           00009C   241 _KBLS	=	0x009c
+                           00009D   242 _KBE	=	0x009d
+                           00009E   243 _KBF	=	0x009e
+                           0000A0   244 _P2	=	0x00a0
+                           0000A2   245 _AUXR1	=	0x00a2
+                           0000A3   246 _PLLCON	=	0x00a3
+                           0000A4   247 _PLLDIV	=	0x00a4
+                           0000A6   248 _WDTRST	=	0x00a6
+                           0000A7   249 _WDTPRG	=	0x00a7
+                           0000A8   250 _IE	=	0x00a8
+                           0000A8   251 _IEN0	=	0x00a8
+                           0000A9   252 _SADDR	=	0x00a9
+                           0000AF   253 _CKCON1	=	0x00af
+                           0000B0   254 _P3	=	0x00b0
+                           0000B1   255 _IEN1	=	0x00b1
+                           0000B2   256 _IPL1	=	0x00b2
+                           0000B3   257 _IPH1	=	0x00b3
+                           0000B7   258 _IPH0	=	0x00b7
+                           0000B8   259 _IPL0	=	0x00b8
+                           0000B9   260 _SADEN	=	0x00b9
+                           00BBBA   261 _UFNUM	=	0xbbba
+                           0000BA   262 _UFNUML	=	0x00ba
+                           0000BB   263 _UFNUMH	=	0x00bb
+                           0000BC   264 _USBCON	=	0x00bc
+                           0000BD   265 _USBINT	=	0x00bd
+                           0000BE   266 _USBIEN	=	0x00be
+                           0000C0   267 _P4	=	0x00c0
+                           0000C2   268 _UEPIEN	=	0x00c2
+                           0000C3   269 _SPCON	=	0x00c3
+                           0000C4   270 _SPSTA	=	0x00c4
+                           0000C5   271 _SPDAT	=	0x00c5
+                           0000C6   272 _USBADDR	=	0x00c6
+                           0000C7   273 _UEPNUM	=	0x00c7
+                           0000C8   274 _T2CON	=	0x00c8
+                           0000C9   275 _T2MOD	=	0x00c9
+                           00CBCA   276 _RCAP2	=	0xcbca
+                           0000CA   277 _RCAP2L	=	0x00ca
+                           0000CB   278 _RCAP2H	=	0x00cb
+                           00CDCC   279 _TMR2	=	0xcdcc
+                           0000CC   280 _TL2	=	0x00cc
+                           0000CD   281 _TH2	=	0x00cd
+                           0000CE   282 _UEPSTAX	=	0x00ce
+                           0000CF   283 _UEPDATX	=	0x00cf
+                           0000D0   284 _PSW	=	0x00d0
+                           0000D1   285 _FCON	=	0x00d1
+                           0000D2   286 _EECON	=	0x00d2
+                           0000D4   287 _UEPCONX	=	0x00d4
+                           0000D5   288 _UEPRST	=	0x00d5
+                           0000D8   289 _CCON	=	0x00d8
+                           0000D9   290 _CMOD	=	0x00d9
+                           0000DA   291 _CCAPM0	=	0x00da
+                           0000DB   292 _CCAPM1	=	0x00db
+                           0000DC   293 _CCAPM2	=	0x00dc
+                           0000DD   294 _CCAPM3	=	0x00dd
+                           0000DE   295 _CCAPM4	=	0x00de
+                           0000E0   296 _ACC	=	0x00e0
+                           00E3E2   297 _UBYCTX	=	0xe3e2
+                           0000E2   298 _UBYCTLX	=	0x00e2
+                           0000E3   299 _UBYCTHX	=	0x00e3
+                           00F9E9   300 _PCA	=	0xf9e9
+                           0000E9   301 _CL	=	0x00e9
+                           0000F9   302 _CH	=	0x00f9
+                           00FAEA   303 _CCAP0	=	0xfaea
+                           0000EA   304 _CCAP0L	=	0x00ea
+                           0000FA   305 _CCAP0H	=	0x00fa
+                           00FBEB   306 _CCAP1	=	0xfbeb
+                           0000EB   307 _CCAP1L	=	0x00eb
+                           0000FB   308 _CCAP1H	=	0x00fb
+                           00FCEC   309 _CCAP2	=	0xfcec
+                           0000EC   310 _CCAP2L	=	0x00ec
+                           0000FC   311 _CCAP2H	=	0x00fc
+                           00FDED   312 _CCAP3	=	0xfded
+                           0000ED   313 _CCAP3L	=	0x00ed
+                           0000FD   314 _CCAP3H	=	0x00fd
+                           00FEEE   315 _CCAP4	=	0xfeee
+                           0000EE   316 _CCAP4L	=	0x00ee
+                           0000FE   317 _CCAP4H	=	0x00fe
+                           0000F0   318 _B	=	0x00f0
+                           0000F1   319 _LEDCON	=	0x00f1
+                           0000F8   320 _UEPINT	=	0x00f8
+                                    321 ;--------------------------------------------------------
+                                    322 ; special function bits
+                                    323 ;--------------------------------------------------------
+                                    324 	.area RSEG    (ABS,DATA)
+      000000                        325 	.org 0x0000
+                           000080   326 _P0_0	=	0x0080
+                           000081   327 _P0_1	=	0x0081
+                           000082   328 _P0_2	=	0x0082
+                           000083   329 _P0_3	=	0x0083
+                           000084   330 _P0_4	=	0x0084
+                           000085   331 _P0_5	=	0x0085
+                           000086   332 _P0_6	=	0x0086
+                           000087   333 _P0_7	=	0x0087
+                           000088   334 _IT0	=	0x0088
+                           000089   335 _IE0	=	0x0089
+                           00008A   336 _IT1	=	0x008a
+                           00008B   337 _IE1	=	0x008b
+                           00008C   338 _TR0	=	0x008c
+                           00008D   339 _TF0	=	0x008d
+                           00008E   340 _TR1	=	0x008e
+                           00008F   341 _TF1	=	0x008f
+                           000090   342 _P1_0	=	0x0090
+                           000091   343 _P1_1	=	0x0091
+                           000092   344 _P1_2	=	0x0092
+                           000093   345 _P1_3	=	0x0093
+                           000094   346 _P1_4	=	0x0094
+                           000095   347 _P1_5	=	0x0095
+                           000096   348 _P1_6	=	0x0096
+                           000097   349 _P1_7	=	0x0097
+                           000098   350 _RI	=	0x0098
+                           000099   351 _TI	=	0x0099
+                           00009A   352 _RB8	=	0x009a
+                           00009B   353 _TB8	=	0x009b
+                           00009C   354 _REN	=	0x009c
+                           00009D   355 _SM2	=	0x009d
+                           00009E   356 _SM1	=	0x009e
+                           00009F   357 _SM0	=	0x009f
+                           00009F   358 _FE	=	0x009f
+                           0000A0   359 _P2_0	=	0x00a0
+                           0000A1   360 _P2_1	=	0x00a1
+                           0000A2   361 _P2_2	=	0x00a2
+                           0000A3   362 _P2_3	=	0x00a3
+                           0000A4   363 _P2_4	=	0x00a4
+                           0000A5   364 _P2_5	=	0x00a5
+                           0000A6   365 _P2_6	=	0x00a6
+                           0000A7   366 _P2_7	=	0x00a7
+                           0000A8   367 _EX0	=	0x00a8
+                           0000A9   368 _ET0	=	0x00a9
+                           0000AA   369 _EX1	=	0x00aa
+                           0000AB   370 _ET1	=	0x00ab
+                           0000AC   371 _ES	=	0x00ac
+                           0000AD   372 _ET2	=	0x00ad
+                           0000AE   373 _EC	=	0x00ae
+                           0000AF   374 _EA	=	0x00af
+                           0000B0   375 _P3_0	=	0x00b0
+                           0000B1   376 _P3_1	=	0x00b1
+                           0000B2   377 _P3_2	=	0x00b2
+                           0000B3   378 _P3_3	=	0x00b3
+                           0000B4   379 _P3_4	=	0x00b4
+                           0000B5   380 _P3_5	=	0x00b5
+                           0000B6   381 _P3_6	=	0x00b6
+                           0000B7   382 _P3_7	=	0x00b7
+                           0000B8   383 _PX0L	=	0x00b8
+                           0000B9   384 _PT0L	=	0x00b9
+                           0000BA   385 _PX1L	=	0x00ba
+                           0000BB   386 _PT1L	=	0x00bb
+                           0000BC   387 _PSL	=	0x00bc
+                           0000BD   388 _PT2L	=	0x00bd
+                           0000BE   389 _PPCL	=	0x00be
+                           0000C0   390 _P4_0	=	0x00c0
+                           0000C1   391 _P4_1	=	0x00c1
+                           0000C8   392 _CP_RL2	=	0x00c8
+                           0000C9   393 _C_T2	=	0x00c9
+                           0000CA   394 _TR2	=	0x00ca
+                           0000CB   395 _EXEN2	=	0x00cb
+                           0000CC   396 _TCLK	=	0x00cc
+                           0000CD   397 _RCLK	=	0x00cd
+                           0000CE   398 _EXF2	=	0x00ce
+                           0000CF   399 _TF2	=	0x00cf
+                           0000D0   400 _P	=	0x00d0
+                           0000D1   401 _F1	=	0x00d1
+                           0000D2   402 _OV	=	0x00d2
+                           0000D3   403 _RS0	=	0x00d3
+                           0000D4   404 _RS1	=	0x00d4
+                           0000D5   405 _F0	=	0x00d5
+                           0000D6   406 _AC	=	0x00d6
+                           0000D7   407 _CY	=	0x00d7
+                           0000D8   408 _CCF0	=	0x00d8
+                           0000D9   409 _CCF1	=	0x00d9
+                           0000DA   410 _CCF2	=	0x00da
+                           0000DB   411 _CCF3	=	0x00db
+                           0000DC   412 _CCF4	=	0x00dc
+                           0000DE   413 _CR	=	0x00de
+                           0000DF   414 _CF	=	0x00df
+                           0000F8   415 _EP0INT	=	0x00f8
+                           0000F9   416 _EP1INT	=	0x00f9
+                           0000FA   417 _EP2INT	=	0x00fa
+                           0000FB   418 _EP3INT	=	0x00fb
+                           0000FC   419 _EP4INT	=	0x00fc
+                           0000FD   420 _EP5INT	=	0x00fd
+                           0000FE   421 _EP6INT	=	0x00fe
+                                    422 ;--------------------------------------------------------
+                                    423 ; overlayable register banks
+                                    424 ;--------------------------------------------------------
+                                    425 	.area REG_BANK_0	(REL,OVR,DATA)
+      000000                        426 	.ds 8
                                     427 ;--------------------------------------------------------
-                                    428 	.area REG_BANK_0	(REL,OVR,DATA)
-      000000                        429 	.ds 8
-                                    430 ;--------------------------------------------------------
-                                    431 ; internal ram data
-                                    432 ;--------------------------------------------------------
-                                    433 	.area DSEG    (DATA)
-      000036                        434 _i2c_write_PARM_2:
-      000036                        435 	.ds 1
-      000037                        436 _i2c_write_data_10000_10:
-      000037                        437 	.ds 3
+                                    428 ; internal ram data
+                                    429 ;--------------------------------------------------------
+                                    430 	.area DSEG    (DATA)
+                                    431 ;--------------------------------------------------------
+                                    432 ; overlayable items in internal ram
+                                    433 ;--------------------------------------------------------
+                                    434 ;--------------------------------------------------------
+                                    435 ; indirectly addressable internal ram data
+                                    436 ;--------------------------------------------------------
+                                    437 	.area ISEG    (DATA)
                                     438 ;--------------------------------------------------------
-                                    439 ; overlayable items in internal ram
+                                    439 ; absolute internal ram data
                                     440 ;--------------------------------------------------------
-                                    441 ;--------------------------------------------------------
-                                    442 ; indirectly addressable internal ram data
+                                    441 	.area IABS    (ABS,DATA)
+                                    442 	.area IABS    (ABS,DATA)
                                     443 ;--------------------------------------------------------
-                                    444 	.area ISEG    (DATA)
+                                    444 ; bit data
                                     445 ;--------------------------------------------------------
-                                    446 ; absolute internal ram data
+                                    446 	.area BSEG    (BIT)
                                     447 ;--------------------------------------------------------
-                                    448 	.area IABS    (ABS,DATA)
-                                    449 	.area IABS    (ABS,DATA)
-                                    450 ;--------------------------------------------------------
-                                    451 ; bit data
-                                    452 ;--------------------------------------------------------
-                                    453 	.area BSEG    (BIT)
-                                    454 ;--------------------------------------------------------
-                                    455 ; paged external ram data
-                                    456 ;--------------------------------------------------------
-                                    457 	.area PSEG    (PAG,XDATA)
-                                    458 ;--------------------------------------------------------
-                                    459 ; uninitialized external ram data
-                                    460 ;--------------------------------------------------------
-                                    461 	.area XSEG    (XDATA)
-                                    462 ;--------------------------------------------------------
-                                    463 ; absolute external ram data
-                                    464 ;--------------------------------------------------------
-                                    465 	.area XABS    (ABS,XDATA)
-                                    466 ;--------------------------------------------------------
-                                    467 ; initialized external ram data
-                                    468 ;--------------------------------------------------------
-                                    469 	.area XISEG   (XDATA)
-                                    470 	.area HOME    (CODE)
-                                    471 	.area GSINIT0 (CODE)
-                                    472 	.area GSINIT1 (CODE)
-                                    473 	.area GSINIT2 (CODE)
-                                    474 	.area GSINIT3 (CODE)
-                                    475 	.area GSINIT4 (CODE)
-                                    476 	.area GSINIT5 (CODE)
+                                    448 ; paged external ram data
+                                    449 ;--------------------------------------------------------
+                                    450 	.area PSEG    (PAG,XDATA)
+                                    451 ;--------------------------------------------------------
+                                    452 ; uninitialized external ram data
+                                    453 ;--------------------------------------------------------
+                                    454 	.area XSEG    (XDATA)
+                                    455 ;--------------------------------------------------------
+                                    456 ; absolute external ram data
+                                    457 ;--------------------------------------------------------
+                                    458 	.area XABS    (ABS,XDATA)
+                                    459 ;--------------------------------------------------------
+                                    460 ; initialized external ram data
+                                    461 ;--------------------------------------------------------
+                                    462 	.area XISEG   (XDATA)
+                                    463 	.area HOME    (CODE)
+                                    464 	.area GSINIT0 (CODE)
+                                    465 	.area GSINIT1 (CODE)
+                                    466 	.area GSINIT2 (CODE)
+                                    467 	.area GSINIT3 (CODE)
+                                    468 	.area GSINIT4 (CODE)
+                                    469 	.area GSINIT5 (CODE)
+                                    470 	.area GSINIT  (CODE)
+                                    471 	.area GSFINAL (CODE)
+                                    472 	.area CSEG    (CODE)
+                                    473 ;--------------------------------------------------------
+                                    474 ; global & static initialisations
+                                    475 ;--------------------------------------------------------
+                                    476 	.area HOME    (CODE)
                                     477 	.area GSINIT  (CODE)
                                     478 	.area GSFINAL (CODE)
-                                    479 	.area CSEG    (CODE)
+                                    479 	.area GSINIT  (CODE)
                                     480 ;--------------------------------------------------------
-                                    481 ; global & static initialisations
+                                    481 ; Home
                                     482 ;--------------------------------------------------------
                                     483 	.area HOME    (CODE)
-                                    484 	.area GSINIT  (CODE)
-                                    485 	.area GSFINAL (CODE)
-                                    486 	.area GSINIT  (CODE)
+                                    484 	.area HOME    (CODE)
+                                    485 ;--------------------------------------------------------
+                                    486 ; code
                                     487 ;--------------------------------------------------------
-                                    488 ; Home
-                                    489 ;--------------------------------------------------------
-                                    490 	.area HOME    (CODE)
-                                    491 	.area HOME    (CODE)
-                                    492 ;--------------------------------------------------------
-                                    493 ; code
-                                    494 ;--------------------------------------------------------
-                                    495 	.area CSEG    (CODE)
-                                    496 ;------------------------------------------------------------
-                                    497 ;Allocation info for local variables in function 'timer0_init'
-                                    498 ;------------------------------------------------------------
-                                    499 ;	mcu_config.c:5: void timer0_init(void){
-                                    500 ;	-----------------------------------------
-                                    501 ;	 function timer0_init
-                                    502 ;	-----------------------------------------
-      000367                        503 _timer0_init:
-                           000007   504 	ar7 = 0x07
-                           000006   505 	ar6 = 0x06
-                           000005   506 	ar5 = 0x05
-                           000004   507 	ar4 = 0x04
-                           000003   508 	ar3 = 0x03
-                           000002   509 	ar2 = 0x02
-                           000001   510 	ar1 = 0x01
-                           000000   511 	ar0 = 0x00
-                                    512 ;	mcu_config.c:8: TMOD = (TMOD & 0xF0) | 0x02;
-      000367 E5 89            [12]  513 	mov	a,_TMOD
-      000369 54 F0            [12]  514 	anl	a,#0xf0
-      00036B 44 02            [12]  515 	orl	a,#0x02
-      00036D F5 89            [12]  516 	mov	_TMOD,a
-                                    517 ;	mcu_config.c:9: TH0=0x38;     /* auto reload value for 100us */
-      00036F 75 8C 38         [24]  518 	mov	_TH0,#0x38
-                                    519 ;	mcu_config.c:10: TL0=0x38;     /* initize timer with start value */
-      000372 75 8A 38         [24]  520 	mov	_TL0,#0x38
-                                    521 ;	mcu_config.c:11: TF0 = 0; 
-                                    522 ;	assignBit
-      000375 C2 8D            [12]  523 	clr	_TF0
-                                    524 ;	mcu_config.c:12: ET0=1;        /* Enable timer interrupt */
-                                    525 ;	assignBit
-      000377 D2 A9            [12]  526 	setb	_ET0
-                                    527 ;	mcu_config.c:13: TR0=1;        /* Start Timer 0 */
-                                    528 ;	assignBit
-      000379 D2 8C            [12]  529 	setb	_TR0
-                                    530 ;	mcu_config.c:15: }
-      00037B 22               [24]  531 	ret
-                                    532 ;------------------------------------------------------------
-                                    533 ;Allocation info for local variables in function 'i2c_init'
-                                    534 ;------------------------------------------------------------
-                                    535 ;	mcu_config.c:17: void i2c_init(void){
-                                    536 ;	-----------------------------------------
-                                    537 ;	 function i2c_init
-                                    538 ;	-----------------------------------------
-      00037C                        539 _i2c_init:
-                                    540 ;	mcu_config.c:19: P4 |= 0x03;    /* make P4.0 and P4.1 high */
-      00037C 43 C0 03         [24]  541 	orl	_P4,#0x03
-                                    542 ;	mcu_config.c:22: SSCON=0x40;
-      00037F 75 93 40         [24]  543 	mov	_SSCON,#0x40
-                                    544 ;	mcu_config.c:23: }
-      000382 22               [24]  545 	ret
-                                    546 ;------------------------------------------------------------
-                                    547 ;Allocation info for local variables in function 'i2c_write'
-                                    548 ;------------------------------------------------------------
-                                    549 ;length        Allocated with name '_i2c_write_PARM_2'
-                                    550 ;data          Allocated with name '_i2c_write_data_10000_10'
-                                    551 ;i             Allocated to registers r4 
-                                    552 ;timeout       Allocated to registers r6 r7 
-                                    553 ;------------------------------------------------------------
-                                    554 ;	mcu_config.c:25: unsigned char i2c_write(const unsigned char *data, unsigned char length){
-                                    555 ;	-----------------------------------------
-                                    556 ;	 function i2c_write
-                                    557 ;	-----------------------------------------
-      000383                        558 _i2c_write:
-      000383 85 82 37         [24]  559 	mov	_i2c_write_data_10000_10,dpl
-      000386 85 83 38         [24]  560 	mov	(_i2c_write_data_10000_10 + 1),dph
-      000389 85 F0 39         [24]  561 	mov	(_i2c_write_data_10000_10 + 2),b
-                                    562 ;	mcu_config.c:30: if(length == 0 || length > 32)
-      00038C E5 36            [12]  563 	mov	a,_i2c_write_PARM_2
-      00038E 60 06            [24]  564 	jz	00101$
-      000390 E5 36            [12]  565 	mov	a,_i2c_write_PARM_2
-      000392 24 DF            [12]  566 	add	a,#0xff - 0x20
-      000394 50 04            [24]  567 	jnc	00102$
-                                    568 ;	free result
-      000396                        569 00101$:
-                                    570 ;	mcu_config.c:31: return 0;
-      000396 75 82 00         [24]  571 	mov	dpl, #0x00
-      000399 22               [24]  572 	ret
-      00039A                        573 00102$:
-                                    574 ;	mcu_config.c:33: if(i2c_busy)
-      00039A E5 31            [12]  575 	mov	a,_i2c_busy
-      00039C 60 04            [24]  576 	jz	00105$
-                                    577 ;	mcu_config.c:34: return 0;
-      00039E 75 82 00         [24]  578 	mov	dpl, #0x00
-      0003A1 22               [24]  579 	ret
-      0003A2                        580 00105$:
-                                    581 ;	mcu_config.c:36: i2c_busy = 1;
-      0003A2 75 31 01         [24]  582 	mov	_i2c_busy,#0x01
-                                    583 ;	mcu_config.c:37: i2c_done = 0;
-      0003A5 75 32 00         [24]  584 	mov	_i2c_done,#0x00
-                                    585 ;	mcu_config.c:38: i2c_error = 0;
-      0003A8 75 30 00         [24]  586 	mov	_i2c_error,#0x00
-                                    587 ;	mcu_config.c:39: i2c_tx_index = 0;
-      0003AB 75 2F 00         [24]  588 	mov	_i2c_tx_index,#0x00
-                                    589 ;	mcu_config.c:40: i2c_tx_length = length;
-      0003AE 85 36 2E         [24]  590 	mov	_i2c_tx_length,_i2c_write_PARM_2
-                                    591 ;	mcu_config.c:42: for(i = 0; i < length; i++){
-      0003B1 7C 00            [12]  592 	mov	r4,#0x00
-      0003B3                        593 00127$:
-      0003B3 C3               [12]  594 	clr	c
-      0003B4 EC               [12]  595 	mov	a,r4
-      0003B5 95 36            [12]  596 	subb	a,_i2c_write_PARM_2
-      0003B7 50 1B            [24]  597 	jnc	00106$
-                                    598 ;	mcu_config.c:43: i2c_tx_buffer[i] = data[i];
-      0003B9 EC               [12]  599 	mov	a,r4
-      0003BA 24 0E            [12]  600 	add	a, #_i2c_tx_buffer
-      0003BC F9               [12]  601 	mov	r1,a
-      0003BD EC               [12]  602 	mov	a,r4
-      0003BE 25 37            [12]  603 	add	a, _i2c_write_data_10000_10
-      0003C0 FA               [12]  604 	mov	r2,a
-      0003C1 E4               [12]  605 	clr	a
-      0003C2 35 38            [12]  606 	addc	a, (_i2c_write_data_10000_10 + 1)
-      0003C4 FB               [12]  607 	mov	r3,a
-      0003C5 AF 39            [24]  608 	mov	r7,(_i2c_write_data_10000_10 + 2)
-      0003C7 8A 82            [24]  609 	mov	dpl,r2
-      0003C9 8B 83            [24]  610 	mov	dph,r3
-      0003CB 8F F0            [24]  611 	mov	b,r7
-      0003CD 12 07 C0         [24]  612 	lcall	__gptrget
-      0003D0 F7               [12]  613 	mov	@r1,a
-                                    614 ;	mcu_config.c:42: for(i = 0; i < length; i++){
-      0003D1 0C               [12]  615 	inc	r4
-      0003D2 80 DF            [24]  616 	sjmp	00127$
-      0003D4                        617 00106$:
-                                    618 ;	mcu_config.c:46: SSCON |= 0x40;
-      0003D4 43 93 40         [24]  619 	orl	_SSCON,#0x40
-                                    620 ;	mcu_config.c:47: SSCON |= 0x20;
-      0003D7 43 93 20         [24]  621 	orl	_SSCON,#0x20
-                                    622 ;	mcu_config.c:49: timeout = 0;
-      0003DA 7E 00            [12]  623 	mov	r6,#0x00
-      0003DC 7F 00            [12]  624 	mov	r7,#0x00
-                                    625 ;	mcu_config.c:51: while(!i2c_done && timeout < 60000U)
-      0003DE                        626 00108$:
-      0003DE E5 32            [12]  627 	mov	a,_i2c_done
-      0003E0 70 10            [24]  628 	jnz	00110$
-      0003E2 C3               [12]  629 	clr	c
-      0003E3 EE               [12]  630 	mov	a,r6
-      0003E4 94 60            [12]  631 	subb	a,#0x60
-      0003E6 EF               [12]  632 	mov	a,r7
-      0003E7 94 EA            [12]  633 	subb	a,#0xea
-      0003E9 50 07            [24]  634 	jnc	00110$
-                                    635 ;	mcu_config.c:52: timeout++;
-      0003EB 0E               [12]  636 	inc	r6
-      0003EC BE 00 EF         [24]  637 	cjne	r6,#0x00,00108$
-      0003EF 0F               [12]  638 	inc	r7
-      0003F0 80 EC            [24]  639 	sjmp	00108$
-      0003F2                        640 00110$:
-                                    641 ;	mcu_config.c:54: if(!i2c_done){
-      0003F2 E5 32            [12]  642 	mov	a,_i2c_done
-      0003F4 70 2D            [24]  643 	jnz	00124$
-                                    644 ;	mcu_config.c:56: i2c_error = 0xFE;
-      0003F6 75 30 FE         [24]  645 	mov	_i2c_error,#0xfe
-                                    646 ;	mcu_config.c:58: SSCON &= ~0x40;
-      0003F9 53 93 BF         [24]  647 	anl	_SSCON,#0xbf
-                                    648 ;	mcu_config.c:59: SSCON |= 0x10;
-      0003FC 43 93 10         [24]  649 	orl	_SSCON,#0x10
-                                    650 ;	mcu_config.c:60: SSCON &= ~0x08;
-      0003FF 53 93 F7         [24]  651 	anl	_SSCON,#0xf7
-                                    652 ;	mcu_config.c:62: timeout = 0;
-      000402 7E 00            [12]  653 	mov	r6,#0x00
-      000404 7F 00            [12]  654 	mov	r7,#0x00
-                                    655 ;	mcu_config.c:64: while((SSCON & 0x10) && timeout < 60000U)
-      000406                        656 00112$:
-      000406 E5 93            [12]  657 	mov	a,_SSCON
-      000408 30 E4 10         [24]  658 	jnb	acc.4,00114$
-      00040B C3               [12]  659 	clr	c
-      00040C EE               [12]  660 	mov	a,r6
-      00040D 94 60            [12]  661 	subb	a,#0x60
-      00040F EF               [12]  662 	mov	a,r7
-      000410 94 EA            [12]  663 	subb	a,#0xea
-      000412 50 07            [24]  664 	jnc	00114$
-                                    665 ;	mcu_config.c:65: timeout++;
-      000414 0E               [12]  666 	inc	r6
-      000415 BE 00 EE         [24]  667 	cjne	r6,#0x00,00112$
-      000418 0F               [12]  668 	inc	r7
-      000419 80 EB            [24]  669 	sjmp	00112$
-      00041B                        670 00114$:
-                                    671 ;	mcu_config.c:67: SSCON &= ~0x08;
-      00041B 53 93 F7         [24]  672 	anl	_SSCON,#0xf7
-                                    673 ;	mcu_config.c:68: SSCON |= 0x40;
-      00041E 43 93 40         [24]  674 	orl	_SSCON,#0x40
-      000421 80 2F            [24]  675 	sjmp	00125$
-      000423                        676 00124$:
-                                    677 ;	mcu_config.c:70: }else if(SSCON & 0x10){
-      000423 E5 93            [12]  678 	mov	a,_SSCON
-      000425 30 E4 2A         [24]  679 	jnb	acc.4,00125$
-                                    680 ;	mcu_config.c:72: timeout = 0;
-      000428 7E 00            [12]  681 	mov	r6,#0x00
-      00042A 7F 00            [12]  682 	mov	r7,#0x00
-                                    683 ;	mcu_config.c:74: while((SSCON & 0x10) && timeout < 60000U)
-      00042C                        684 00116$:
-      00042C E5 93            [12]  685 	mov	a,_SSCON
-      00042E 30 E4 10         [24]  686 	jnb	acc.4,00118$
-      000431 C3               [12]  687 	clr	c
-      000432 EE               [12]  688 	mov	a,r6
-      000433 94 60            [12]  689 	subb	a,#0x60
-      000435 EF               [12]  690 	mov	a,r7
-      000436 94 EA            [12]  691 	subb	a,#0xea
-      000438 50 07            [24]  692 	jnc	00118$
-                                    693 ;	mcu_config.c:75: timeout++;
-      00043A 0E               [12]  694 	inc	r6
-      00043B BE 00 EE         [24]  695 	cjne	r6,#0x00,00116$
-      00043E 0F               [12]  696 	inc	r7
-      00043F 80 EB            [24]  697 	sjmp	00116$
-      000441                        698 00118$:
-                                    699 ;	mcu_config.c:77: if(SSCON & 0x10){
-      000441 E5 93            [12]  700 	mov	a,_SSCON
-      000443 30 E4 0C         [24]  701 	jnb	acc.4,00125$
-                                    702 ;	mcu_config.c:78: i2c_error = 0xFE;
-      000446 75 30 FE         [24]  703 	mov	_i2c_error,#0xfe
-                                    704 ;	mcu_config.c:79: SSCON &= ~0x40;
-      000449 53 93 BF         [24]  705 	anl	_SSCON,#0xbf
-                                    706 ;	mcu_config.c:80: SSCON &= ~0x08;
-      00044C 53 93 F7         [24]  707 	anl	_SSCON,#0xf7
-                                    708 ;	mcu_config.c:81: SSCON |= 0x40;
-      00044F 43 93 40         [24]  709 	orl	_SSCON,#0x40
-      000452                        710 00125$:
-                                    711 ;	mcu_config.c:85: i2c_tx_length = 0;
-                                    712 ;	mcu_config.c:86: i2c_busy = 0;
-                                    713 ;	mcu_config.c:88: return (i2c_error == 0);
-      000452 E4               [12]  714 	clr	a
-      000453 F5 2E            [12]  715 	mov	_i2c_tx_length,a
-      000455 F5 31            [12]  716 	mov	_i2c_busy,a
-      000457 B5 30 04         [24]  717 	cjne	a,_i2c_error,00275$
-      00045A 74 01            [12]  718 	mov	a,#0x01
-      00045C 80 01            [24]  719 	sjmp	00276$
-      00045E                        720 00275$:
-      00045E E4               [12]  721 	clr	a
-      00045F                        722 00276$:
-      00045F F5 82            [12]  723 	mov	dpl,a
-                                    724 ;	mcu_config.c:89: }
-      000461 22               [24]  725 	ret
-                                    726 	.area CSEG    (CODE)
-                                    727 	.area CONST   (CODE)
-                                    728 	.area XINIT   (CODE)
-                                    729 	.area CABS    (ABS,CODE)
+                                    488 	.area CSEG    (CODE)
+                                    489 ;------------------------------------------------------------
+                                    490 ;Allocation info for local variables in function 'timer0_init'
+                                    491 ;------------------------------------------------------------
+                                    492 ;	mcu_config.c:5: void timer0_init(void){
+                                    493 ;	-----------------------------------------
+                                    494 ;	 function timer0_init
+                                    495 ;	-----------------------------------------
+      00018E                        496 _timer0_init:
+                           000007   497 	ar7 = 0x07
+                           000006   498 	ar6 = 0x06
+                           000005   499 	ar5 = 0x05
+                           000004   500 	ar4 = 0x04
+                           000003   501 	ar3 = 0x03
+                           000002   502 	ar2 = 0x02
+                           000001   503 	ar1 = 0x01
+                           000000   504 	ar0 = 0x00
+                                    505 ;	mcu_config.c:8: TMOD = (TMOD & 0xF0) | 0x02;
+      00018E E5 89            [12]  506 	mov	a,_TMOD
+      000190 54 F0            [12]  507 	anl	a,#0xf0
+      000192 44 02            [12]  508 	orl	a,#0x02
+      000194 F5 89            [12]  509 	mov	_TMOD,a
+                                    510 ;	mcu_config.c:9: TH0=0x38;     /* auto reload value for 100us */
+      000196 75 8C 38         [24]  511 	mov	_TH0,#0x38
+                                    512 ;	mcu_config.c:10: TL0=0x38;     /* initize timer with start value */
+      000199 75 8A 38         [24]  513 	mov	_TL0,#0x38
+                                    514 ;	mcu_config.c:11: TF0 = 0; 
+                                    515 ;	assignBit
+      00019C C2 8D            [12]  516 	clr	_TF0
+                                    517 ;	mcu_config.c:12: ET0=1;        /* Enable timer interrupt */
+                                    518 ;	assignBit
+      00019E D2 A9            [12]  519 	setb	_ET0
+                                    520 ;	mcu_config.c:13: TR0=1;        /* Start Timer 0 */
+                                    521 ;	assignBit
+      0001A0 D2 8C            [12]  522 	setb	_TR0
+                                    523 ;	mcu_config.c:15: }
+      0001A2 22               [24]  524 	ret
+                                    525 	.area CSEG    (CODE)
+                                    526 	.area CONST   (CODE)
+                                    527 	.area XINIT   (CODE)
+                                    528 	.area CABS    (ABS,CODE)
