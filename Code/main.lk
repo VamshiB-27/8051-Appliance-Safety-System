@@ -19,5 +19,6 @@ main.rel
 mcu_config.rel
 my_lcd.rel
 my_oled.rel
+my_uart.rel
 
 -e

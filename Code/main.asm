@@ -10,8 +10,15 @@
 ;--------------------------------------------------------
 	.globl _timer0_isr
 	.globl _main
+	.globl _oled_show_message
+	.globl _uart_read_byte
+	.globl _uart_write_string
+	.globl _uart_write_buffer
+	.globl _uart_init
 	.globl _oled_string
+	.globl _oled_char
 	.globl _oled_set_position
+	.globl _oled_clear
 	.globl _oled_init
 	.globl _timer0_init
 	.globl _EP6INT
@@ -214,6 +221,8 @@
 	.globl _DPL
 	.globl _SP
 	.globl _P0
+	.globl _oled_show_message_PARM_3
+	.globl _oled_show_message_PARM_2
 	.globl _time_ms
 	.globl _delay_time_ms
 	.globl _delay_us
@@ -441,7 +450,17 @@ _delay_time_ms::
 	.ds 4
 _time_ms::
 	.ds 2
-_timer0_isr_value_10000_24:
+_oled_show_message_PARM_2:
+	.ds 3
+_oled_show_message_PARM_3:
+	.ds 1
+_main_rx_data_10000_26:
+	.ds 1
+_main_rx_buffer_10000_26:
+	.ds 20
+_main_tx_buffer_10000_26:
+	.ds 13
+_timer0_isr_value_10000_46:
 	.ds 2
 ;--------------------------------------------------------
 ; overlayable items in internal ram
@@ -575,18 +594,18 @@ sdcc_atomic_compare_exchange_gptr_impl::
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'timer0_isr'
 ;------------------------------------------------------------
-;value         Allocated with name '_timer0_isr_value_10000_24'
+;value         Allocated with name '_timer0_isr_value_10000_46'
 ;------------------------------------------------------------
-;	main.c:46: static int value=0;
+;	main.c:117: static int value = 0;
 	clr	a
-	mov	_timer0_isr_value_10000_24,a
-	mov	(_timer0_isr_value_10000_24 + 1),a
-;	main.c:6: volatile unsigned long int delay_time_ms = 0;
+	mov	_timer0_isr_value_10000_46,a
+	mov	(_timer0_isr_value_10000_46 + 1),a
+;	main.c:8: volatile unsigned long int delay_time_ms = 0;
 	mov	_delay_time_ms,a
 	mov	(_delay_time_ms + 1),a
 	mov	(_delay_time_ms + 2),a
 	mov	(_delay_time_ms + 3),a
-;	main.c:7: volatile unsigned short int time_ms = 0;
+;	main.c:9: volatile unsigned short int time_ms = 0;
 	mov	_time_ms,a
 	mov	(_time_ms + 1),a
 	.area GSFINAL (CODE)
@@ -606,13 +625,18 @@ __sdcc_program_exit:
 ;--------------------------------------------------------
 	.area CSEG    (CODE)
 ;------------------------------------------------------------
-;Allocation info for local variables in function 'main'
+;Allocation info for local variables in function 'oled_show_message'
 ;------------------------------------------------------------
-;	main.c:10: void main(void){
+;data          Allocated with name '_oled_show_message_PARM_2'
+;length        Allocated with name '_oled_show_message_PARM_3'
+;label         Allocated to registers r5 r6 r7 
+;i             Allocated to registers r7 
+;------------------------------------------------------------
+;	main.c:13: void oled_show_message(char *label, unsigned char *data, unsigned char length)
 ;	-----------------------------------------
-;	 function main
+;	 function oled_show_message
 ;	-----------------------------------------
-_main:
+_oled_show_message:
 	ar7 = 0x07
 	ar6 = 0x06
 	ar5 = 0x05
@@ -621,42 +645,264 @@ _main:
 	ar2 = 0x02
 	ar1 = 0x01
 	ar0 = 0x00
-;	main.c:12: EA = 0;
-;	assignBit
-	clr	_EA
-;	main.c:13: timer0_init();
-	lcall	_timer0_init
-;	main.c:14: EA=1;         /* Enable global interrupt */
-;	assignBit
-	setb	_EA
-;	main.c:16: oled_init();
-	lcall	_oled_init
+	mov	r5, dpl
+	mov	r6, dph
+	mov	r7, b
 ;	main.c:17: oled_set_position(0, 0);
 	mov	_oled_set_position_PARM_2,#0x00
 	mov	dpl, #0x00
+	push	ar7
+	push	ar6
+	push	ar5
 	lcall	_oled_set_position
-;	main.c:18: oled_string("!OLED OK!");
+;	main.c:18: oled_string("                    ");
 	mov	dptr,#___str_0
 	mov	b, #0x80
 	lcall	_oled_string
-;	main.c:20: while(1){
+;	main.c:19: oled_set_position(0, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x00
+	lcall	_oled_set_position
+	pop	ar5
+	pop	ar6
+	pop	ar7
+;	main.c:20: oled_string(label);
+	mov	dpl, r5
+	mov	dph, r6
+	mov	b, r7
+	lcall	_oled_string
+;	main.c:22: oled_set_position(3, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x03
+	lcall	_oled_set_position
+;	main.c:24: for (i = 0; i < DISPLAY_LENGTH; i++)
+	mov	r7,#0x00
+00103$:
+;	main.c:25: oled_char(' ');
+	mov	dpl, #0x20
+	push	ar7
+	lcall	_oled_char
+	pop	ar7
+;	main.c:24: for (i = 0; i < DISPLAY_LENGTH; i++)
+	inc	r7
+	cjne	r7,#0x14,00151$
+00151$:
+	jc	00103$
+;	main.c:27: oled_set_position(3, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x03
+	lcall	_oled_set_position
+;	main.c:29: for (i = 0; i < length && i < DISPLAY_LENGTH; i++)
+	mov	r7,#0x00
+00107$:
+	clr	c
+	mov	a,r7
+	subb	a,_oled_show_message_PARM_3
+	jnc	00109$
+	cjne	r7,#0x14,00154$
+00154$:
+	jnc	00109$
+;	main.c:30: oled_char(data[i]);
+	mov	a,r7
+	add	a, _oled_show_message_PARM_2
+	mov	r4,a
+	clr	a
+	addc	a, (_oled_show_message_PARM_2 + 1)
+	mov	r5,a
+	mov	r6,(_oled_show_message_PARM_2 + 2)
+	mov	dpl,r4
+	mov	dph,r5
+	mov	b,r6
+	lcall	__gptrget
+	mov	dpl,a
+	push	ar7
+	lcall	_oled_char
+	pop	ar7
+;	main.c:29: for (i = 0; i < length && i < DISPLAY_LENGTH; i++)
+	inc	r7
+	sjmp	00107$
+00109$:
+;	main.c:31: }
+	ret
+;------------------------------------------------------------
+;Allocation info for local variables in function 'main'
+;------------------------------------------------------------
+;rx_data       Allocated with name '_main_rx_data_10000_26'
+;uart_status   Allocated to registers 
+;rx_buffer     Allocated with name '_main_rx_buffer_10000_26'
+;rx_length     Allocated to registers r7 
+;tx_buffer     Allocated with name '_main_tx_buffer_10000_26'
+;------------------------------------------------------------
+;	main.c:33: void main(void)
+;	-----------------------------------------
+;	 function main
+;	-----------------------------------------
+_main:
+;	main.c:38: unsigned char rx_length = 0;
+	mov	r7,#0x00
+;	main.c:39: unsigned char tx_buffer[] = "UART TX TEST";
+	mov	_main_tx_buffer_10000_26,#0x55
+	mov	(_main_tx_buffer_10000_26 + 0x0001),#0x41
+	mov	(_main_tx_buffer_10000_26 + 0x0002),#0x52
+	mov	(_main_tx_buffer_10000_26 + 0x0003),#0x54
+	mov	(_main_tx_buffer_10000_26 + 0x0004),#0x20
+	mov	(_main_tx_buffer_10000_26 + 0x0005),#0x54
+	mov	(_main_tx_buffer_10000_26 + 0x0006),#0x58
+	mov	(_main_tx_buffer_10000_26 + 0x0007),#0x20
+	mov	(_main_tx_buffer_10000_26 + 0x0008),#0x54
+	mov	(_main_tx_buffer_10000_26 + 0x0009),#0x45
+	mov	(_main_tx_buffer_10000_26 + 0x000a),#0x53
+	mov	(_main_tx_buffer_10000_26 + 0x000b),#0x54
+	mov	(_main_tx_buffer_10000_26 + 0x000c),r7
+;	main.c:41: EA = 0;
+;	assignBit
+	clr	_EA
+;	main.c:42: timer0_init();
+	push	ar7
+	lcall	_timer0_init
+;	main.c:43: EA = 1;
+;	assignBit
+	setb	_EA
+;	main.c:45: oled_init();
+	lcall	_oled_init
+;	main.c:46: oled_clear();
+	lcall	_oled_clear
+;	main.c:48: oled_set_position(0, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x00
+	lcall	_oled_set_position
+;	main.c:49: oled_string("UART RX TX TEST");
+	mov	dptr,#___str_2
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:51: uart_status = uart_init(9600);
+	mov	dptr,#0x2580
+	clr	a
+	mov	b,a
+	lcall	_uart_init
+	mov	a, dpl
+	pop	ar7
+;	main.c:53: if (!uart_status)
+;	main.c:55: oled_set_position(2, 0);
+	jnz	00105$
+	mov	_oled_set_position_PARM_2,a
+	mov	dpl, #0x02
+	lcall	_oled_set_position
+;	main.c:56: oled_string("UART INIT FAIL");
+	mov	dptr,#___str_3
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:58: while (1);
 00102$:
-;	main.c:23: }
 	sjmp	00102$
+00105$:
+;	main.c:61: uart_write_string("UART TX TEST\r\n");
+	mov	dptr,#___str_4
+	mov	b, #0x80
+	push	ar7
+	lcall	_uart_write_string
+;	main.c:63: oled_show_message("TX: SENT", tx_buffer, 12);
+	mov	_oled_show_message_PARM_2,#_main_tx_buffer_10000_26
+	mov	(_oled_show_message_PARM_2 + 1),#0x00
+	mov	(_oled_show_message_PARM_2 + 2),#0x40
+	mov	_oled_show_message_PARM_3,#0x0c
+	mov	dptr,#___str_5
+	mov	b, #0x80
+	lcall	_oled_show_message
+;	main.c:64: delay_ms(1000);
+	mov	dptr,#0x03e8
+	clr	a
+	mov	b,a
+	lcall	_delay_ms
+;	main.c:66: oled_set_position(0, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x00
+	lcall	_oled_set_position
+;	main.c:67: oled_string("                    ");
+	mov	dptr,#___str_0
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:68: oled_set_position(0, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x00
+	lcall	_oled_set_position
+;	main.c:69: oled_string("WAITING RX");
+	mov	dptr,#___str_6
+	mov	b, #0x80
+	lcall	_oled_string
+	pop	ar7
+;	main.c:71: while (1)
+00117$:
+;	main.c:73: if (uart_read_byte(&rx_data))
+	mov	dptr,#_main_rx_data_10000_26
+	mov	b, #0x40
+	push	ar7
+	lcall	_uart_read_byte
+	mov	a, dpl
+	pop	ar7
+	jz	00117$
+;	main.c:75: if (rx_data == '\r' || rx_data == '\n')
+	mov	a,#0x0d
+	cjne	a,_main_rx_data_10000_26,00172$
+	sjmp	00110$
+00172$:
+	mov	a,#0x0a
+	cjne	a,_main_rx_data_10000_26,00111$
+00110$:
+;	main.c:77: if (rx_length > 0)
+	mov	a,r7
+	jz	00117$
+;	main.c:79: uart_write_buffer(rx_buffer, rx_length);
+	mov	_uart_write_buffer_PARM_2,r7
+	mov	(_uart_write_buffer_PARM_2 + 1),#0x00
+	mov	dptr,#_main_rx_buffer_10000_26
+	mov	b, #0x40
+	push	ar7
+	lcall	_uart_write_buffer
+;	main.c:80: uart_write_string("\r\n");
+	mov	dptr,#___str_7
+	mov	b, #0x80
+	lcall	_uart_write_string
+	pop	ar7
+;	main.c:82: oled_show_message("RX: RECEIVED", rx_buffer, rx_length);
+	mov	_oled_show_message_PARM_2,#_main_rx_buffer_10000_26
+	mov	(_oled_show_message_PARM_2 + 1),#0x00
+	mov	(_oled_show_message_PARM_2 + 2),#0x40
+	mov	_oled_show_message_PARM_3,r7
+	mov	dptr,#___str_8
+	mov	b, #0x80
+	lcall	_oled_show_message
+;	main.c:84: rx_length = 0;
+	mov	r7,#0x00
+	sjmp	00117$
+00111$:
+;	main.c:89: if (rx_length < DISPLAY_LENGTH)
+	cjne	r7,#0x14,00176$
+00176$:
+	jnc	00117$
+;	main.c:91: rx_buffer[rx_length++] = rx_data;
+	mov	ar6,r7
+	inc	r7
+	mov	a,r6
+	add	a, #_main_rx_buffer_10000_26
+	mov	r0,a
+	mov	@r0,_main_rx_data_10000_26
+;	main.c:96: }
+	sjmp	00117$
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'delay_us'
 ;------------------------------------------------------------
 ;value         Allocated to registers r6 r7 
 ;i             Allocated to registers r5 
 ;------------------------------------------------------------
-;	main.c:26: void delay_us(unsigned int value){
+;	main.c:98: void delay_us(unsigned int value)
 ;	-----------------------------------------
 ;	 function delay_us
 ;	-----------------------------------------
 _delay_us:
 	mov	r6, dpl
 	mov	r7, dph
-;	main.c:30: while(value--){
+;	main.c:102: while (value--)
 00102$:
 	mov	ar4,r6
 	mov	ar5,r7
@@ -667,20 +913,20 @@ _delay_us:
 	mov	a,r4
 	orl	a,r5
 	jz	00108$
-;	main.c:31: for(i=0;i<4;i++);   /* This is around 1us */
+;	main.c:104: for (i = 0; i < 4; i++);
 	mov	r5,#0x04
 00107$:
 	djnz	r5,00107$
 	sjmp	00102$
 00108$:
-;	main.c:33: }
+;	main.c:106: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'delay_ms'
 ;------------------------------------------------------------
 ;value         Allocated to registers r4 r5 r6 r7 
 ;------------------------------------------------------------
-;	main.c:35: void delay_ms(unsigned long int value){
+;	main.c:108: void delay_ms(unsigned long int value)
 ;	-----------------------------------------
 ;	 function delay_ms
 ;	-----------------------------------------
@@ -689,13 +935,13 @@ _delay_ms:
 	mov	r5,dph
 	mov	r6,b
 	mov	r7,a
-;	main.c:37: delay_time_ms=0;
+;	main.c:110: delay_time_ms = 0;
 	clr	a
 	mov	_delay_time_ms,a
 	mov	(_delay_time_ms + 1),a
 	mov	(_delay_time_ms + 2),a
 	mov	(_delay_time_ms + 3),a
-;	main.c:38: while(delay_time_ms<value);
+;	main.c:112: while (delay_time_ms < value);
 00101$:
 	clr	c
 	mov	a,_delay_time_ms
@@ -707,14 +953,14 @@ _delay_ms:
 	mov	a,(_delay_time_ms + 3)
 	subb	a,r7
 	jc	00101$
-;	main.c:40: }
+;	main.c:113: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'timer0_isr'
 ;------------------------------------------------------------
-;value         Allocated with name '_timer0_isr_value_10000_24'
+;value         Allocated with name '_timer0_isr_value_10000_46'
 ;------------------------------------------------------------
-;	main.c:44: void timer0_isr(void) __interrupt(1){
+;	main.c:115: void timer0_isr(void) __interrupt(1)
 ;	-----------------------------------------
 ;	 function timer0_isr
 ;	-----------------------------------------
@@ -726,28 +972,28 @@ _timer0_isr:
 	push	ar4
 	push	psw
 	mov	psw,#0x00
-;	main.c:47: TF0=0;
+;	main.c:119: TF0 = 0;
 ;	assignBit
 	clr	_TF0
-;	main.c:48: value++;
-	inc	_timer0_isr_value_10000_24
+;	main.c:120: value++;
+	inc	_timer0_isr_value_10000_46
 	clr	a
-	cjne	a,_timer0_isr_value_10000_24,00121$
-	inc	(_timer0_isr_value_10000_24 + 1)
+	cjne	a,_timer0_isr_value_10000_46,00121$
+	inc	(_timer0_isr_value_10000_46 + 1)
 00121$:
-;	main.c:49: if(value>=10){
+;	main.c:122: if (value >= 10)
 	clr	c
-	mov	a,_timer0_isr_value_10000_24
+	mov	a,_timer0_isr_value_10000_46
 	subb	a,#0x0a
-	mov	a,(_timer0_isr_value_10000_24 + 1)
+	mov	a,(_timer0_isr_value_10000_46 + 1)
 	xrl	a,#0x80
 	subb	a,#0x80
 	jc	00105$
-;	main.c:51: value=0;
+;	main.c:124: value = 0;
 	clr	a
-	mov	_timer0_isr_value_10000_24,a
-	mov	(_timer0_isr_value_10000_24 + 1),a
-;	main.c:52: delay_time_ms++;
+	mov	_timer0_isr_value_10000_46,a
+	mov	(_timer0_isr_value_10000_46 + 1),a
+;	main.c:125: delay_time_ms++;
 	mov	r4,_delay_time_ms
 	mov	r5,(_delay_time_ms + 1)
 	mov	r6,(_delay_time_ms + 2)
@@ -764,7 +1010,7 @@ _timer0_isr:
 	clr	a
 	addc	a, r7
 	mov	(_delay_time_ms + 3),a
-;	main.c:53: time_ms++;
+;	main.c:126: time_ms++;
 	mov	r6,_time_ms
 	mov	r7,(_time_ms + 1)
 	mov	a,#0x01
@@ -773,7 +1019,7 @@ _timer0_isr:
 	clr	a
 	addc	a, r7
 	mov	(_time_ms + 1),a
-;	main.c:55: if(time_ms>=1000){
+;	main.c:128: if (time_ms >= 1000)
 	mov	r6,_time_ms
 	mov	r7,(_time_ms + 1)
 	clr	c
@@ -782,12 +1028,12 @@ _timer0_isr:
 	mov	a,r7
 	subb	a,#0x03
 	jc	00105$
-;	main.c:56: time_ms=0;
+;	main.c:129: time_ms = 0;
 	clr	a
 	mov	_time_ms,a
 	mov	(_time_ms + 1),a
 00105$:
-;	main.c:59: }
+;	main.c:131: }
 	pop	psw
 	pop	ar4
 	pop	ar5
@@ -802,7 +1048,45 @@ _timer0_isr:
 	.area CONST   (CODE)
 	.area CONST   (CODE)
 ___str_0:
-	.ascii "!OLED OK!"
+	.ascii "                    "
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_2:
+	.ascii "UART RX TX TEST"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_3:
+	.ascii "UART INIT FAIL"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_4:
+	.ascii "UART TX TEST"
+	.db 0x0d
+	.db 0x0a
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_5:
+	.ascii "TX: SENT"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_6:
+	.ascii "WAITING RX"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_7:
+	.db 0x0d
+	.db 0x0a
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_8:
+	.ascii "RX: RECEIVED"
 	.db 0x00
 	.area CSEG    (CODE)
 	.area XINIT   (CODE)

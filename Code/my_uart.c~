@@ -1,0 +1,124 @@
+
+#include <AT89C513xA.h>
+#include "my_uart.h"
+
+#define UART_RX_BUFFER_SIZE 16
+#define UART_RX_BUFFER_MASK 15
+
+static volatile uart_u8 rx_buffer[UART_RX_BUFFER_SIZE];
+static volatile uart_u8 rx_head = 0;
+static volatile uart_u8 rx_tail = 0;
+
+uart_u8 uart_init(uart_u32 baud)
+{
+    uart_u32 divisor;
+    uart_u8 reload;
+
+    if (baud == 0)
+        return 0;
+
+    divisor = UART_FOSC_HZ / (32UL * baud);
+
+    if (divisor == 0 || divisor > 255UL)
+        return 0;
+
+    reload = (uart_u8)(256UL - divisor);
+
+    ES = 0;
+    TR2 = 0;
+    T2CON = 0x00;
+
+    SCON = 0x50;
+    PCON |= 0x80;
+
+    BDRCON = 0x00;
+    BRL = reload;
+    BDRCON = 0xF0;
+
+    rx_head = 0;
+    rx_tail = 0;
+
+    TI = 0;
+    RI = 0;
+
+    ES = 1;
+
+    return 1;
+}
+
+void uart_write_byte(uart_u8 data)
+{
+    ES = 0;
+
+    TI = 0;
+    SBUF = data;
+
+    while (TI == 0);
+
+    TI = 0;
+
+    ES = 1;
+}
+
+void uart_write_buffer(const uart_u8 *data, uart_u16 length)
+{
+    uart_u16 i;
+
+    for (i = 0; i < length; i++)
+        uart_write_byte(data[i]);
+}
+
+void uart_write_string(const char *str)
+{
+    while (*str != '\0')
+    {
+        uart_write_byte((uart_u8)*str);
+        str++;
+    }
+}
+
+uart_u8 uart_available(void)
+{
+    return (rx_head != rx_tail);
+}
+
+uart_u8 uart_read_byte(uart_u8 *data)
+{
+    if (rx_head == rx_tail)
+        return 0;
+
+    *data = rx_buffer[rx_tail];
+    rx_tail = (rx_tail + 1) & UART_RX_BUFFER_MASK;
+
+    return 1;
+}
+
+uart_u8 uart_read_byte_blocking(uart_u8 *data)
+{
+    while (uart_read_byte(data) == 0);
+
+    return 1;
+}
+
+void uart_isr(void) __interrupt(4)
+{
+    uart_u8 data;
+    uart_u8 next;
+
+    if (RI)
+    {
+        data = SBUF;
+        RI = 0;
+
+        next = (rx_head + 1) & UART_RX_BUFFER_MASK;
+
+        if (next != rx_tail)
+        {
+            rx_buffer[rx_head] = data;
+            rx_head = next;
+        }
+    }
+
+    if (TI)
+        TI = 0;
+}

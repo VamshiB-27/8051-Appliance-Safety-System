@@ -523,7 +523,7 @@ _oled_char_data_10000_47:
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'i2c_delay'
 ;------------------------------------------------------------
-;	my_oled.c:51: static void i2c_delay(void)
+;	my_oled.c:52: static void i2c_delay(void)
 ;	-----------------------------------------
 ;	 function i2c_delay
 ;	-----------------------------------------
@@ -536,57 +536,57 @@ _i2c_delay:
 	ar2 = 0x02
 	ar1 = 0x01
 	ar0 = 0x00
-;	my_oled.c:53: delay_us(5);
+;	my_oled.c:54: delay_us(5);
 	mov	dptr,#0x0005
-;	my_oled.c:54: }
+;	my_oled.c:55: }
 	ljmp	_delay_us
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'i2c_start'
 ;------------------------------------------------------------
-;	my_oled.c:56: void i2c_start(void)
+;	my_oled.c:57: void i2c_start(void)
 ;	-----------------------------------------
 ;	 function i2c_start
 ;	-----------------------------------------
 _i2c_start:
-;	my_oled.c:58: OLED_SDA = 1;
+;	my_oled.c:59: OLED_SDA = 1;
 ;	assignBit
 	setb	_P4_1
-;	my_oled.c:59: OLED_SCL = 1;
+;	my_oled.c:60: OLED_SCL = 1;
 ;	assignBit
 	setb	_P4_0
-;	my_oled.c:60: i2c_delay();
+;	my_oled.c:61: i2c_delay();
 	lcall	_i2c_delay
-;	my_oled.c:61: OLED_SDA = 0;
+;	my_oled.c:62: OLED_SDA = 0;
 ;	assignBit
 	clr	_P4_1
-;	my_oled.c:62: i2c_delay();
+;	my_oled.c:63: i2c_delay();
 	lcall	_i2c_delay
-;	my_oled.c:63: OLED_SCL = 0;
+;	my_oled.c:64: OLED_SCL = 0;
 ;	assignBit
 	clr	_P4_0
-;	my_oled.c:64: }
+;	my_oled.c:65: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'i2c_stop'
 ;------------------------------------------------------------
-;	my_oled.c:66: void i2c_stop(void)
+;	my_oled.c:67: void i2c_stop(void)
 ;	-----------------------------------------
 ;	 function i2c_stop
 ;	-----------------------------------------
 _i2c_stop:
-;	my_oled.c:68: OLED_SDA = 0;
+;	my_oled.c:69: OLED_SDA = 0;
 ;	assignBit
 	clr	_P4_1
-;	my_oled.c:69: OLED_SCL = 1;
+;	my_oled.c:70: OLED_SCL = 1;
 ;	assignBit
 	setb	_P4_0
-;	my_oled.c:70: i2c_delay();
+;	my_oled.c:71: i2c_delay();
 	lcall	_i2c_delay
-;	my_oled.c:71: OLED_SDA = 1;
+;	my_oled.c:72: OLED_SDA = 1;
 ;	assignBit
 	setb	_P4_1
-;	my_oled.c:72: i2c_delay();
-;	my_oled.c:73: }
+;	my_oled.c:73: i2c_delay();
+;	my_oled.c:74: }
 	ljmp	_i2c_delay
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'i2c_write'
@@ -595,74 +595,74 @@ _i2c_stop:
 ;i             Allocated to registers r6 
 ;ack           Allocated to registers r7 
 ;------------------------------------------------------------
-;	my_oled.c:75: unsigned char i2c_write(unsigned char dat)
+;	my_oled.c:76: unsigned char i2c_write(unsigned char dat)
 ;	-----------------------------------------
 ;	 function i2c_write
 ;	-----------------------------------------
 _i2c_write:
 	mov	r7, dpl
-;	my_oled.c:80: for(i = 0; i < 8; i++)
+;	my_oled.c:81: for(i = 0; i < 8; i++)
 	mov	r6,#0x00
 00102$:
-;	my_oled.c:82: OLED_SDA = (dat & 0x80) ? 1 : 0;
+;	my_oled.c:83: OLED_SDA = (dat & 0x80) ? 1 : 0;
 	mov	ar5,r7
 	anl	ar5,#0x80
 ;	assignBit
 	mov	a,r5
 	add	a,#0xff
 	mov	_P4_1,c
-;	my_oled.c:83: i2c_delay();
+;	my_oled.c:84: i2c_delay();
 	push	ar7
 	push	ar6
 	lcall	_i2c_delay
-;	my_oled.c:84: OLED_SCL = 1;
+;	my_oled.c:85: OLED_SCL = 1;
 ;	assignBit
 	setb	_P4_0
-;	my_oled.c:85: i2c_delay();
+;	my_oled.c:86: i2c_delay();
 	lcall	_i2c_delay
 	pop	ar6
 	pop	ar7
-;	my_oled.c:86: OLED_SCL = 0;
+;	my_oled.c:87: OLED_SCL = 0;
 ;	assignBit
 	clr	_P4_0
-;	my_oled.c:87: dat <<= 1;
+;	my_oled.c:88: dat <<= 1;
 	mov	a,r7
 	add	a,r7
 	mov	r7,a
-;	my_oled.c:80: for(i = 0; i < 8; i++)
+;	my_oled.c:81: for(i = 0; i < 8; i++)
 	inc	r6
 	cjne	r6,#0x08,00120$
 00120$:
 	jc	00102$
-;	my_oled.c:90: OLED_SDA = 1;
+;	my_oled.c:91: OLED_SDA = 1;
 ;	assignBit
 	setb	_P4_1
-;	my_oled.c:91: i2c_delay();
+;	my_oled.c:92: i2c_delay();
 	lcall	_i2c_delay
-;	my_oled.c:92: OLED_SCL = 1;
+;	my_oled.c:93: OLED_SCL = 1;
 ;	assignBit
 	setb	_P4_0
-;	my_oled.c:93: i2c_delay();
+;	my_oled.c:94: i2c_delay();
 	lcall	_i2c_delay
-;	my_oled.c:94: ack = OLED_SDA;
+;	my_oled.c:95: ack = OLED_SDA;
 	mov	c,_P4_1
 	clr	a
 	rlc	a
 	mov	r7,a
-;	my_oled.c:95: OLED_SCL = 0;
+;	my_oled.c:96: OLED_SCL = 0;
 ;	assignBit
 	clr	_P4_0
-;	my_oled.c:96: i2c_delay();
+;	my_oled.c:97: i2c_delay();
 	push	ar7
 	lcall	_i2c_delay
 	pop	ar7
-;	my_oled.c:98: return (ack == 0);
+;	my_oled.c:99: return (ack == 0);
 	clr	a
 	cjne	r7,#0x00,00122$
 	inc	a
 00122$:
 	mov	dpl,a
-;	my_oled.c:99: }
+;	my_oled.c:100: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'i2c_write_transaction'
@@ -673,29 +673,29 @@ _i2c_write:
 ;i             Allocated to registers r7 
 ;success       Allocated to registers r6 
 ;------------------------------------------------------------
-;	my_oled.c:101: static unsigned char i2c_write_transaction(
+;	my_oled.c:102: static unsigned char i2c_write_transaction(
 ;	-----------------------------------------
 ;	 function i2c_write_transaction
 ;	-----------------------------------------
 _i2c_write_transaction:
 	mov	r7, dpl
-;	my_oled.c:107: unsigned char success = 1;
+;	my_oled.c:108: unsigned char success = 1;
 	mov	r6,#0x01
-;	my_oled.c:109: i2c_start();
+;	my_oled.c:110: i2c_start();
 	push	ar7
 	push	ar6
 	lcall	_i2c_start
-;	my_oled.c:111: if(!i2c_write(OLED_ADDR))
+;	my_oled.c:112: if(!i2c_write(OLED_ADDR))
 	mov	dpl, #0x78
 	lcall	_i2c_write
 	mov	a, dpl
 	pop	ar6
 	pop	ar7
-;	my_oled.c:112: success = 0;
+;	my_oled.c:113: success = 0;
 	jnz	00102$
 	mov	r6,a
 00102$:
-;	my_oled.c:114: if(success && !i2c_write(control))
+;	my_oled.c:115: if(success && !i2c_write(control))
 	mov	a,r6
 	jz	00104$
 	mov	dpl, r7
@@ -703,11 +703,11 @@ _i2c_write_transaction:
 	lcall	_i2c_write
 	mov	a, dpl
 	pop	ar6
-;	my_oled.c:115: success = 0;
+;	my_oled.c:116: success = 0;
 	jnz	00104$
 	mov	r6,a
 00104$:
-;	my_oled.c:117: for(i = 0; i < length && success; i++)
+;	my_oled.c:118: for(i = 0; i < length && success; i++)
 	mov	r7,#0x00
 00111$:
 	clr	c
@@ -716,7 +716,7 @@ _i2c_write_transaction:
 	jnc	00108$
 	mov	a,r6
 	jz	00108$
-;	my_oled.c:119: if(!i2c_write(data[i]))
+;	my_oled.c:120: if(!i2c_write(data[i]))
 	mov	a,r7
 	add	a, _i2c_write_transaction_PARM_2
 	mov	r3,a
@@ -735,59 +735,59 @@ _i2c_write_transaction:
 	mov	a, dpl
 	pop	ar6
 	pop	ar7
-;	my_oled.c:120: success = 0;
+;	my_oled.c:121: success = 0;
 	jnz	00112$
 	mov	r6,a
 00112$:
-;	my_oled.c:117: for(i = 0; i < length && success; i++)
+;	my_oled.c:118: for(i = 0; i < length && success; i++)
 	inc	r7
 	sjmp	00111$
 00108$:
-;	my_oled.c:123: i2c_stop();
+;	my_oled.c:124: i2c_stop();
 	push	ar6
 	lcall	_i2c_stop
 	pop	ar6
-;	my_oled.c:124: return success;
+;	my_oled.c:125: return success;
 	mov	dpl, r6
-;	my_oled.c:125: }
+;	my_oled.c:126: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'oled_command'
 ;------------------------------------------------------------
 ;cmd           Allocated with name '_oled_command_cmd_10000_30'
 ;------------------------------------------------------------
-;	my_oled.c:127: void oled_command(unsigned char cmd)
+;	my_oled.c:128: void oled_command(unsigned char cmd)
 ;	-----------------------------------------
 ;	 function oled_command
 ;	-----------------------------------------
 _oled_command:
 	mov	_oled_command_cmd_10000_30,dpl
-;	my_oled.c:129: i2c_write_transaction(0x00, &cmd, 1);
+;	my_oled.c:130: i2c_write_transaction(0x00, &cmd, 1);
 	mov	_i2c_write_transaction_PARM_2,#_oled_command_cmd_10000_30
 	mov	(_i2c_write_transaction_PARM_2 + 1),#0x00
 	mov	(_i2c_write_transaction_PARM_2 + 2),#0x40
 	mov	_i2c_write_transaction_PARM_3,#0x01
 	mov	dpl, #0x00
-;	my_oled.c:130: }
+;	my_oled.c:131: }
 	ljmp	_i2c_write_transaction
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'oled_data'
 ;------------------------------------------------------------
 ;dat           Allocated with name '_oled_data_dat_10000_32'
 ;------------------------------------------------------------
-;	my_oled.c:132: void oled_data(unsigned char dat)
+;	my_oled.c:133: void oled_data(unsigned char dat)
 ;	-----------------------------------------
 ;	 function oled_data
 ;	-----------------------------------------
 _oled_data:
 	mov	_oled_data_dat_10000_32,dpl
-;	my_oled.c:134: i2c_write_transaction(0x40, &dat, 1);
+;	my_oled.c:135: i2c_write_transaction(0x40, &dat, 1);
 	mov	_i2c_write_transaction_PARM_2,#_oled_data_dat_10000_32
 	mov	(_i2c_write_transaction_PARM_2 + 1),#0x00
 	mov	(_i2c_write_transaction_PARM_2 + 2),#0x40
 	mov	_i2c_write_transaction_PARM_3,#0x01
 	mov	dpl, #0x40
-;	my_oled.c:135: }
+;	my_oled.c:136: }
 	ljmp	_i2c_write_transaction
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'oled_set_position'
@@ -795,48 +795,48 @@ _oled_data:
 ;column        Allocated with name '_oled_set_position_PARM_2'
 ;page          Allocated to registers r7 
 ;------------------------------------------------------------
-;	my_oled.c:137: void oled_set_position(unsigned char page, unsigned char column)
+;	my_oled.c:138: void oled_set_position(unsigned char page, unsigned char column)
 ;	-----------------------------------------
 ;	 function oled_set_position
 ;	-----------------------------------------
 _oled_set_position:
-;	my_oled.c:139: if(page > 7)
+;	my_oled.c:140: if(page > 7)
 	mov	a,dpl
 	mov	r7,a
 	add	a,#0xff - 0x07
 	jnc	00102$
 ;	free result
-;	my_oled.c:140: page = 7;
+;	my_oled.c:141: page = 7;
 	mov	r7,#0x07
 00102$:
-;	my_oled.c:142: if(column > 127)
+;	my_oled.c:143: if(column > 127)
 	mov	a,_oled_set_position_PARM_2
 	add	a,#0xff - 0x7f
 	jnc	00104$
 ;	free result
-;	my_oled.c:143: column = 127;
+;	my_oled.c:144: column = 127;
 	mov	_oled_set_position_PARM_2,#0x7f
 00104$:
-;	my_oled.c:145: oled_page = page;
+;	my_oled.c:146: oled_page = page;
 	mov	_oled_page,r7
-;	my_oled.c:146: oled_column = column;
+;	my_oled.c:147: oled_column = column;
 	mov	r6,_oled_set_position_PARM_2
 	mov	_oled_column,r6
-;	my_oled.c:148: oled_command(0xB0 | page);
+;	my_oled.c:149: oled_command(0xB0 | page);
 	mov	a,#0xb0
 	orl	a,r7
 	mov	dpl,a
 	push	ar6
 	lcall	_oled_command
 	pop	ar6
-;	my_oled.c:149: oled_command(column & 0x0F);
+;	my_oled.c:150: oled_command(column & 0x0F);
 	mov	a,#0x0f
 	anl	a,r6
 	mov	dpl,a
 	push	ar6
 	lcall	_oled_command
 	pop	ar6
-;	my_oled.c:150: oled_command(0x10 | (column >> 4));
+;	my_oled.c:151: oled_command(0x10 | (column >> 4));
 	mov	a,r6
 	swap	a
 	anl	a,#0x0f
@@ -844,7 +844,7 @@ _oled_set_position:
 	mov	a,#0x10
 	orl	a,r6
 	mov	dpl,a
-;	my_oled.c:151: }
+;	my_oled.c:152: }
 	ljmp	_oled_command
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'oled_clear'
@@ -854,37 +854,37 @@ _oled_set_position:
 ;i             Allocated to registers r7 
 ;zeros         Allocated with name '_oled_clear_zeros_10000_39'
 ;------------------------------------------------------------
-;	my_oled.c:153: void oled_clear(void)
+;	my_oled.c:154: void oled_clear(void)
 ;	-----------------------------------------
 ;	 function oled_clear
 ;	-----------------------------------------
 _oled_clear:
-;	my_oled.c:160: for(i = 0; i < 16; i++)
+;	my_oled.c:161: for(i = 0; i < 16; i++)
 	mov	r7,#0x00
 00104$:
-;	my_oled.c:161: zeros[i] = 0x00;
+;	my_oled.c:162: zeros[i] = 0x00;
 	mov	a,r7
 	add	a, #_oled_clear_zeros_10000_39
 	mov	r0,a
 	mov	@r0,#0x00
-;	my_oled.c:160: for(i = 0; i < 16; i++)
+;	my_oled.c:161: for(i = 0; i < 16; i++)
 	inc	r7
 	cjne	r7,#0x10,00154$
 00154$:
 	jc	00104$
-;	my_oled.c:163: for(page = 0; page < 8; page++)
+;	my_oled.c:164: for(page = 0; page < 8; page++)
 	mov	r7,#0x00
 00108$:
-;	my_oled.c:165: oled_set_position(page, 0);
+;	my_oled.c:166: oled_set_position(page, 0);
 	mov	_oled_set_position_PARM_2,#0x00
 	mov	dpl, r7
 	push	ar7
 	lcall	_oled_set_position
 	pop	ar7
-;	my_oled.c:167: for(col = 0; col < 128; col += 16)
+;	my_oled.c:168: for(col = 0; col < 128; col += 16)
 	mov	r6,#0x00
 00106$:
-;	my_oled.c:168: i2c_write_transaction(0x40, zeros, 16);
+;	my_oled.c:169: i2c_write_transaction(0x40, zeros, 16);
 	mov	_i2c_write_transaction_PARM_2,#_oled_clear_zeros_10000_39
 	mov	(_i2c_write_transaction_PARM_2 + 1),#0x00
 	mov	(_i2c_write_transaction_PARM_2 + 2),#0x40
@@ -895,7 +895,7 @@ _oled_clear:
 	lcall	_i2c_write_transaction
 	pop	ar6
 	pop	ar7
-;	my_oled.c:167: for(col = 0; col < 128; col += 16)
+;	my_oled.c:168: for(col = 0; col < 128; col += 16)
 	mov	ar5,r6
 	mov	a,#0x10
 	add	a, r5
@@ -903,116 +903,116 @@ _oled_clear:
 	cjne	r6,#0x80,00156$
 00156$:
 	jc	00106$
-;	my_oled.c:163: for(page = 0; page < 8; page++)
+;	my_oled.c:164: for(page = 0; page < 8; page++)
 	inc	r7
 	cjne	r7,#0x08,00158$
 00158$:
 	jc	00108$
-;	my_oled.c:171: oled_set_position(0, 0);
+;	my_oled.c:172: oled_set_position(0, 0);
 	mov	_oled_set_position_PARM_2,#0x00
 	mov	dpl, #0x00
-;	my_oled.c:172: }
+;	my_oled.c:173: }
 	ljmp	_oled_set_position
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'oled_init'
 ;------------------------------------------------------------
-;	my_oled.c:174: void oled_init(void)
+;	my_oled.c:175: void oled_init(void)
 ;	-----------------------------------------
 ;	 function oled_init
 ;	-----------------------------------------
 _oled_init:
-;	my_oled.c:176: delay_ms(100);
+;	my_oled.c:177: delay_ms(100);
 	mov	dptr,#0x0064
 	clr	a
 	mov	b,a
 	lcall	_delay_ms
-;	my_oled.c:178: OLED_SCL = 1;
+;	my_oled.c:179: OLED_SCL = 1;
 ;	assignBit
 	setb	_P4_0
-;	my_oled.c:179: OLED_SDA = 1;
+;	my_oled.c:180: OLED_SDA = 1;
 ;	assignBit
 	setb	_P4_1
-;	my_oled.c:181: oled_command(0xAE);
+;	my_oled.c:182: oled_command(0xAE);
 	mov	dpl, #0xae
 	lcall	_oled_command
-;	my_oled.c:182: oled_command(0xD5);
+;	my_oled.c:183: oled_command(0xD5);
 	mov	dpl, #0xd5
 	lcall	_oled_command
-;	my_oled.c:183: oled_command(0x80);
+;	my_oled.c:184: oled_command(0x80);
 	mov	dpl, #0x80
 	lcall	_oled_command
-;	my_oled.c:184: oled_command(0xA8);
+;	my_oled.c:185: oled_command(0xA8);
 	mov	dpl, #0xa8
 	lcall	_oled_command
-;	my_oled.c:185: oled_command(0x3F);
+;	my_oled.c:186: oled_command(0x3F);
 	mov	dpl, #0x3f
 	lcall	_oled_command
-;	my_oled.c:186: oled_command(0xD3);
+;	my_oled.c:187: oled_command(0xD3);
 	mov	dpl, #0xd3
 	lcall	_oled_command
-;	my_oled.c:187: oled_command(0x00);
+;	my_oled.c:188: oled_command(0x00);
 	mov	dpl, #0x00
 	lcall	_oled_command
-;	my_oled.c:188: oled_command(0x40);
+;	my_oled.c:189: oled_command(0x40);
 	mov	dpl, #0x40
 	lcall	_oled_command
-;	my_oled.c:189: oled_command(0x8D);
+;	my_oled.c:190: oled_command(0x8D);
 	mov	dpl, #0x8d
 	lcall	_oled_command
-;	my_oled.c:190: oled_command(0x14);
+;	my_oled.c:191: oled_command(0x14);
 	mov	dpl, #0x14
 	lcall	_oled_command
-;	my_oled.c:191: oled_command(0x20);
+;	my_oled.c:192: oled_command(0x20);
 	mov	dpl, #0x20
 	lcall	_oled_command
-;	my_oled.c:192: oled_command(0x02);
+;	my_oled.c:193: oled_command(0x02);
 	mov	dpl, #0x02
 	lcall	_oled_command
-;	my_oled.c:193: oled_command(0xA1);
+;	my_oled.c:194: oled_command(0xA1);
 	mov	dpl, #0xa1
 	lcall	_oled_command
-;	my_oled.c:194: oled_command(0xC8);
+;	my_oled.c:195: oled_command(0xC8);
 	mov	dpl, #0xc8
 	lcall	_oled_command
-;	my_oled.c:195: oled_command(0xDA);
+;	my_oled.c:196: oled_command(0xDA);
 	mov	dpl, #0xda
 	lcall	_oled_command
-;	my_oled.c:196: oled_command(0x12);
+;	my_oled.c:197: oled_command(0x12);
 	mov	dpl, #0x12
 	lcall	_oled_command
-;	my_oled.c:197: oled_command(0x81);
+;	my_oled.c:198: oled_command(0x81);
 	mov	dpl, #0x81
 	lcall	_oled_command
-;	my_oled.c:198: oled_command(0x7F);
+;	my_oled.c:199: oled_command(0x7F);
 	mov	dpl, #0x7f
 	lcall	_oled_command
-;	my_oled.c:199: oled_command(0xD9);
+;	my_oled.c:200: oled_command(0xD9);
 	mov	dpl, #0xd9
 	lcall	_oled_command
-;	my_oled.c:200: oled_command(0xF1);
+;	my_oled.c:201: oled_command(0xF1);
 	mov	dpl, #0xf1
 	lcall	_oled_command
-;	my_oled.c:201: oled_command(0xDB);
+;	my_oled.c:202: oled_command(0xDB);
 	mov	dpl, #0xdb
 	lcall	_oled_command
-;	my_oled.c:202: oled_command(0x40);
+;	my_oled.c:203: oled_command(0x40);
 	mov	dpl, #0x40
 	lcall	_oled_command
-;	my_oled.c:203: oled_command(0xA4);
+;	my_oled.c:204: oled_command(0xA4);
 	mov	dpl, #0xa4
 	lcall	_oled_command
-;	my_oled.c:204: oled_command(0xA6);
+;	my_oled.c:205: oled_command(0xA6);
 	mov	dpl, #0xa6
 	lcall	_oled_command
-;	my_oled.c:206: oled_clear();
+;	my_oled.c:207: oled_clear();
 	lcall	_oled_clear
-;	my_oled.c:207: oled_command(0xAF);
+;	my_oled.c:208: oled_command(0xAF);
 	mov	dpl, #0xaf
 	lcall	_oled_command
-;	my_oled.c:208: oled_set_position(0, 0);
+;	my_oled.c:209: oled_set_position(0, 0);
 	mov	_oled_set_position_PARM_2,#0x00
 	mov	dpl, #0x00
-;	my_oled.c:209: }
+;	my_oled.c:210: }
 	ljmp	_oled_set_position
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'oled_char'
@@ -1022,13 +1022,13 @@ _oled_init:
 ;index         Allocated to registers r6 
 ;data          Allocated with name '_oled_char_data_10000_47'
 ;------------------------------------------------------------
-;	my_oled.c:211: void oled_char(unsigned char c)
+;	my_oled.c:212: void oled_char(unsigned char c)
 ;	-----------------------------------------
 ;	 function oled_char
 ;	-----------------------------------------
 _oled_char:
 	mov	r7, dpl
-;	my_oled.c:217: if(c >= 'a' && c <= 'z')
+;	my_oled.c:218: if(c >= 'a' && c <= 'z')
 	cjne	r7,#0x61,00513$
 00513$:
 	jc	00102$
@@ -1036,26 +1036,26 @@ _oled_char:
 	add	a,#0xff - 0x7a
 	jc	00102$
 ;	free result
-;	my_oled.c:218: c -= ('a' - 'A');
+;	my_oled.c:219: c -= ('a' - 'A');
 	mov	ar6,r7
 	mov	a,r6
 	add	a,#0xe0
 	mov	r7,a
 00102$:
-;	my_oled.c:220: for(i = 0; i < 6; i++)
+;	my_oled.c:221: for(i = 0; i < 6; i++)
 	mov	r6,#0x00
 00153$:
-;	my_oled.c:221: data[i] = 0x00;
+;	my_oled.c:222: data[i] = 0x00;
 	mov	a,r6
 	add	a, #_oled_char_data_10000_47
 	mov	r0,a
 	mov	@r0,#0x00
-;	my_oled.c:220: for(i = 0; i < 6; i++)
+;	my_oled.c:221: for(i = 0; i < 6; i++)
 	inc	r6
 	cjne	r6,#0x06,00516$
 00516$:
 	jc	00153$
-;	my_oled.c:223: if(c >= 'A' && c <= 'Z')
+;	my_oled.c:224: if(c >= 'A' && c <= 'Z')
 	cjne	r7,#0x41,00518$
 00518$:
 	jc	00142$
@@ -1063,11 +1063,11 @@ _oled_char:
 	add	a,#0xff - 0x5a
 	jc	00142$
 ;	free result
-;	my_oled.c:225: index = c - 'A';
+;	my_oled.c:226: index = c - 'A';
 	mov	ar6,r7
 	mov	a,r6
 	add	a,#0xbf
-;	my_oled.c:227: for(i = 0; i < 5; i++)
+;	my_oled.c:228: for(i = 0; i < 5; i++)
 	mov	r5,#0x00
 	mov	b,#0x05
 	mul	ab
@@ -1077,7 +1077,7 @@ _oled_char:
 	addc	a, b
 	mov	r6,a
 00155$:
-;	my_oled.c:228: data[i] = font5x7[index][i];
+;	my_oled.c:229: data[i] = font5x7[index][i];
 	mov	a,r5
 	add	a, #_oled_char_data_10000_47
 	mov	r1,a
@@ -1090,14 +1090,14 @@ _oled_char:
 	clr	a
 	movc	a,@a+dptr
 	mov	@r1,a
-;	my_oled.c:227: for(i = 0; i < 5; i++)
+;	my_oled.c:228: for(i = 0; i < 5; i++)
 	inc	r5
 	cjne	r5,#0x05,00521$
 00521$:
 	jc	00155$
 	ljmp	00143$
 00142$:
-;	my_oled.c:230: else if(c >= '0' && c <= '9')
+;	my_oled.c:231: else if(c >= '0' && c <= '9')
 	cjne	r7,#0x30,00523$
 00523$:
 	jc	00138$
@@ -1105,11 +1105,11 @@ _oled_char:
 	add	a,#0xff - 0x39
 	jc	00138$
 ;	free result
-;	my_oled.c:232: index = 26 + c - '0';
+;	my_oled.c:233: index = 26 + c - '0';
 	mov	ar6,r7
 	mov	a,#0xea
 	add	a, r6
-;	my_oled.c:234: for(i = 0; i < 5; i++)
+;	my_oled.c:235: for(i = 0; i < 5; i++)
 	mov	r5,#0x00
 	mov	b,#0x05
 	mul	ab
@@ -1119,7 +1119,7 @@ _oled_char:
 	addc	a, b
 	mov	r6,a
 00157$:
-;	my_oled.c:235: data[i] = font5x7[index][i];
+;	my_oled.c:236: data[i] = font5x7[index][i];
 	mov	a,r5
 	add	a, #_oled_char_data_10000_47
 	mov	r1,a
@@ -1132,14 +1132,14 @@ _oled_char:
 	clr	a
 	movc	a,@a+dptr
 	mov	@r1,a
-;	my_oled.c:234: for(i = 0; i < 5; i++)
+;	my_oled.c:235: for(i = 0; i < 5; i++)
 	inc	r5
 	cjne	r5,#0x05,00526$
 00526$:
 	jc	00157$
 	ljmp	00143$
 00138$:
-;	my_oled.c:239: switch(c)
+;	my_oled.c:240: switch(c)
 	cjne	r7,#0x20,00528$
 	ljmp	00143$
 00528$:
@@ -1225,283 +1225,283 @@ _oled_char:
 	ljmp	00133$
 00555$:
 	ljmp	00143$
-;	my_oled.c:241: case '.':
+;	my_oled.c:242: case '.':
 00107$:
-;	my_oled.c:242: data[2] = 0x60;
+;	my_oled.c:243: data[2] = 0x60;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x60
-;	my_oled.c:243: break;
+;	my_oled.c:244: break;
 	ljmp	00143$
-;	my_oled.c:245: case ',':
+;	my_oled.c:246: case ',':
 00108$:
-;	my_oled.c:246: data[2] = 0x60;
+;	my_oled.c:247: data[2] = 0x60;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x60
-;	my_oled.c:247: data[3] = 0x40;
+;	my_oled.c:248: data[3] = 0x40;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x40
-;	my_oled.c:248: break;
+;	my_oled.c:249: break;
 	ljmp	00143$
-;	my_oled.c:250: case ':':
+;	my_oled.c:251: case ':':
 00109$:
-;	my_oled.c:251: data[2] = 0x36;
+;	my_oled.c:252: data[2] = 0x36;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x36
-;	my_oled.c:252: break;
+;	my_oled.c:253: break;
 	ljmp	00143$
-;	my_oled.c:254: case ';':
+;	my_oled.c:255: case ';':
 00110$:
-;	my_oled.c:255: data[2] = 0x36;
+;	my_oled.c:256: data[2] = 0x36;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x36
-;	my_oled.c:256: data[3] = 0x40;
+;	my_oled.c:257: data[3] = 0x40;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x40
-;	my_oled.c:257: break;
+;	my_oled.c:258: break;
 	ljmp	00143$
-;	my_oled.c:259: case '-':
+;	my_oled.c:260: case '-':
 00111$:
-;	my_oled.c:260: data[0] = 0x08;
+;	my_oled.c:261: data[0] = 0x08;
 	mov	_oled_char_data_10000_47,#0x08
-;	my_oled.c:261: data[1] = 0x08;
+;	my_oled.c:262: data[1] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x08
-;	my_oled.c:262: data[2] = 0x08;
+;	my_oled.c:263: data[2] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
-;	my_oled.c:263: data[3] = 0x08;
+;	my_oled.c:264: data[3] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x08
-;	my_oled.c:264: data[4] = 0x08;
+;	my_oled.c:265: data[4] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0004),#0x08
-;	my_oled.c:265: break;
+;	my_oled.c:266: break;
 	ljmp	00143$
-;	my_oled.c:267: case '_':
+;	my_oled.c:268: case '_':
 00112$:
-;	my_oled.c:268: data[0] = 0x40;
+;	my_oled.c:269: data[0] = 0x40;
 	mov	_oled_char_data_10000_47,#0x40
-;	my_oled.c:269: data[1] = 0x40;
+;	my_oled.c:270: data[1] = 0x40;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x40
-;	my_oled.c:270: data[2] = 0x40;
+;	my_oled.c:271: data[2] = 0x40;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x40
-;	my_oled.c:271: data[3] = 0x40;
+;	my_oled.c:272: data[3] = 0x40;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x40
-;	my_oled.c:272: data[4] = 0x40;
+;	my_oled.c:273: data[4] = 0x40;
 	mov	(_oled_char_data_10000_47 + 0x0004),#0x40
-;	my_oled.c:273: break;
+;	my_oled.c:274: break;
 	ljmp	00143$
-;	my_oled.c:275: case '!':
+;	my_oled.c:276: case '!':
 00113$:
-;	my_oled.c:276: data[2] = 0x5F;
+;	my_oled.c:277: data[2] = 0x5F;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x5f
-;	my_oled.c:277: break;
+;	my_oled.c:278: break;
 	ljmp	00143$
-;	my_oled.c:279: case '?':
+;	my_oled.c:280: case '?':
 00114$:
-;	my_oled.c:280: data[0] = 0x02;
+;	my_oled.c:281: data[0] = 0x02;
 	mov	_oled_char_data_10000_47,#0x02
-;	my_oled.c:281: data[1] = 0x01;
+;	my_oled.c:282: data[1] = 0x01;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x01
-;	my_oled.c:282: data[2] = 0x51;
+;	my_oled.c:283: data[2] = 0x51;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x51
-;	my_oled.c:283: data[3] = 0x09;
+;	my_oled.c:284: data[3] = 0x09;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x09
-;	my_oled.c:284: data[4] = 0x06;
+;	my_oled.c:285: data[4] = 0x06;
 	mov	(_oled_char_data_10000_47 + 0x0004),#0x06
-;	my_oled.c:285: break;
+;	my_oled.c:286: break;
 	ljmp	00143$
-;	my_oled.c:287: case '/':
+;	my_oled.c:288: case '/':
 00115$:
-;	my_oled.c:288: data[0] = 0x20;
+;	my_oled.c:289: data[0] = 0x20;
 	mov	_oled_char_data_10000_47,#0x20
-;	my_oled.c:289: data[1] = 0x10;
+;	my_oled.c:290: data[1] = 0x10;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x10
-;	my_oled.c:290: data[2] = 0x08;
+;	my_oled.c:291: data[2] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
-;	my_oled.c:291: data[3] = 0x04;
+;	my_oled.c:292: data[3] = 0x04;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x04
-;	my_oled.c:292: data[4] = 0x02;
+;	my_oled.c:293: data[4] = 0x02;
 	mov	(_oled_char_data_10000_47 + 0x0004),#0x02
-;	my_oled.c:293: break;
+;	my_oled.c:294: break;
 	ljmp	00143$
-;	my_oled.c:295: case '\\':
+;	my_oled.c:296: case '\\':
 00116$:
-;	my_oled.c:296: data[0] = 0x02;
+;	my_oled.c:297: data[0] = 0x02;
 	mov	_oled_char_data_10000_47,#0x02
-;	my_oled.c:297: data[1] = 0x04;
+;	my_oled.c:298: data[1] = 0x04;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x04
-;	my_oled.c:298: data[2] = 0x08;
+;	my_oled.c:299: data[2] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
-;	my_oled.c:299: data[3] = 0x10;
+;	my_oled.c:300: data[3] = 0x10;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x10
-;	my_oled.c:300: data[4] = 0x20;
+;	my_oled.c:301: data[4] = 0x20;
 	mov	(_oled_char_data_10000_47 + 0x0004),#0x20
-;	my_oled.c:301: break;
+;	my_oled.c:302: break;
 	ljmp	00143$
-;	my_oled.c:303: case '+':
+;	my_oled.c:304: case '+':
 00117$:
-;	my_oled.c:304: data[1] = 0x08;
+;	my_oled.c:305: data[1] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x08
-;	my_oled.c:305: data[2] = 0x1C;
+;	my_oled.c:306: data[2] = 0x1C;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x1c
-;	my_oled.c:306: data[3] = 0x08;
+;	my_oled.c:307: data[3] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x08
-;	my_oled.c:307: break;
+;	my_oled.c:308: break;
 	ljmp	00143$
-;	my_oled.c:309: case '=':
+;	my_oled.c:310: case '=':
 00118$:
-;	my_oled.c:310: data[1] = 0x14;
+;	my_oled.c:311: data[1] = 0x14;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x14
-;	my_oled.c:311: data[2] = 0x14;
+;	my_oled.c:312: data[2] = 0x14;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x14
-;	my_oled.c:312: data[3] = 0x14;
+;	my_oled.c:313: data[3] = 0x14;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x14
-;	my_oled.c:313: break;
+;	my_oled.c:314: break;
 	ljmp	00143$
-;	my_oled.c:315: case '(':
+;	my_oled.c:316: case '(':
 00119$:
-;	my_oled.c:316: data[1] = 0x1C;
+;	my_oled.c:317: data[1] = 0x1C;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x1c
-;	my_oled.c:317: data[2] = 0x22;
+;	my_oled.c:318: data[2] = 0x22;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x22
-;	my_oled.c:318: data[3] = 0x41;
+;	my_oled.c:319: data[3] = 0x41;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x41
-;	my_oled.c:319: break;
+;	my_oled.c:320: break;
 	ljmp	00143$
-;	my_oled.c:321: case ')':
+;	my_oled.c:322: case ')':
 00120$:
-;	my_oled.c:322: data[1] = 0x41;
+;	my_oled.c:323: data[1] = 0x41;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x41
-;	my_oled.c:323: data[2] = 0x22;
+;	my_oled.c:324: data[2] = 0x22;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x22
-;	my_oled.c:324: data[3] = 0x1C;
+;	my_oled.c:325: data[3] = 0x1C;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x1c
-;	my_oled.c:325: break;
+;	my_oled.c:326: break;
 	ljmp	00143$
-;	my_oled.c:327: case '%':
+;	my_oled.c:328: case '%':
 00121$:
-;	my_oled.c:328: data[0] = 0x23;
+;	my_oled.c:329: data[0] = 0x23;
 	mov	_oled_char_data_10000_47,#0x23
-;	my_oled.c:329: data[1] = 0x13;
+;	my_oled.c:330: data[1] = 0x13;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x13
-;	my_oled.c:330: data[2] = 0x08;
+;	my_oled.c:331: data[2] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
-;	my_oled.c:331: data[3] = 0x64;
+;	my_oled.c:332: data[3] = 0x64;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x64
-;	my_oled.c:332: data[4] = 0x62;
+;	my_oled.c:333: data[4] = 0x62;
 	mov	(_oled_char_data_10000_47 + 0x0004),#0x62
-;	my_oled.c:333: break;
+;	my_oled.c:334: break;
 	ljmp	00143$
-;	my_oled.c:335: case '\'':
+;	my_oled.c:336: case '\'':
 00122$:
-;	my_oled.c:336: data[2] = 0x07;
+;	my_oled.c:337: data[2] = 0x07;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x07
-;	my_oled.c:337: break;
-;	my_oled.c:339: case 0x22:     /* for char ' " ' */
+;	my_oled.c:338: break;
+;	my_oled.c:340: case 0x22:     /* for char ' " ' */
 	sjmp	00143$
 00123$:
-;	my_oled.c:340: data[1] = 0x03;
+;	my_oled.c:341: data[1] = 0x03;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x03
-;	my_oled.c:341: data[3] = 0x03;
+;	my_oled.c:342: data[3] = 0x03;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x03
-;	my_oled.c:342: break;
-;	my_oled.c:344: case '*':
+;	my_oled.c:343: break;
+;	my_oled.c:345: case '*':
 	sjmp	00143$
 00124$:
-;	my_oled.c:345: data[1] = 0x14;
+;	my_oled.c:346: data[1] = 0x14;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x14
-;	my_oled.c:346: data[2] = 0x08;
+;	my_oled.c:347: data[2] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
-;	my_oled.c:347: data[3] = 0x14;
+;	my_oled.c:348: data[3] = 0x14;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x14
-;	my_oled.c:348: break;
-;	my_oled.c:350: case '#':
+;	my_oled.c:349: break;
+;	my_oled.c:351: case '#':
 	sjmp	00143$
 00125$:
-;	my_oled.c:351: data[0] = 0x14;
+;	my_oled.c:352: data[0] = 0x14;
 	mov	_oled_char_data_10000_47,#0x14
-;	my_oled.c:352: data[1] = 0x7F;
+;	my_oled.c:353: data[1] = 0x7F;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x7f
-;	my_oled.c:353: data[2] = 0x14;
+;	my_oled.c:354: data[2] = 0x14;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x14
-;	my_oled.c:354: data[3] = 0x7F;
+;	my_oled.c:355: data[3] = 0x7F;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x7f
-;	my_oled.c:355: data[4] = 0x14;
+;	my_oled.c:356: data[4] = 0x14;
 	mov	(_oled_char_data_10000_47 + 0x0004),#0x14
-;	my_oled.c:356: break;
-;	my_oled.c:358: case '<':
+;	my_oled.c:357: break;
+;	my_oled.c:359: case '<':
 	sjmp	00143$
 00126$:
-;	my_oled.c:359: data[0] = 0x08;
+;	my_oled.c:360: data[0] = 0x08;
 	mov	_oled_char_data_10000_47,#0x08
-;	my_oled.c:360: data[1] = 0x14;
+;	my_oled.c:361: data[1] = 0x14;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x14
-;	my_oled.c:361: data[2] = 0x22;
+;	my_oled.c:362: data[2] = 0x22;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x22
-;	my_oled.c:362: data[3] = 0x41;
+;	my_oled.c:363: data[3] = 0x41;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x41
-;	my_oled.c:363: break;
-;	my_oled.c:365: case '>':
+;	my_oled.c:364: break;
+;	my_oled.c:366: case '>':
 	sjmp	00143$
 00127$:
-;	my_oled.c:366: data[0] = 0x41;
+;	my_oled.c:367: data[0] = 0x41;
 	mov	_oled_char_data_10000_47,#0x41
-;	my_oled.c:367: data[1] = 0x22;
+;	my_oled.c:368: data[1] = 0x22;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x22
-;	my_oled.c:368: data[2] = 0x14;
+;	my_oled.c:369: data[2] = 0x14;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x14
-;	my_oled.c:369: data[3] = 0x08;
+;	my_oled.c:370: data[3] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x08
-;	my_oled.c:370: break;
-;	my_oled.c:372: case '|':
+;	my_oled.c:371: break;
+;	my_oled.c:373: case '|':
 	sjmp	00143$
 00128$:
-;	my_oled.c:373: data[2] = 0x7F;
+;	my_oled.c:374: data[2] = 0x7F;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x7f
-;	my_oled.c:374: break;
-;	my_oled.c:376: case '[':
+;	my_oled.c:375: break;
+;	my_oled.c:377: case '[':
 	sjmp	00143$
 00129$:
-;	my_oled.c:377: data[1] = 0x7F;
+;	my_oled.c:378: data[1] = 0x7F;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x7f
-;	my_oled.c:378: data[2] = 0x41;
+;	my_oled.c:379: data[2] = 0x41;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x41
-;	my_oled.c:379: break;
-;	my_oled.c:381: case ']':
+;	my_oled.c:380: break;
+;	my_oled.c:382: case ']':
 	sjmp	00143$
 00130$:
-;	my_oled.c:382: data[2] = 0x41;
+;	my_oled.c:383: data[2] = 0x41;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x41
-;	my_oled.c:383: data[3] = 0x7F;
+;	my_oled.c:384: data[3] = 0x7F;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x7f
-;	my_oled.c:384: break;
-;	my_oled.c:386: case '{':
+;	my_oled.c:385: break;
+;	my_oled.c:387: case '{':
 	sjmp	00143$
 00131$:
-;	my_oled.c:387: data[1] = 0x08;
+;	my_oled.c:388: data[1] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x08
-;	my_oled.c:388: data[2] = 0x36;
+;	my_oled.c:389: data[2] = 0x36;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x36
-;	my_oled.c:389: data[3] = 0x41;
+;	my_oled.c:390: data[3] = 0x41;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x41
-;	my_oled.c:390: break;
-;	my_oled.c:392: case '}':
+;	my_oled.c:391: break;
+;	my_oled.c:393: case '}':
 	sjmp	00143$
 00132$:
-;	my_oled.c:393: data[1] = 0x41;
+;	my_oled.c:394: data[1] = 0x41;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x41
-;	my_oled.c:394: data[2] = 0x36;
+;	my_oled.c:395: data[2] = 0x36;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x36
-;	my_oled.c:395: data[3] = 0x08;
+;	my_oled.c:396: data[3] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x08
-;	my_oled.c:396: break;
-;	my_oled.c:398: case '~':
+;	my_oled.c:397: break;
+;	my_oled.c:399: case '~':
 	sjmp	00143$
 00133$:
-;	my_oled.c:399: data[0] = 0x08;
+;	my_oled.c:400: data[0] = 0x08;
 	mov	_oled_char_data_10000_47,#0x08
-;	my_oled.c:400: data[1] = 0x04;
+;	my_oled.c:401: data[1] = 0x04;
 	mov	(_oled_char_data_10000_47 + 0x0001),#0x04
-;	my_oled.c:401: data[2] = 0x08;
+;	my_oled.c:402: data[2] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
-;	my_oled.c:402: data[3] = 0x10;
+;	my_oled.c:403: data[3] = 0x10;
 	mov	(_oled_char_data_10000_47 + 0x0003),#0x10
-;	my_oled.c:403: data[4] = 0x08;
+;	my_oled.c:404: data[4] = 0x08;
 	mov	(_oled_char_data_10000_47 + 0x0004),#0x08
-;	my_oled.c:409: }
+;	my_oled.c:410: }
 00143$:
-;	my_oled.c:412: if((unsigned int)oled_column + 6 > 128)
+;	my_oled.c:413: if((unsigned int)oled_column + 6 > 128)
 	mov	r6,_oled_column
 	mov	r7,#0x00
 	mov	a,#0x06
@@ -1517,55 +1517,55 @@ _oled_char:
 	subb	a,r7
 	jnc	00148$
 ;	free result
-;	my_oled.c:414: oled_page++;
+;	my_oled.c:415: oled_page++;
 	inc	_oled_page
-;	my_oled.c:415: oled_column = 0;
+;	my_oled.c:416: oled_column = 0;
 	mov	_oled_column,#0x00
-;	my_oled.c:417: if(oled_page > 7)
+;	my_oled.c:418: if(oled_page > 7)
 	mov	a,_oled_page
 	add	a,#0xff - 0x07
 	jnc	00146$
 ;	free result
-;	my_oled.c:418: oled_page = 0;
+;	my_oled.c:419: oled_page = 0;
 	mov	_oled_page,#0x00
 00146$:
-;	my_oled.c:420: oled_set_position(oled_page, oled_column);
+;	my_oled.c:421: oled_set_position(oled_page, oled_column);
 	mov	_oled_set_position_PARM_2,#0x00
 	mov	dpl, _oled_page
 	lcall	_oled_set_position
 00148$:
-;	my_oled.c:423: i2c_write_transaction(0x40, data, 6);
+;	my_oled.c:424: i2c_write_transaction(0x40, data, 6);
 	mov	_i2c_write_transaction_PARM_2,#_oled_char_data_10000_47
 	mov	(_i2c_write_transaction_PARM_2 + 1),#0x00
 	mov	(_i2c_write_transaction_PARM_2 + 2),#0x40
 	mov	_i2c_write_transaction_PARM_3,#0x06
 	mov	dpl, #0x40
 	lcall	_i2c_write_transaction
-;	my_oled.c:424: oled_column += 6;
+;	my_oled.c:425: oled_column += 6;
 	mov	r7,_oled_column
 	mov	a,#0x06
 	add	a, r7
-;	my_oled.c:426: if(oled_column >= 128)
+;	my_oled.c:427: if(oled_column >= 128)
 	mov	_oled_column,a
 	clr	c
 	subb	a,#0x80
 	jc	00159$
-;	my_oled.c:428: oled_column = 0;
+;	my_oled.c:429: oled_column = 0;
 	mov	_oled_column,#0x00
-;	my_oled.c:429: oled_page++;
+;	my_oled.c:430: oled_page++;
 	inc	_oled_page
-;	my_oled.c:431: if(oled_page > 7)
+;	my_oled.c:432: if(oled_page > 7)
 	mov	a,_oled_page
 	add	a,#0xff - 0x07
 	jnc	00150$
 ;	free result
-;	my_oled.c:432: oled_page = 0;
+;	my_oled.c:433: oled_page = 0;
 	mov	_oled_page,#0x00
 00150$:
-;	my_oled.c:434: oled_set_position(oled_page, oled_column);
+;	my_oled.c:435: oled_set_position(oled_page, oled_column);
 	mov	_oled_set_position_PARM_2,#0x00
 	mov	dpl, _oled_page
-;	my_oled.c:436: }
+;	my_oled.c:437: }
 	ljmp	_oled_set_position
 00159$:
 	ret
@@ -1574,7 +1574,7 @@ _oled_char:
 ;------------------------------------------------------------
 ;str           Allocated to registers r5 r6 r7 
 ;------------------------------------------------------------
-;	my_oled.c:438: void oled_string(char *str)
+;	my_oled.c:439: void oled_string(char *str)
 ;	-----------------------------------------
 ;	 function oled_string
 ;	-----------------------------------------
@@ -1582,7 +1582,7 @@ _oled_string:
 	mov	r5, dpl
 	mov	r6, dph
 	mov	r7, b
-;	my_oled.c:440: while(*str)
+;	my_oled.c:441: while(*str)
 00109$:
 	mov	dpl,r5
 	mov	dph,r6
@@ -1590,21 +1590,21 @@ _oled_string:
 	lcall	__gptrget
 	mov	r4,a
 	jz	00112$
-;	my_oled.c:442: if(*str == '\n')
+;	my_oled.c:443: if(*str == '\n')
 	cjne	r4,#0x0a,00107$
-;	my_oled.c:444: oled_page++;
+;	my_oled.c:445: oled_page++;
 	inc	_oled_page
-;	my_oled.c:446: if(oled_page > 7)
+;	my_oled.c:447: if(oled_page > 7)
 	mov	a,_oled_page
 	add	a,#0xff - 0x07
 	jnc	00102$
 ;	free result
-;	my_oled.c:447: oled_page = 0;
+;	my_oled.c:448: oled_page = 0;
 	mov	_oled_page,#0x00
 00102$:
-;	my_oled.c:449: oled_column = 0;
+;	my_oled.c:450: oled_column = 0;
 	mov	_oled_column,#0x00
-;	my_oled.c:450: oled_set_position(oled_page, oled_column);
+;	my_oled.c:451: oled_set_position(oled_page, oled_column);
 	mov	_oled_set_position_PARM_2,#0x00
 	mov	dpl, _oled_page
 	push	ar7
@@ -1614,17 +1614,17 @@ _oled_string:
 	pop	ar5
 	pop	ar6
 	pop	ar7
-;	my_oled.c:451: str++;
+;	my_oled.c:452: str++;
 	inc	r5
 	cjne	r5,#0x00,00109$
 	inc	r6
 	sjmp	00109$
 00107$:
-;	my_oled.c:453: else if(*str == '\r')
+;	my_oled.c:454: else if(*str == '\r')
 	cjne	r4,#0x0d,00104$
-;	my_oled.c:455: oled_column = 0;
+;	my_oled.c:456: oled_column = 0;
 	mov	_oled_column,#0x00
-;	my_oled.c:456: oled_set_position(oled_page, oled_column);
+;	my_oled.c:457: oled_set_position(oled_page, oled_column);
 	mov	_oled_set_position_PARM_2,#0x00
 	mov	dpl, _oled_page
 	push	ar7
@@ -1634,13 +1634,13 @@ _oled_string:
 	pop	ar5
 	pop	ar6
 	pop	ar7
-;	my_oled.c:457: str++;
+;	my_oled.c:458: str++;
 	inc	r5
 	cjne	r5,#0x00,00109$
 	inc	r6
 	sjmp	00109$
 00104$:
-;	my_oled.c:461: oled_char((unsigned char)*str++);
+;	my_oled.c:462: oled_char((unsigned char)*str++);
 	mov	dpl,r4
 	inc	r5
 	cjne	r5,#0x00,00157$
@@ -1655,7 +1655,7 @@ _oled_string:
 	pop	ar7
 	sjmp	00109$
 00112$:
-;	my_oled.c:464: }
+;	my_oled.c:465: }
 	ret
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
@@ -1797,50 +1797,50 @@ _font5x7:
 	.db #0x51	; 81	'Q'
 	.db #0x3e	; 62
 	.db #0x00	; 0
-	.db #0x21	; 33
-	.db #0x7f	; 127
-	.db #0x01	; 1
-	.db #0x00	; 0
-	.db #0x23	; 35
-	.db #0x45	; 69	'E'
-	.db #0x49	; 73	'I'
-	.db #0x51	; 81	'Q'
-	.db #0x21	; 33
 	.db #0x42	; 66	'B'
-	.db #0x41	; 65	'A'
-	.db #0x51	; 81	'Q'
-	.db #0x69	; 105	'i'
-	.db #0x46	; 70	'F'
-	.db #0x0c	; 12
-	.db #0x14	; 20
-	.db #0x24	; 36
 	.db #0x7f	; 127
-	.db #0x04	; 4
-	.db #0x72	; 114	'r'
-	.db #0x51	; 81	'Q'
-	.db #0x51	; 81	'Q'
-	.db #0x51	; 81	'Q'
-	.db #0x4e	; 78	'N'
-	.db #0x1e	; 30
-	.db #0x29	; 41
-	.db #0x49	; 73	'I'
-	.db #0x49	; 73	'I'
-	.db #0x06	; 6
 	.db #0x40	; 64
-	.db #0x47	; 71	'G'
-	.db #0x48	; 72	'H'
-	.db #0x50	; 80	'P'
-	.db #0x60	; 96
-	.db #0x36	; 54	'6'
+	.db #0x00	; 0
+	.db #0x42	; 66	'B'
+	.db #0x61	; 97	'a'
+	.db #0x51	; 81	'Q'
 	.db #0x49	; 73	'I'
-	.db #0x49	; 73	'I'
-	.db #0x49	; 73	'I'
-	.db #0x36	; 54	'6'
-	.db #0x30	; 48	'0'
-	.db #0x49	; 73	'I'
-	.db #0x49	; 73	'I'
-	.db #0x4a	; 74	'J'
+	.db #0x46	; 70	'F'
+	.db #0x21	; 33
+	.db #0x41	; 65	'A'
+	.db #0x45	; 69	'E'
+	.db #0x4b	; 75	'K'
+	.db #0x31	; 49	'1'
+	.db #0x18	; 24
+	.db #0x14	; 20
+	.db #0x12	; 18
+	.db #0x7f	; 127
+	.db #0x10	; 16
+	.db #0x27	; 39
+	.db #0x45	; 69	'E'
+	.db #0x45	; 69	'E'
+	.db #0x45	; 69	'E'
+	.db #0x39	; 57	'9'
 	.db #0x3c	; 60
+	.db #0x4a	; 74	'J'
+	.db #0x49	; 73	'I'
+	.db #0x49	; 73	'I'
+	.db #0x30	; 48	'0'
+	.db #0x01	; 1
+	.db #0x71	; 113	'q'
+	.db #0x09	; 9
+	.db #0x05	; 5
+	.db #0x03	; 3
+	.db #0x36	; 54	'6'
+	.db #0x49	; 73	'I'
+	.db #0x49	; 73	'I'
+	.db #0x49	; 73	'I'
+	.db #0x36	; 54	'6'
+	.db #0x06	; 6
+	.db #0x49	; 73	'I'
+	.db #0x49	; 73	'I'
+	.db #0x29	; 41
+	.db #0x1e	; 30
 	.area CSEG    (CODE)
 	.area XINIT   (CODE)
 	.area CABS    (ABS,CODE)

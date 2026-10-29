@@ -29,7 +29,7 @@
                     android:layout_height="wrap_content"
                     android:text="Appliance Safety"
                     android:textColor="#172033"
-                    android:textSize="25sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -38,7 +38,7 @@
                     android:layout_marginTop="5dp"
                     android:text="Device AP001"
                     android:textColor="#687386"
-                    android:textSize="15sp" />
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
