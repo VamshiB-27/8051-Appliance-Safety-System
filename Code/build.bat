@@ -22,7 +22,7 @@ set "OBJECTS="
 for %%F in (*.c) do (
     echo.
     echo Compiling %%F...
-    sdcc -mmcs51 --iram-size 128 --xram-size 0 --code-size 4096 --nooverlay --noinduction --std-sdcc89 --model-small -c "%%F"
+    sdcc -mmcs51 --model-small --iram-size 128 --xram-size 0 --code-size 32768 --noinduction --std-sdcc89 -c "%%F"
     if errorlevel 1 goto error
     set "OBJECTS=!OBJECTS! %%~nF.rel"
 )
@@ -34,7 +34,7 @@ if not defined OBJECTS (
 
 echo.
 echo Linking project...
-sdcc -mmcs51 --iram-size 128 --xram-size 0 --code-size 4096 --nooverlay --noinduction --std-sdcc89 --model-small !OBJECTS!
+sdcc -mmcs51 --model-small --iram-size 128 --xram-size 0 --code-size 32768 --noinduction --std-sdcc89 !OBJECTS!
 if errorlevel 1 goto error
 
 if not exist main.ihx (

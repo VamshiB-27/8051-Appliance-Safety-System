@@ -3,7 +3,7 @@
 -M
 -I 0x0080
 -X 0x0000
--C 0x1000
+-C 0x8000
 -b HOME = 0x0000
 -b XSEG = 0x0001
 -b PSEG = 0x0001
@@ -17,7 +17,6 @@
 -l libfloat
 main.rel
 mcu_config.rel
-my_lcd.rel
 my_oled.rel
 my_uart.rel
 
