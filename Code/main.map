@@ -44,19 +44,19 @@ C:   00000001  s_XSEG
 C:   00000003  l_GSFINAL                       
 C:   00000003  l_GSINIT0                       
 C:   00000004  l_OSEG                          
-C:   00000005  l_SSEG                          
 C:   00000008  l_REG_BANK_0                    
 C:   00000008  s_REG_BANK_1                    
 C:   0000000A  l_GSINIT2                       
 C:   00000010  s_REG_BANK_2                    
 C:   00000018  s_BIT_BANK                      
 C:   00000018  s_REG_BANK_3                    
-C:   0000001C  l_GSINIT                        
+C:   0000001A  l_GSINIT                        
 C:   00000020  s_BSEG_BYTES                    
 C:   00000020  s__CODE                         
 C:   00000022  l_GSINIT3                       
+C:   00000027  l_SSEG                          
 C:   0000002A  l_GSINIT4                       
-C:   00000056  l_HOME                          
+C:   00000055  s_OSEG                          
 ASxxxx Linker V05.50.4-SDLD,  page 2.
 Hexadecimal  [32-Bits]
 
@@ -66,23 +66,23 @@ CABS                                00000000    00000000 =           0. bytes (A
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
+C:   00000056  l_HOME                          
 C:   00000056  s_GSINIT0                       
 C:   00000059  s_GSINIT1                       
 C:   00000059  s_GSINIT2                       
+C:   00000059  s_SSEG                          
 C:   00000063  s_GSINIT3                       
-C:   00000077  s_OSEG                          
-C:   0000007B  s_SSEG                          
 C:   00000080  l_DSEG                          
 C:   00000080  l_IRAM                          
 C:   00000085  s_GSINIT4                       
 C:   000000AF  s_GSINIT                        
 C:   000000AF  s_GSINIT5                       
-C:   000000CB  s_GSFINAL                       
-C:   000000CE  s_CSEG                          
-C:   00000185  l_CONST                         
-C:   00000F72  l_CSEG                          
-C:   00001040  s_CONST                         
-C:   000011C5  s_XINIT                         
+C:   000000C9  s_GSFINAL                       
+C:   000000CC  s_CSEG                          
+C:   00000182  l_CONST                         
+C:   0000111B  l_CSEG                          
+C:   000011E7  s_CONST                         
+C:   00001369  s_XINIT                         
 
 ASxxxx Linker V05.50.4-SDLD,  page 3.
 Hexadecimal  [32-Bits]
@@ -354,34 +354,32 @@ DSEG                                00000000    00000080 =         128. bytes (R
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
      00000008  _delay_time_ms                     main
-     0000000C  _time_ms                           main
-     0000005E  _oled_set_position_PARM_2          my_oled
-     00000075  _uart_write_buffer_PARM_2          my_uart
-
+     0000003C  _oled_set_position_PARM_2          my_oled
+     00000053  _uart_write_buffer_PARM_2          my_uart
 ASxxxx Linker V05.50.4-SDLD,  page 10.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-OSEG                                00000077    00000004 =           4. bytes (REL,OVR)
+OSEG                                00000055    00000004 =           4. bytes (REL,OVR)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
-     00000077  __divslong_PARM_2                  _divulong
-     00000077  __divulong_PARM_2                  _divulong
-     00000077  __gptrput_PARM_2                   _gptrput
-     00000077  __mullong_PARM_2                   _mullong
+     00000055  __divslong_PARM_2                  _divulong
+     00000055  __divulong_PARM_2                  _divulong
+     00000055  __gptrput_PARM_2                   _gptrput
+     00000055  __mullong_PARM_2                   _mullong
 
 ASxxxx Linker V05.50.4-SDLD,  page 11.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-SSEG                                0000007B    00000005 =           5. bytes (REL,OVR)
+SSEG                                00000059    00000027 =          39. bytes (REL,OVR)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
-     0000007B  __start__stack                     main
+     00000059  __start__stack                     main
 
 ASxxxx Linker V05.50.4-SDLD,  page 12.
 Hexadecimal  [32-Bits]
@@ -446,7 +444,7 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-GSINIT                              000000AF    0000001C =          28. bytes (REL,CON,CODE)
+GSINIT                              000000AF    0000001A =          26. bytes (REL,CON,CODE)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
@@ -455,7 +453,7 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-GSFINAL                             000000CB    00000003 =           3. bytes (REL,CON,CODE)
+GSFINAL                             000000C9    00000003 =           3. bytes (REL,CON,CODE)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
@@ -464,45 +462,45 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-CSEG                                000000CE    00000F72 =        3954. bytes (REL,CON,CODE)
+CSEG                                000000CC    0000111B =        4379. bytes (REL,CON,CODE)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
-C:   000000CE  _delay_us                          main
-C:   000000E6  _delay_ms                          main
-C:   00000106  _timer0_isr                        main
-C:   000007D0  _main                              main
-C:   00000824  _timer0_init                       mcu_config
-C:   0000083F  _i2c_start                         my_oled
-C:   0000084E  _i2c_stop                          my_oled
-C:   0000085A  _i2c_write                         my_oled
-C:   0000090B  _oled_command                      my_oled
-C:   00000920  _oled_data                         my_oled
-C:   00000935  _oled_set_position                 my_oled
-C:   00000972  _oled_clear                        my_oled
-C:   000009C4  _oled_init                         my_oled
-C:   00000A73  _oled_char                         my_oled
-C:   00000D40  _oled_string                       my_oled
-C:   00000DBA  _uart_init                         my_uart
-C:   00000E75  _uart_write_byte                   my_uart
-C:   00000E7E  _uart_write_buffer                 my_uart
-C:   00000EC3  _uart_write_string                 my_uart
-C:   00000EEE  _uart_available                    my_uart
-C:   00000EFA  _uart_read_byte                    my_uart
-C:   00000F18  _uart_read_byte_blocking           my_uart
-C:   00000F32  __divulong                         _divulong
-C:   00000F97  __gptrput                          _gptrput
-C:   00000FB2  __mullong                          _mullong
-C:   00000FB2  __mullong_dummy                    _mullong
-C:   00001020  __gptrget                          _gptrget
-C:   0000103C  ___sdcc_external_startup           _startup
+C:   000000CC  _delay_us                          main
+C:   000000E4  _delay_ms                          main
+C:   00000104  _timer0_isr                        main
+C:   0000097C  _main                              main
+C:   000009CB  _timer0_init                       mcu_config
+C:   000009E6  _i2c_start                         my_oled
+C:   000009F5  _i2c_stop                          my_oled
+C:   00000A01  _i2c_write                         my_oled
+C:   00000AB2  _oled_command                      my_oled
+C:   00000AC7  _oled_data                         my_oled
+C:   00000ADC  _oled_set_position                 my_oled
+C:   00000B19  _oled_clear                        my_oled
+C:   00000B6B  _oled_init                         my_oled
+C:   00000C1A  _oled_char                         my_oled
+C:   00000EE7  _oled_string                       my_oled
+C:   00000F61  _uart_init                         my_uart
+C:   0000101C  _uart_write_byte                   my_uart
+C:   00001025  _uart_write_buffer                 my_uart
+C:   0000106A  _uart_write_string                 my_uart
+C:   00001095  _uart_available                    my_uart
+C:   000010A1  _uart_read_byte                    my_uart
+C:   000010BF  _uart_read_byte_blocking           my_uart
+C:   000010D9  __divulong                         _divulong
+C:   0000113E  __gptrput                          _gptrput
+C:   00001159  __mullong                          _mullong
+C:   00001159  __mullong_dummy                    _mullong
+C:   000011C7  __gptrget                          _gptrget
+C:   000011E3  ___sdcc_external_startup           _startup
 
 ASxxxx Linker V05.50.4-SDLD,  page 20.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-CONST                               00001040    00000185 =         389. bytes (REL,CON,CODE)
+CONST                               000011E7    00000182 =         386. bytes (REL,CON,CODE)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------

@@ -440,24 +440,24 @@
                                     440 ; internal ram data
                                     441 ;--------------------------------------------------------
                                     442 	.area DSEG    (DATA)
-      000056                        443 _oled_page:
-      000056                        444 	.ds 1
-      000057                        445 _oled_column:
-      000057                        446 	.ds 1
-      000058                        447 _i2c_write_transaction_PARM_2:
-      000058                        448 	.ds 3
-      00005B                        449 _i2c_write_transaction_PARM_3:
-      00005B                        450 	.ds 1
-      00005C                        451 _oled_command_cmd_10000_30:
-      00005C                        452 	.ds 1
-      00005D                        453 _oled_data_dat_10000_32:
-      00005D                        454 	.ds 1
-      00005E                        455 _oled_set_position_PARM_2:
-      00005E                        456 	.ds 1
-      00005F                        457 _oled_clear_zeros_10000_39:
-      00005F                        458 	.ds 16
-      00006F                        459 _oled_char_data_10000_47:
-      00006F                        460 	.ds 6
+      000034                        443 _oled_page:
+      000034                        444 	.ds 1
+      000035                        445 _oled_column:
+      000035                        446 	.ds 1
+      000036                        447 _i2c_write_transaction_PARM_2:
+      000036                        448 	.ds 3
+      000039                        449 _i2c_write_transaction_PARM_3:
+      000039                        450 	.ds 1
+      00003A                        451 _oled_command_cmd_10000_30:
+      00003A                        452 	.ds 1
+      00003B                        453 _oled_data_dat_10000_32:
+      00003B                        454 	.ds 1
+      00003C                        455 _oled_set_position_PARM_2:
+      00003C                        456 	.ds 1
+      00003D                        457 _oled_clear_zeros_10000_39:
+      00003D                        458 	.ds 16
+      00004D                        459 _oled_char_data_10000_47:
+      00004D                        460 	.ds 6
                                     461 ;--------------------------------------------------------
                                     462 ; overlayable items in internal ram
                                     463 ;--------------------------------------------------------
@@ -508,9 +508,9 @@
                                     508 	.area GSFINAL (CODE)
                                     509 	.area GSINIT  (CODE)
                                     510 ;	my_oled.c:9: static unsigned char oled_page = 0;
-      0000C5 75 56 00         [24]  511 	mov	_oled_page,#0x00
+      0000C3 75 34 00         [24]  511 	mov	_oled_page,#0x00
                                     512 ;	my_oled.c:10: static unsigned char oled_column = 0;
-      0000C8 75 57 00         [24]  513 	mov	_oled_column,#0x00
+      0000C6 75 35 00         [24]  513 	mov	_oled_column,#0x00
                                     514 ;--------------------------------------------------------
                                     515 ; Home
                                     516 ;--------------------------------------------------------
@@ -527,7 +527,7 @@
                                     527 ;	-----------------------------------------
                                     528 ;	 function i2c_delay
                                     529 ;	-----------------------------------------
-      000839                        530 _i2c_delay:
+      0009E0                        530 _i2c_delay:
                            000007   531 	ar7 = 0x07
                            000006   532 	ar6 = 0x06
                            000005   533 	ar5 = 0x05
@@ -537,9 +537,9 @@
                            000001   537 	ar1 = 0x01
                            000000   538 	ar0 = 0x00
                                     539 ;	my_oled.c:54: delay_us(5);
-      000839 90 00 05         [24]  540 	mov	dptr,#0x0005
+      0009E0 90 00 05         [24]  540 	mov	dptr,#0x0005
                                     541 ;	my_oled.c:55: }
-      00083C 02 00 CE         [24]  542 	ljmp	_delay_us
+      0009E3 02 00 CC         [24]  542 	ljmp	_delay_us
                                     543 ;------------------------------------------------------------
                                     544 ;Allocation info for local variables in function 'i2c_start'
                                     545 ;------------------------------------------------------------
@@ -547,25 +547,25 @@
                                     547 ;	-----------------------------------------
                                     548 ;	 function i2c_start
                                     549 ;	-----------------------------------------
-      00083F                        550 _i2c_start:
+      0009E6                        550 _i2c_start:
                                     551 ;	my_oled.c:59: OLED_SDA = 1;
                                     552 ;	assignBit
-      00083F D2 C1            [12]  553 	setb	_P4_1
+      0009E6 D2 C1            [12]  553 	setb	_P4_1
                                     554 ;	my_oled.c:60: OLED_SCL = 1;
                                     555 ;	assignBit
-      000841 D2 C0            [12]  556 	setb	_P4_0
+      0009E8 D2 C0            [12]  556 	setb	_P4_0
                                     557 ;	my_oled.c:61: i2c_delay();
-      000843 12 08 39         [24]  558 	lcall	_i2c_delay
+      0009EA 12 09 E0         [24]  558 	lcall	_i2c_delay
                                     559 ;	my_oled.c:62: OLED_SDA = 0;
                                     560 ;	assignBit
-      000846 C2 C1            [12]  561 	clr	_P4_1
+      0009ED C2 C1            [12]  561 	clr	_P4_1
                                     562 ;	my_oled.c:63: i2c_delay();
-      000848 12 08 39         [24]  563 	lcall	_i2c_delay
+      0009EF 12 09 E0         [24]  563 	lcall	_i2c_delay
                                     564 ;	my_oled.c:64: OLED_SCL = 0;
                                     565 ;	assignBit
-      00084B C2 C0            [12]  566 	clr	_P4_0
+      0009F2 C2 C0            [12]  566 	clr	_P4_0
                                     567 ;	my_oled.c:65: }
-      00084D 22               [24]  568 	ret
+      0009F4 22               [24]  568 	ret
                                     569 ;------------------------------------------------------------
                                     570 ;Allocation info for local variables in function 'i2c_stop'
                                     571 ;------------------------------------------------------------
@@ -573,21 +573,21 @@
                                     573 ;	-----------------------------------------
                                     574 ;	 function i2c_stop
                                     575 ;	-----------------------------------------
-      00084E                        576 _i2c_stop:
+      0009F5                        576 _i2c_stop:
                                     577 ;	my_oled.c:69: OLED_SDA = 0;
                                     578 ;	assignBit
-      00084E C2 C1            [12]  579 	clr	_P4_1
+      0009F5 C2 C1            [12]  579 	clr	_P4_1
                                     580 ;	my_oled.c:70: OLED_SCL = 1;
                                     581 ;	assignBit
-      000850 D2 C0            [12]  582 	setb	_P4_0
+      0009F7 D2 C0            [12]  582 	setb	_P4_0
                                     583 ;	my_oled.c:71: i2c_delay();
-      000852 12 08 39         [24]  584 	lcall	_i2c_delay
+      0009F9 12 09 E0         [24]  584 	lcall	_i2c_delay
                                     585 ;	my_oled.c:72: OLED_SDA = 1;
                                     586 ;	assignBit
-      000855 D2 C1            [12]  587 	setb	_P4_1
+      0009FC D2 C1            [12]  587 	setb	_P4_1
                                     588 ;	my_oled.c:73: i2c_delay();
                                     589 ;	my_oled.c:74: }
-      000857 02 08 39         [24]  590 	ljmp	_i2c_delay
+      0009FE 02 09 E0         [24]  590 	ljmp	_i2c_delay
                                     591 ;------------------------------------------------------------
                                     592 ;Allocation info for local variables in function 'i2c_write'
                                     593 ;------------------------------------------------------------
@@ -599,71 +599,71 @@
                                     599 ;	-----------------------------------------
                                     600 ;	 function i2c_write
                                     601 ;	-----------------------------------------
-      00085A                        602 _i2c_write:
-      00085A AF 82            [24]  603 	mov	r7, dpl
+      000A01                        602 _i2c_write:
+      000A01 AF 82            [24]  603 	mov	r7, dpl
                                     604 ;	my_oled.c:81: for(i = 0; i < 8; i++)
-      00085C 7E 00            [12]  605 	mov	r6,#0x00
-      00085E                        606 00102$:
+      000A03 7E 00            [12]  605 	mov	r6,#0x00
+      000A05                        606 00102$:
                                     607 ;	my_oled.c:83: OLED_SDA = (dat & 0x80) ? 1 : 0;
-      00085E 8F 05            [24]  608 	mov	ar5,r7
-      000860 53 05 80         [24]  609 	anl	ar5,#0x80
+      000A05 8F 05            [24]  608 	mov	ar5,r7
+      000A07 53 05 80         [24]  609 	anl	ar5,#0x80
                                     610 ;	assignBit
-      000863 ED               [12]  611 	mov	a,r5
-      000864 24 FF            [12]  612 	add	a,#0xff
-      000866 92 C1            [24]  613 	mov	_P4_1,c
+      000A0A ED               [12]  611 	mov	a,r5
+      000A0B 24 FF            [12]  612 	add	a,#0xff
+      000A0D 92 C1            [24]  613 	mov	_P4_1,c
                                     614 ;	my_oled.c:84: i2c_delay();
-      000868 C0 07            [24]  615 	push	ar7
-      00086A C0 06            [24]  616 	push	ar6
-      00086C 12 08 39         [24]  617 	lcall	_i2c_delay
+      000A0F C0 07            [24]  615 	push	ar7
+      000A11 C0 06            [24]  616 	push	ar6
+      000A13 12 09 E0         [24]  617 	lcall	_i2c_delay
                                     618 ;	my_oled.c:85: OLED_SCL = 1;
                                     619 ;	assignBit
-      00086F D2 C0            [12]  620 	setb	_P4_0
+      000A16 D2 C0            [12]  620 	setb	_P4_0
                                     621 ;	my_oled.c:86: i2c_delay();
-      000871 12 08 39         [24]  622 	lcall	_i2c_delay
-      000874 D0 06            [24]  623 	pop	ar6
-      000876 D0 07            [24]  624 	pop	ar7
+      000A18 12 09 E0         [24]  622 	lcall	_i2c_delay
+      000A1B D0 06            [24]  623 	pop	ar6
+      000A1D D0 07            [24]  624 	pop	ar7
                                     625 ;	my_oled.c:87: OLED_SCL = 0;
                                     626 ;	assignBit
-      000878 C2 C0            [12]  627 	clr	_P4_0
+      000A1F C2 C0            [12]  627 	clr	_P4_0
                                     628 ;	my_oled.c:88: dat <<= 1;
-      00087A EF               [12]  629 	mov	a,r7
-      00087B 2F               [12]  630 	add	a,r7
-      00087C FF               [12]  631 	mov	r7,a
+      000A21 EF               [12]  629 	mov	a,r7
+      000A22 2F               [12]  630 	add	a,r7
+      000A23 FF               [12]  631 	mov	r7,a
                                     632 ;	my_oled.c:81: for(i = 0; i < 8; i++)
-      00087D 0E               [12]  633 	inc	r6
-      00087E BE 08 00         [24]  634 	cjne	r6,#0x08,00120$
-      000881                        635 00120$:
-      000881 40 DB            [24]  636 	jc	00102$
+      000A24 0E               [12]  633 	inc	r6
+      000A25 BE 08 00         [24]  634 	cjne	r6,#0x08,00120$
+      000A28                        635 00120$:
+      000A28 40 DB            [24]  636 	jc	00102$
                                     637 ;	my_oled.c:91: OLED_SDA = 1;
                                     638 ;	assignBit
-      000883 D2 C1            [12]  639 	setb	_P4_1
+      000A2A D2 C1            [12]  639 	setb	_P4_1
                                     640 ;	my_oled.c:92: i2c_delay();
-      000885 12 08 39         [24]  641 	lcall	_i2c_delay
+      000A2C 12 09 E0         [24]  641 	lcall	_i2c_delay
                                     642 ;	my_oled.c:93: OLED_SCL = 1;
                                     643 ;	assignBit
-      000888 D2 C0            [12]  644 	setb	_P4_0
+      000A2F D2 C0            [12]  644 	setb	_P4_0
                                     645 ;	my_oled.c:94: i2c_delay();
-      00088A 12 08 39         [24]  646 	lcall	_i2c_delay
+      000A31 12 09 E0         [24]  646 	lcall	_i2c_delay
                                     647 ;	my_oled.c:95: ack = OLED_SDA;
-      00088D A2 C1            [12]  648 	mov	c,_P4_1
-      00088F E4               [12]  649 	clr	a
-      000890 33               [12]  650 	rlc	a
-      000891 FF               [12]  651 	mov	r7,a
+      000A34 A2 C1            [12]  648 	mov	c,_P4_1
+      000A36 E4               [12]  649 	clr	a
+      000A37 33               [12]  650 	rlc	a
+      000A38 FF               [12]  651 	mov	r7,a
                                     652 ;	my_oled.c:96: OLED_SCL = 0;
                                     653 ;	assignBit
-      000892 C2 C0            [12]  654 	clr	_P4_0
+      000A39 C2 C0            [12]  654 	clr	_P4_0
                                     655 ;	my_oled.c:97: i2c_delay();
-      000894 C0 07            [24]  656 	push	ar7
-      000896 12 08 39         [24]  657 	lcall	_i2c_delay
-      000899 D0 07            [24]  658 	pop	ar7
+      000A3B C0 07            [24]  656 	push	ar7
+      000A3D 12 09 E0         [24]  657 	lcall	_i2c_delay
+      000A40 D0 07            [24]  658 	pop	ar7
                                     659 ;	my_oled.c:99: return (ack == 0);
-      00089B E4               [12]  660 	clr	a
-      00089C BF 00 01         [24]  661 	cjne	r7,#0x00,00122$
-      00089F 04               [12]  662 	inc	a
-      0008A0                        663 00122$:
-      0008A0 F5 82            [12]  664 	mov	dpl,a
+      000A42 E4               [12]  660 	clr	a
+      000A43 BF 00 01         [24]  661 	cjne	r7,#0x00,00122$
+      000A46 04               [12]  662 	inc	a
+      000A47                        663 00122$:
+      000A47 F5 82            [12]  664 	mov	dpl,a
                                     665 ;	my_oled.c:100: }
-      0008A2 22               [24]  666 	ret
+      000A49 22               [24]  666 	ret
                                     667 ;------------------------------------------------------------
                                     668 ;Allocation info for local variables in function 'i2c_write_transaction'
                                     669 ;------------------------------------------------------------
@@ -677,80 +677,80 @@
                                     677 ;	-----------------------------------------
                                     678 ;	 function i2c_write_transaction
                                     679 ;	-----------------------------------------
-      0008A3                        680 _i2c_write_transaction:
-      0008A3 AF 82            [24]  681 	mov	r7, dpl
+      000A4A                        680 _i2c_write_transaction:
+      000A4A AF 82            [24]  681 	mov	r7, dpl
                                     682 ;	my_oled.c:108: unsigned char success = 1;
-      0008A5 7E 01            [12]  683 	mov	r6,#0x01
+      000A4C 7E 01            [12]  683 	mov	r6,#0x01
                                     684 ;	my_oled.c:110: i2c_start();
-      0008A7 C0 07            [24]  685 	push	ar7
-      0008A9 C0 06            [24]  686 	push	ar6
-      0008AB 12 08 3F         [24]  687 	lcall	_i2c_start
+      000A4E C0 07            [24]  685 	push	ar7
+      000A50 C0 06            [24]  686 	push	ar6
+      000A52 12 09 E6         [24]  687 	lcall	_i2c_start
                                     688 ;	my_oled.c:112: if(!i2c_write(OLED_ADDR))
-      0008AE 75 82 78         [24]  689 	mov	dpl, #0x78
-      0008B1 12 08 5A         [24]  690 	lcall	_i2c_write
-      0008B4 E5 82            [12]  691 	mov	a, dpl
-      0008B6 D0 06            [24]  692 	pop	ar6
-      0008B8 D0 07            [24]  693 	pop	ar7
+      000A55 75 82 78         [24]  689 	mov	dpl, #0x78
+      000A58 12 0A 01         [24]  690 	lcall	_i2c_write
+      000A5B E5 82            [12]  691 	mov	a, dpl
+      000A5D D0 06            [24]  692 	pop	ar6
+      000A5F D0 07            [24]  693 	pop	ar7
                                     694 ;	my_oled.c:113: success = 0;
-      0008BA 70 01            [24]  695 	jnz	00102$
-      0008BC FE               [12]  696 	mov	r6,a
-      0008BD                        697 00102$:
+      000A61 70 01            [24]  695 	jnz	00102$
+      000A63 FE               [12]  696 	mov	r6,a
+      000A64                        697 00102$:
                                     698 ;	my_oled.c:115: if(success && !i2c_write(control))
-      0008BD EE               [12]  699 	mov	a,r6
-      0008BE 60 0E            [24]  700 	jz	00104$
-      0008C0 8F 82            [24]  701 	mov	dpl, r7
-      0008C2 C0 06            [24]  702 	push	ar6
-      0008C4 12 08 5A         [24]  703 	lcall	_i2c_write
-      0008C7 E5 82            [12]  704 	mov	a, dpl
-      0008C9 D0 06            [24]  705 	pop	ar6
+      000A64 EE               [12]  699 	mov	a,r6
+      000A65 60 0E            [24]  700 	jz	00104$
+      000A67 8F 82            [24]  701 	mov	dpl, r7
+      000A69 C0 06            [24]  702 	push	ar6
+      000A6B 12 0A 01         [24]  703 	lcall	_i2c_write
+      000A6E E5 82            [12]  704 	mov	a, dpl
+      000A70 D0 06            [24]  705 	pop	ar6
                                     706 ;	my_oled.c:116: success = 0;
-      0008CB 70 01            [24]  707 	jnz	00104$
-      0008CD FE               [12]  708 	mov	r6,a
-      0008CE                        709 00104$:
+      000A72 70 01            [24]  707 	jnz	00104$
+      000A74 FE               [12]  708 	mov	r6,a
+      000A75                        709 00104$:
                                     710 ;	my_oled.c:118: for(i = 0; i < length && success; i++)
-      0008CE 7F 00            [12]  711 	mov	r7,#0x00
-      0008D0                        712 00111$:
-      0008D0 C3               [12]  713 	clr	c
-      0008D1 EF               [12]  714 	mov	a,r7
-      0008D2 95 5B            [12]  715 	subb	a,_i2c_write_transaction_PARM_3
-      0008D4 50 2B            [24]  716 	jnc	00108$
-      0008D6 EE               [12]  717 	mov	a,r6
-      0008D7 60 28            [24]  718 	jz	00108$
+      000A75 7F 00            [12]  711 	mov	r7,#0x00
+      000A77                        712 00111$:
+      000A77 C3               [12]  713 	clr	c
+      000A78 EF               [12]  714 	mov	a,r7
+      000A79 95 39            [12]  715 	subb	a,_i2c_write_transaction_PARM_3
+      000A7B 50 2B            [24]  716 	jnc	00108$
+      000A7D EE               [12]  717 	mov	a,r6
+      000A7E 60 28            [24]  718 	jz	00108$
                                     719 ;	my_oled.c:120: if(!i2c_write(data[i]))
-      0008D9 EF               [12]  720 	mov	a,r7
-      0008DA 25 58            [12]  721 	add	a, _i2c_write_transaction_PARM_2
-      0008DC FB               [12]  722 	mov	r3,a
-      0008DD E4               [12]  723 	clr	a
-      0008DE 35 59            [12]  724 	addc	a, (_i2c_write_transaction_PARM_2 + 1)
-      0008E0 FC               [12]  725 	mov	r4,a
-      0008E1 AD 5A            [24]  726 	mov	r5,(_i2c_write_transaction_PARM_2 + 2)
-      0008E3 8B 82            [24]  727 	mov	dpl,r3
-      0008E5 8C 83            [24]  728 	mov	dph,r4
-      0008E7 8D F0            [24]  729 	mov	b,r5
-      0008E9 12 10 20         [24]  730 	lcall	__gptrget
-      0008EC F5 82            [12]  731 	mov	dpl,a
-      0008EE C0 07            [24]  732 	push	ar7
-      0008F0 C0 06            [24]  733 	push	ar6
-      0008F2 12 08 5A         [24]  734 	lcall	_i2c_write
-      0008F5 E5 82            [12]  735 	mov	a, dpl
-      0008F7 D0 06            [24]  736 	pop	ar6
-      0008F9 D0 07            [24]  737 	pop	ar7
+      000A80 EF               [12]  720 	mov	a,r7
+      000A81 25 36            [12]  721 	add	a, _i2c_write_transaction_PARM_2
+      000A83 FB               [12]  722 	mov	r3,a
+      000A84 E4               [12]  723 	clr	a
+      000A85 35 37            [12]  724 	addc	a, (_i2c_write_transaction_PARM_2 + 1)
+      000A87 FC               [12]  725 	mov	r4,a
+      000A88 AD 38            [24]  726 	mov	r5,(_i2c_write_transaction_PARM_2 + 2)
+      000A8A 8B 82            [24]  727 	mov	dpl,r3
+      000A8C 8C 83            [24]  728 	mov	dph,r4
+      000A8E 8D F0            [24]  729 	mov	b,r5
+      000A90 12 11 C7         [24]  730 	lcall	__gptrget
+      000A93 F5 82            [12]  731 	mov	dpl,a
+      000A95 C0 07            [24]  732 	push	ar7
+      000A97 C0 06            [24]  733 	push	ar6
+      000A99 12 0A 01         [24]  734 	lcall	_i2c_write
+      000A9C E5 82            [12]  735 	mov	a, dpl
+      000A9E D0 06            [24]  736 	pop	ar6
+      000AA0 D0 07            [24]  737 	pop	ar7
                                     738 ;	my_oled.c:121: success = 0;
-      0008FB 70 01            [24]  739 	jnz	00112$
-      0008FD FE               [12]  740 	mov	r6,a
-      0008FE                        741 00112$:
+      000AA2 70 01            [24]  739 	jnz	00112$
+      000AA4 FE               [12]  740 	mov	r6,a
+      000AA5                        741 00112$:
                                     742 ;	my_oled.c:118: for(i = 0; i < length && success; i++)
-      0008FE 0F               [12]  743 	inc	r7
-      0008FF 80 CF            [24]  744 	sjmp	00111$
-      000901                        745 00108$:
+      000AA5 0F               [12]  743 	inc	r7
+      000AA6 80 CF            [24]  744 	sjmp	00111$
+      000AA8                        745 00108$:
                                     746 ;	my_oled.c:124: i2c_stop();
-      000901 C0 06            [24]  747 	push	ar6
-      000903 12 08 4E         [24]  748 	lcall	_i2c_stop
-      000906 D0 06            [24]  749 	pop	ar6
+      000AA8 C0 06            [24]  747 	push	ar6
+      000AAA 12 09 F5         [24]  748 	lcall	_i2c_stop
+      000AAD D0 06            [24]  749 	pop	ar6
                                     750 ;	my_oled.c:125: return success;
-      000908 8E 82            [24]  751 	mov	dpl, r6
+      000AAF 8E 82            [24]  751 	mov	dpl, r6
                                     752 ;	my_oled.c:126: }
-      00090A 22               [24]  753 	ret
+      000AB1 22               [24]  753 	ret
                                     754 ;------------------------------------------------------------
                                     755 ;Allocation info for local variables in function 'oled_command'
                                     756 ;------------------------------------------------------------
@@ -760,16 +760,16 @@
                                     760 ;	-----------------------------------------
                                     761 ;	 function oled_command
                                     762 ;	-----------------------------------------
-      00090B                        763 _oled_command:
-      00090B 85 82 5C         [24]  764 	mov	_oled_command_cmd_10000_30,dpl
+      000AB2                        763 _oled_command:
+      000AB2 85 82 3A         [24]  764 	mov	_oled_command_cmd_10000_30,dpl
                                     765 ;	my_oled.c:130: i2c_write_transaction(0x00, &cmd, 1);
-      00090E 75 58 5C         [24]  766 	mov	_i2c_write_transaction_PARM_2,#_oled_command_cmd_10000_30
-      000911 75 59 00         [24]  767 	mov	(_i2c_write_transaction_PARM_2 + 1),#0x00
-      000914 75 5A 40         [24]  768 	mov	(_i2c_write_transaction_PARM_2 + 2),#0x40
-      000917 75 5B 01         [24]  769 	mov	_i2c_write_transaction_PARM_3,#0x01
-      00091A 75 82 00         [24]  770 	mov	dpl, #0x00
+      000AB5 75 36 3A         [24]  766 	mov	_i2c_write_transaction_PARM_2,#_oled_command_cmd_10000_30
+      000AB8 75 37 00         [24]  767 	mov	(_i2c_write_transaction_PARM_2 + 1),#0x00
+      000ABB 75 38 40         [24]  768 	mov	(_i2c_write_transaction_PARM_2 + 2),#0x40
+      000ABE 75 39 01         [24]  769 	mov	_i2c_write_transaction_PARM_3,#0x01
+      000AC1 75 82 00         [24]  770 	mov	dpl, #0x00
                                     771 ;	my_oled.c:131: }
-      00091D 02 08 A3         [24]  772 	ljmp	_i2c_write_transaction
+      000AC4 02 0A 4A         [24]  772 	ljmp	_i2c_write_transaction
                                     773 ;------------------------------------------------------------
                                     774 ;Allocation info for local variables in function 'oled_data'
                                     775 ;------------------------------------------------------------
@@ -779,16 +779,16 @@
                                     779 ;	-----------------------------------------
                                     780 ;	 function oled_data
                                     781 ;	-----------------------------------------
-      000920                        782 _oled_data:
-      000920 85 82 5D         [24]  783 	mov	_oled_data_dat_10000_32,dpl
+      000AC7                        782 _oled_data:
+      000AC7 85 82 3B         [24]  783 	mov	_oled_data_dat_10000_32,dpl
                                     784 ;	my_oled.c:135: i2c_write_transaction(0x40, &dat, 1);
-      000923 75 58 5D         [24]  785 	mov	_i2c_write_transaction_PARM_2,#_oled_data_dat_10000_32
-      000926 75 59 00         [24]  786 	mov	(_i2c_write_transaction_PARM_2 + 1),#0x00
-      000929 75 5A 40         [24]  787 	mov	(_i2c_write_transaction_PARM_2 + 2),#0x40
-      00092C 75 5B 01         [24]  788 	mov	_i2c_write_transaction_PARM_3,#0x01
-      00092F 75 82 40         [24]  789 	mov	dpl, #0x40
+      000ACA 75 36 3B         [24]  785 	mov	_i2c_write_transaction_PARM_2,#_oled_data_dat_10000_32
+      000ACD 75 37 00         [24]  786 	mov	(_i2c_write_transaction_PARM_2 + 1),#0x00
+      000AD0 75 38 40         [24]  787 	mov	(_i2c_write_transaction_PARM_2 + 2),#0x40
+      000AD3 75 39 01         [24]  788 	mov	_i2c_write_transaction_PARM_3,#0x01
+      000AD6 75 82 40         [24]  789 	mov	dpl, #0x40
                                     790 ;	my_oled.c:136: }
-      000932 02 08 A3         [24]  791 	ljmp	_i2c_write_transaction
+      000AD9 02 0A 4A         [24]  791 	ljmp	_i2c_write_transaction
                                     792 ;------------------------------------------------------------
                                     793 ;Allocation info for local variables in function 'oled_set_position'
                                     794 ;------------------------------------------------------------
@@ -799,53 +799,53 @@
                                     799 ;	-----------------------------------------
                                     800 ;	 function oled_set_position
                                     801 ;	-----------------------------------------
-      000935                        802 _oled_set_position:
+      000ADC                        802 _oled_set_position:
                                     803 ;	my_oled.c:140: if(page > 7)
-      000935 E5 82            [12]  804 	mov	a,dpl
-      000937 FF               [12]  805 	mov	r7,a
-      000938 24 F8            [12]  806 	add	a,#0xff - 0x07
-      00093A 50 02            [24]  807 	jnc	00102$
+      000ADC E5 82            [12]  804 	mov	a,dpl
+      000ADE FF               [12]  805 	mov	r7,a
+      000ADF 24 F8            [12]  806 	add	a,#0xff - 0x07
+      000AE1 50 02            [24]  807 	jnc	00102$
                                     808 ;	free result
                                     809 ;	my_oled.c:141: page = 7;
-      00093C 7F 07            [12]  810 	mov	r7,#0x07
-      00093E                        811 00102$:
+      000AE3 7F 07            [12]  810 	mov	r7,#0x07
+      000AE5                        811 00102$:
                                     812 ;	my_oled.c:143: if(column > 127)
-      00093E E5 5E            [12]  813 	mov	a,_oled_set_position_PARM_2
-      000940 24 80            [12]  814 	add	a,#0xff - 0x7f
-      000942 50 03            [24]  815 	jnc	00104$
+      000AE5 E5 3C            [12]  813 	mov	a,_oled_set_position_PARM_2
+      000AE7 24 80            [12]  814 	add	a,#0xff - 0x7f
+      000AE9 50 03            [24]  815 	jnc	00104$
                                     816 ;	free result
                                     817 ;	my_oled.c:144: column = 127;
-      000944 75 5E 7F         [24]  818 	mov	_oled_set_position_PARM_2,#0x7f
-      000947                        819 00104$:
+      000AEB 75 3C 7F         [24]  818 	mov	_oled_set_position_PARM_2,#0x7f
+      000AEE                        819 00104$:
                                     820 ;	my_oled.c:146: oled_page = page;
-      000947 8F 56            [24]  821 	mov	_oled_page,r7
+      000AEE 8F 34            [24]  821 	mov	_oled_page,r7
                                     822 ;	my_oled.c:147: oled_column = column;
-      000949 AE 5E            [24]  823 	mov	r6,_oled_set_position_PARM_2
-      00094B 8E 57            [24]  824 	mov	_oled_column,r6
+      000AF0 AE 3C            [24]  823 	mov	r6,_oled_set_position_PARM_2
+      000AF2 8E 35            [24]  824 	mov	_oled_column,r6
                                     825 ;	my_oled.c:149: oled_command(0xB0 | page);
-      00094D 74 B0            [12]  826 	mov	a,#0xb0
-      00094F 4F               [12]  827 	orl	a,r7
-      000950 F5 82            [12]  828 	mov	dpl,a
-      000952 C0 06            [24]  829 	push	ar6
-      000954 12 09 0B         [24]  830 	lcall	_oled_command
-      000957 D0 06            [24]  831 	pop	ar6
+      000AF4 74 B0            [12]  826 	mov	a,#0xb0
+      000AF6 4F               [12]  827 	orl	a,r7
+      000AF7 F5 82            [12]  828 	mov	dpl,a
+      000AF9 C0 06            [24]  829 	push	ar6
+      000AFB 12 0A B2         [24]  830 	lcall	_oled_command
+      000AFE D0 06            [24]  831 	pop	ar6
                                     832 ;	my_oled.c:150: oled_command(column & 0x0F);
-      000959 74 0F            [12]  833 	mov	a,#0x0f
-      00095B 5E               [12]  834 	anl	a,r6
-      00095C F5 82            [12]  835 	mov	dpl,a
-      00095E C0 06            [24]  836 	push	ar6
-      000960 12 09 0B         [24]  837 	lcall	_oled_command
-      000963 D0 06            [24]  838 	pop	ar6
+      000B00 74 0F            [12]  833 	mov	a,#0x0f
+      000B02 5E               [12]  834 	anl	a,r6
+      000B03 F5 82            [12]  835 	mov	dpl,a
+      000B05 C0 06            [24]  836 	push	ar6
+      000B07 12 0A B2         [24]  837 	lcall	_oled_command
+      000B0A D0 06            [24]  838 	pop	ar6
                                     839 ;	my_oled.c:151: oled_command(0x10 | (column >> 4));
-      000965 EE               [12]  840 	mov	a,r6
-      000966 C4               [12]  841 	swap	a
-      000967 54 0F            [12]  842 	anl	a,#0x0f
-      000969 FE               [12]  843 	mov	r6,a
-      00096A 74 10            [12]  844 	mov	a,#0x10
-      00096C 4E               [12]  845 	orl	a,r6
-      00096D F5 82            [12]  846 	mov	dpl,a
+      000B0C EE               [12]  840 	mov	a,r6
+      000B0D C4               [12]  841 	swap	a
+      000B0E 54 0F            [12]  842 	anl	a,#0x0f
+      000B10 FE               [12]  843 	mov	r6,a
+      000B11 74 10            [12]  844 	mov	a,#0x10
+      000B13 4E               [12]  845 	orl	a,r6
+      000B14 F5 82            [12]  846 	mov	dpl,a
                                     847 ;	my_oled.c:152: }
-      00096F 02 09 0B         [24]  848 	ljmp	_oled_command
+      000B16 02 0A B2         [24]  848 	ljmp	_oled_command
                                     849 ;------------------------------------------------------------
                                     850 ;Allocation info for local variables in function 'oled_clear'
                                     851 ;------------------------------------------------------------
@@ -858,61 +858,61 @@
                                     858 ;	-----------------------------------------
                                     859 ;	 function oled_clear
                                     860 ;	-----------------------------------------
-      000972                        861 _oled_clear:
+      000B19                        861 _oled_clear:
                                     862 ;	my_oled.c:161: for(i = 0; i < 16; i++)
-      000972 7F 00            [12]  863 	mov	r7,#0x00
-      000974                        864 00104$:
+      000B19 7F 00            [12]  863 	mov	r7,#0x00
+      000B1B                        864 00104$:
                                     865 ;	my_oled.c:162: zeros[i] = 0x00;
-      000974 EF               [12]  866 	mov	a,r7
-      000975 24 5F            [12]  867 	add	a, #_oled_clear_zeros_10000_39
-      000977 F8               [12]  868 	mov	r0,a
-      000978 76 00            [12]  869 	mov	@r0,#0x00
+      000B1B EF               [12]  866 	mov	a,r7
+      000B1C 24 3D            [12]  867 	add	a, #_oled_clear_zeros_10000_39
+      000B1E F8               [12]  868 	mov	r0,a
+      000B1F 76 00            [12]  869 	mov	@r0,#0x00
                                     870 ;	my_oled.c:161: for(i = 0; i < 16; i++)
-      00097A 0F               [12]  871 	inc	r7
-      00097B BF 10 00         [24]  872 	cjne	r7,#0x10,00154$
-      00097E                        873 00154$:
-      00097E 40 F4            [24]  874 	jc	00104$
+      000B21 0F               [12]  871 	inc	r7
+      000B22 BF 10 00         [24]  872 	cjne	r7,#0x10,00154$
+      000B25                        873 00154$:
+      000B25 40 F4            [24]  874 	jc	00104$
                                     875 ;	my_oled.c:164: for(page = 0; page < 8; page++)
-      000980 7F 00            [12]  876 	mov	r7,#0x00
-      000982                        877 00108$:
+      000B27 7F 00            [12]  876 	mov	r7,#0x00
+      000B29                        877 00108$:
                                     878 ;	my_oled.c:166: oled_set_position(page, 0);
-      000982 75 5E 00         [24]  879 	mov	_oled_set_position_PARM_2,#0x00
-      000985 8F 82            [24]  880 	mov	dpl, r7
-      000987 C0 07            [24]  881 	push	ar7
-      000989 12 09 35         [24]  882 	lcall	_oled_set_position
-      00098C D0 07            [24]  883 	pop	ar7
+      000B29 75 3C 00         [24]  879 	mov	_oled_set_position_PARM_2,#0x00
+      000B2C 8F 82            [24]  880 	mov	dpl, r7
+      000B2E C0 07            [24]  881 	push	ar7
+      000B30 12 0A DC         [24]  882 	lcall	_oled_set_position
+      000B33 D0 07            [24]  883 	pop	ar7
                                     884 ;	my_oled.c:168: for(col = 0; col < 128; col += 16)
-      00098E 7E 00            [12]  885 	mov	r6,#0x00
-      000990                        886 00106$:
+      000B35 7E 00            [12]  885 	mov	r6,#0x00
+      000B37                        886 00106$:
                                     887 ;	my_oled.c:169: i2c_write_transaction(0x40, zeros, 16);
-      000990 75 58 5F         [24]  888 	mov	_i2c_write_transaction_PARM_2,#_oled_clear_zeros_10000_39
-      000993 75 59 00         [24]  889 	mov	(_i2c_write_transaction_PARM_2 + 1),#0x00
-      000996 75 5A 40         [24]  890 	mov	(_i2c_write_transaction_PARM_2 + 2),#0x40
-      000999 75 5B 10         [24]  891 	mov	_i2c_write_transaction_PARM_3,#0x10
-      00099C 75 82 40         [24]  892 	mov	dpl, #0x40
-      00099F C0 07            [24]  893 	push	ar7
-      0009A1 C0 06            [24]  894 	push	ar6
-      0009A3 12 08 A3         [24]  895 	lcall	_i2c_write_transaction
-      0009A6 D0 06            [24]  896 	pop	ar6
-      0009A8 D0 07            [24]  897 	pop	ar7
+      000B37 75 36 3D         [24]  888 	mov	_i2c_write_transaction_PARM_2,#_oled_clear_zeros_10000_39
+      000B3A 75 37 00         [24]  889 	mov	(_i2c_write_transaction_PARM_2 + 1),#0x00
+      000B3D 75 38 40         [24]  890 	mov	(_i2c_write_transaction_PARM_2 + 2),#0x40
+      000B40 75 39 10         [24]  891 	mov	_i2c_write_transaction_PARM_3,#0x10
+      000B43 75 82 40         [24]  892 	mov	dpl, #0x40
+      000B46 C0 07            [24]  893 	push	ar7
+      000B48 C0 06            [24]  894 	push	ar6
+      000B4A 12 0A 4A         [24]  895 	lcall	_i2c_write_transaction
+      000B4D D0 06            [24]  896 	pop	ar6
+      000B4F D0 07            [24]  897 	pop	ar7
                                     898 ;	my_oled.c:168: for(col = 0; col < 128; col += 16)
-      0009AA 8E 05            [24]  899 	mov	ar5,r6
-      0009AC 74 10            [12]  900 	mov	a,#0x10
-      0009AE 2D               [12]  901 	add	a, r5
-      0009AF FE               [12]  902 	mov	r6,a
-      0009B0 BE 80 00         [24]  903 	cjne	r6,#0x80,00156$
-      0009B3                        904 00156$:
-      0009B3 40 DB            [24]  905 	jc	00106$
+      000B51 8E 05            [24]  899 	mov	ar5,r6
+      000B53 74 10            [12]  900 	mov	a,#0x10
+      000B55 2D               [12]  901 	add	a, r5
+      000B56 FE               [12]  902 	mov	r6,a
+      000B57 BE 80 00         [24]  903 	cjne	r6,#0x80,00156$
+      000B5A                        904 00156$:
+      000B5A 40 DB            [24]  905 	jc	00106$
                                     906 ;	my_oled.c:164: for(page = 0; page < 8; page++)
-      0009B5 0F               [12]  907 	inc	r7
-      0009B6 BF 08 00         [24]  908 	cjne	r7,#0x08,00158$
-      0009B9                        909 00158$:
-      0009B9 40 C7            [24]  910 	jc	00108$
+      000B5C 0F               [12]  907 	inc	r7
+      000B5D BF 08 00         [24]  908 	cjne	r7,#0x08,00158$
+      000B60                        909 00158$:
+      000B60 40 C7            [24]  910 	jc	00108$
                                     911 ;	my_oled.c:172: oled_set_position(0, 0);
-      0009BB 75 5E 00         [24]  912 	mov	_oled_set_position_PARM_2,#0x00
-      0009BE 75 82 00         [24]  913 	mov	dpl, #0x00
+      000B62 75 3C 00         [24]  912 	mov	_oled_set_position_PARM_2,#0x00
+      000B65 75 82 00         [24]  913 	mov	dpl, #0x00
                                     914 ;	my_oled.c:173: }
-      0009C1 02 09 35         [24]  915 	ljmp	_oled_set_position
+      000B68 02 0A DC         [24]  915 	ljmp	_oled_set_position
                                     916 ;------------------------------------------------------------
                                     917 ;Allocation info for local variables in function 'oled_init'
                                     918 ;------------------------------------------------------------
@@ -920,100 +920,100 @@
                                     920 ;	-----------------------------------------
                                     921 ;	 function oled_init
                                     922 ;	-----------------------------------------
-      0009C4                        923 _oled_init:
+      000B6B                        923 _oled_init:
                                     924 ;	my_oled.c:177: delay_ms(100);
-      0009C4 90 00 64         [24]  925 	mov	dptr,#0x0064
-      0009C7 E4               [12]  926 	clr	a
-      0009C8 F5 F0            [12]  927 	mov	b,a
-      0009CA 12 00 E6         [24]  928 	lcall	_delay_ms
+      000B6B 90 00 64         [24]  925 	mov	dptr,#0x0064
+      000B6E E4               [12]  926 	clr	a
+      000B6F F5 F0            [12]  927 	mov	b,a
+      000B71 12 00 E4         [24]  928 	lcall	_delay_ms
                                     929 ;	my_oled.c:179: OLED_SCL = 1;
                                     930 ;	assignBit
-      0009CD D2 C0            [12]  931 	setb	_P4_0
+      000B74 D2 C0            [12]  931 	setb	_P4_0
                                     932 ;	my_oled.c:180: OLED_SDA = 1;
                                     933 ;	assignBit
-      0009CF D2 C1            [12]  934 	setb	_P4_1
+      000B76 D2 C1            [12]  934 	setb	_P4_1
                                     935 ;	my_oled.c:182: oled_command(0xAE);
-      0009D1 75 82 AE         [24]  936 	mov	dpl, #0xae
-      0009D4 12 09 0B         [24]  937 	lcall	_oled_command
+      000B78 75 82 AE         [24]  936 	mov	dpl, #0xae
+      000B7B 12 0A B2         [24]  937 	lcall	_oled_command
                                     938 ;	my_oled.c:183: oled_command(0xD5);
-      0009D7 75 82 D5         [24]  939 	mov	dpl, #0xd5
-      0009DA 12 09 0B         [24]  940 	lcall	_oled_command
+      000B7E 75 82 D5         [24]  939 	mov	dpl, #0xd5
+      000B81 12 0A B2         [24]  940 	lcall	_oled_command
                                     941 ;	my_oled.c:184: oled_command(0x80);
-      0009DD 75 82 80         [24]  942 	mov	dpl, #0x80
-      0009E0 12 09 0B         [24]  943 	lcall	_oled_command
+      000B84 75 82 80         [24]  942 	mov	dpl, #0x80
+      000B87 12 0A B2         [24]  943 	lcall	_oled_command
                                     944 ;	my_oled.c:185: oled_command(0xA8);
-      0009E3 75 82 A8         [24]  945 	mov	dpl, #0xa8
-      0009E6 12 09 0B         [24]  946 	lcall	_oled_command
+      000B8A 75 82 A8         [24]  945 	mov	dpl, #0xa8
+      000B8D 12 0A B2         [24]  946 	lcall	_oled_command
                                     947 ;	my_oled.c:186: oled_command(0x3F);
-      0009E9 75 82 3F         [24]  948 	mov	dpl, #0x3f
-      0009EC 12 09 0B         [24]  949 	lcall	_oled_command
+      000B90 75 82 3F         [24]  948 	mov	dpl, #0x3f
+      000B93 12 0A B2         [24]  949 	lcall	_oled_command
                                     950 ;	my_oled.c:187: oled_command(0xD3);
-      0009EF 75 82 D3         [24]  951 	mov	dpl, #0xd3
-      0009F2 12 09 0B         [24]  952 	lcall	_oled_command
+      000B96 75 82 D3         [24]  951 	mov	dpl, #0xd3
+      000B99 12 0A B2         [24]  952 	lcall	_oled_command
                                     953 ;	my_oled.c:188: oled_command(0x00);
-      0009F5 75 82 00         [24]  954 	mov	dpl, #0x00
-      0009F8 12 09 0B         [24]  955 	lcall	_oled_command
+      000B9C 75 82 00         [24]  954 	mov	dpl, #0x00
+      000B9F 12 0A B2         [24]  955 	lcall	_oled_command
                                     956 ;	my_oled.c:189: oled_command(0x40);
-      0009FB 75 82 40         [24]  957 	mov	dpl, #0x40
-      0009FE 12 09 0B         [24]  958 	lcall	_oled_command
+      000BA2 75 82 40         [24]  957 	mov	dpl, #0x40
+      000BA5 12 0A B2         [24]  958 	lcall	_oled_command
                                     959 ;	my_oled.c:190: oled_command(0x8D);
-      000A01 75 82 8D         [24]  960 	mov	dpl, #0x8d
-      000A04 12 09 0B         [24]  961 	lcall	_oled_command
+      000BA8 75 82 8D         [24]  960 	mov	dpl, #0x8d
+      000BAB 12 0A B2         [24]  961 	lcall	_oled_command
                                     962 ;	my_oled.c:191: oled_command(0x14);
-      000A07 75 82 14         [24]  963 	mov	dpl, #0x14
-      000A0A 12 09 0B         [24]  964 	lcall	_oled_command
+      000BAE 75 82 14         [24]  963 	mov	dpl, #0x14
+      000BB1 12 0A B2         [24]  964 	lcall	_oled_command
                                     965 ;	my_oled.c:192: oled_command(0x20);
-      000A0D 75 82 20         [24]  966 	mov	dpl, #0x20
-      000A10 12 09 0B         [24]  967 	lcall	_oled_command
+      000BB4 75 82 20         [24]  966 	mov	dpl, #0x20
+      000BB7 12 0A B2         [24]  967 	lcall	_oled_command
                                     968 ;	my_oled.c:193: oled_command(0x02);
-      000A13 75 82 02         [24]  969 	mov	dpl, #0x02
-      000A16 12 09 0B         [24]  970 	lcall	_oled_command
+      000BBA 75 82 02         [24]  969 	mov	dpl, #0x02
+      000BBD 12 0A B2         [24]  970 	lcall	_oled_command
                                     971 ;	my_oled.c:194: oled_command(0xA1);
-      000A19 75 82 A1         [24]  972 	mov	dpl, #0xa1
-      000A1C 12 09 0B         [24]  973 	lcall	_oled_command
+      000BC0 75 82 A1         [24]  972 	mov	dpl, #0xa1
+      000BC3 12 0A B2         [24]  973 	lcall	_oled_command
                                     974 ;	my_oled.c:195: oled_command(0xC8);
-      000A1F 75 82 C8         [24]  975 	mov	dpl, #0xc8
-      000A22 12 09 0B         [24]  976 	lcall	_oled_command
+      000BC6 75 82 C8         [24]  975 	mov	dpl, #0xc8
+      000BC9 12 0A B2         [24]  976 	lcall	_oled_command
                                     977 ;	my_oled.c:196: oled_command(0xDA);
-      000A25 75 82 DA         [24]  978 	mov	dpl, #0xda
-      000A28 12 09 0B         [24]  979 	lcall	_oled_command
+      000BCC 75 82 DA         [24]  978 	mov	dpl, #0xda
+      000BCF 12 0A B2         [24]  979 	lcall	_oled_command
                                     980 ;	my_oled.c:197: oled_command(0x12);
-      000A2B 75 82 12         [24]  981 	mov	dpl, #0x12
-      000A2E 12 09 0B         [24]  982 	lcall	_oled_command
+      000BD2 75 82 12         [24]  981 	mov	dpl, #0x12
+      000BD5 12 0A B2         [24]  982 	lcall	_oled_command
                                     983 ;	my_oled.c:198: oled_command(0x81);
-      000A31 75 82 81         [24]  984 	mov	dpl, #0x81
-      000A34 12 09 0B         [24]  985 	lcall	_oled_command
+      000BD8 75 82 81         [24]  984 	mov	dpl, #0x81
+      000BDB 12 0A B2         [24]  985 	lcall	_oled_command
                                     986 ;	my_oled.c:199: oled_command(0x7F);
-      000A37 75 82 7F         [24]  987 	mov	dpl, #0x7f
-      000A3A 12 09 0B         [24]  988 	lcall	_oled_command
+      000BDE 75 82 7F         [24]  987 	mov	dpl, #0x7f
+      000BE1 12 0A B2         [24]  988 	lcall	_oled_command
                                     989 ;	my_oled.c:200: oled_command(0xD9);
-      000A3D 75 82 D9         [24]  990 	mov	dpl, #0xd9
-      000A40 12 09 0B         [24]  991 	lcall	_oled_command
+      000BE4 75 82 D9         [24]  990 	mov	dpl, #0xd9
+      000BE7 12 0A B2         [24]  991 	lcall	_oled_command
                                     992 ;	my_oled.c:201: oled_command(0xF1);
-      000A43 75 82 F1         [24]  993 	mov	dpl, #0xf1
-      000A46 12 09 0B         [24]  994 	lcall	_oled_command
+      000BEA 75 82 F1         [24]  993 	mov	dpl, #0xf1
+      000BED 12 0A B2         [24]  994 	lcall	_oled_command
                                     995 ;	my_oled.c:202: oled_command(0xDB);
-      000A49 75 82 DB         [24]  996 	mov	dpl, #0xdb
-      000A4C 12 09 0B         [24]  997 	lcall	_oled_command
+      000BF0 75 82 DB         [24]  996 	mov	dpl, #0xdb
+      000BF3 12 0A B2         [24]  997 	lcall	_oled_command
                                     998 ;	my_oled.c:203: oled_command(0x40);
-      000A4F 75 82 40         [24]  999 	mov	dpl, #0x40
-      000A52 12 09 0B         [24] 1000 	lcall	_oled_command
+      000BF6 75 82 40         [24]  999 	mov	dpl, #0x40
+      000BF9 12 0A B2         [24] 1000 	lcall	_oled_command
                                    1001 ;	my_oled.c:204: oled_command(0xA4);
-      000A55 75 82 A4         [24] 1002 	mov	dpl, #0xa4
-      000A58 12 09 0B         [24] 1003 	lcall	_oled_command
+      000BFC 75 82 A4         [24] 1002 	mov	dpl, #0xa4
+      000BFF 12 0A B2         [24] 1003 	lcall	_oled_command
                                    1004 ;	my_oled.c:205: oled_command(0xA6);
-      000A5B 75 82 A6         [24] 1005 	mov	dpl, #0xa6
-      000A5E 12 09 0B         [24] 1006 	lcall	_oled_command
+      000C02 75 82 A6         [24] 1005 	mov	dpl, #0xa6
+      000C05 12 0A B2         [24] 1006 	lcall	_oled_command
                                    1007 ;	my_oled.c:207: oled_clear();
-      000A61 12 09 72         [24] 1008 	lcall	_oled_clear
+      000C08 12 0B 19         [24] 1008 	lcall	_oled_clear
                                    1009 ;	my_oled.c:208: oled_command(0xAF);
-      000A64 75 82 AF         [24] 1010 	mov	dpl, #0xaf
-      000A67 12 09 0B         [24] 1011 	lcall	_oled_command
+      000C0B 75 82 AF         [24] 1010 	mov	dpl, #0xaf
+      000C0E 12 0A B2         [24] 1011 	lcall	_oled_command
                                    1012 ;	my_oled.c:209: oled_set_position(0, 0);
-      000A6A 75 5E 00         [24] 1013 	mov	_oled_set_position_PARM_2,#0x00
-      000A6D 75 82 00         [24] 1014 	mov	dpl, #0x00
+      000C11 75 3C 00         [24] 1013 	mov	_oled_set_position_PARM_2,#0x00
+      000C14 75 82 00         [24] 1014 	mov	dpl, #0x00
                                    1015 ;	my_oled.c:210: }
-      000A70 02 09 35         [24] 1016 	ljmp	_oled_set_position
+      000C17 02 0A DC         [24] 1016 	ljmp	_oled_set_position
                                    1017 ;------------------------------------------------------------
                                    1018 ;Allocation info for local variables in function 'oled_char'
                                    1019 ;------------------------------------------------------------
@@ -1026,549 +1026,549 @@
                                    1026 ;	-----------------------------------------
                                    1027 ;	 function oled_char
                                    1028 ;	-----------------------------------------
-      000A73                       1029 _oled_char:
-      000A73 AF 82            [24] 1030 	mov	r7, dpl
+      000C1A                       1029 _oled_char:
+      000C1A AF 82            [24] 1030 	mov	r7, dpl
                                    1031 ;	my_oled.c:218: if(c >= 'a' && c <= 'z')
-      000A75 BF 61 00         [24] 1032 	cjne	r7,#0x61,00513$
-      000A78                       1033 00513$:
-      000A78 40 0B            [24] 1034 	jc	00102$
-      000A7A EF               [12] 1035 	mov	a,r7
-      000A7B 24 85            [12] 1036 	add	a,#0xff - 0x7a
-      000A7D 40 06            [24] 1037 	jc	00102$
+      000C1C BF 61 00         [24] 1032 	cjne	r7,#0x61,00513$
+      000C1F                       1033 00513$:
+      000C1F 40 0B            [24] 1034 	jc	00102$
+      000C21 EF               [12] 1035 	mov	a,r7
+      000C22 24 85            [12] 1036 	add	a,#0xff - 0x7a
+      000C24 40 06            [24] 1037 	jc	00102$
                                    1038 ;	free result
                                    1039 ;	my_oled.c:219: c -= ('a' - 'A');
-      000A7F 8F 06            [24] 1040 	mov	ar6,r7
-      000A81 EE               [12] 1041 	mov	a,r6
-      000A82 24 E0            [12] 1042 	add	a,#0xe0
-      000A84 FF               [12] 1043 	mov	r7,a
-      000A85                       1044 00102$:
+      000C26 8F 06            [24] 1040 	mov	ar6,r7
+      000C28 EE               [12] 1041 	mov	a,r6
+      000C29 24 E0            [12] 1042 	add	a,#0xe0
+      000C2B FF               [12] 1043 	mov	r7,a
+      000C2C                       1044 00102$:
                                    1045 ;	my_oled.c:221: for(i = 0; i < 6; i++)
-      000A85 7E 00            [12] 1046 	mov	r6,#0x00
-      000A87                       1047 00153$:
+      000C2C 7E 00            [12] 1046 	mov	r6,#0x00
+      000C2E                       1047 00153$:
                                    1048 ;	my_oled.c:222: data[i] = 0x00;
-      000A87 EE               [12] 1049 	mov	a,r6
-      000A88 24 6F            [12] 1050 	add	a, #_oled_char_data_10000_47
-      000A8A F8               [12] 1051 	mov	r0,a
-      000A8B 76 00            [12] 1052 	mov	@r0,#0x00
+      000C2E EE               [12] 1049 	mov	a,r6
+      000C2F 24 4D            [12] 1050 	add	a, #_oled_char_data_10000_47
+      000C31 F8               [12] 1051 	mov	r0,a
+      000C32 76 00            [12] 1052 	mov	@r0,#0x00
                                    1053 ;	my_oled.c:221: for(i = 0; i < 6; i++)
-      000A8D 0E               [12] 1054 	inc	r6
-      000A8E BE 06 00         [24] 1055 	cjne	r6,#0x06,00516$
-      000A91                       1056 00516$:
-      000A91 40 F4            [24] 1057 	jc	00153$
+      000C34 0E               [12] 1054 	inc	r6
+      000C35 BE 06 00         [24] 1055 	cjne	r6,#0x06,00516$
+      000C38                       1056 00516$:
+      000C38 40 F4            [24] 1057 	jc	00153$
                                    1058 ;	my_oled.c:224: if(c >= 'A' && c <= 'Z')
-      000A93 BF 41 00         [24] 1059 	cjne	r7,#0x41,00518$
-      000A96                       1060 00518$:
-      000A96 40 30            [24] 1061 	jc	00142$
-      000A98 EF               [12] 1062 	mov	a,r7
-      000A99 24 A5            [12] 1063 	add	a,#0xff - 0x5a
-      000A9B 40 2B            [24] 1064 	jc	00142$
+      000C3A BF 41 00         [24] 1059 	cjne	r7,#0x41,00518$
+      000C3D                       1060 00518$:
+      000C3D 40 30            [24] 1061 	jc	00142$
+      000C3F EF               [12] 1062 	mov	a,r7
+      000C40 24 A5            [12] 1063 	add	a,#0xff - 0x5a
+      000C42 40 2B            [24] 1064 	jc	00142$
                                    1065 ;	free result
                                    1066 ;	my_oled.c:226: index = c - 'A';
-      000A9D 8F 06            [24] 1067 	mov	ar6,r7
-      000A9F EE               [12] 1068 	mov	a,r6
-      000AA0 24 BF            [12] 1069 	add	a,#0xbf
+      000C44 8F 06            [24] 1067 	mov	ar6,r7
+      000C46 EE               [12] 1068 	mov	a,r6
+      000C47 24 BF            [12] 1069 	add	a,#0xbf
                                    1070 ;	my_oled.c:228: for(i = 0; i < 5; i++)
-      000AA2 7D 00            [12] 1071 	mov	r5,#0x00
-      000AA4 75 F0 05         [24] 1072 	mov	b,#0x05
-      000AA7 A4               [48] 1073 	mul	ab
-      000AA8 24 11            [12] 1074 	add	a, #_font5x7
-      000AAA FC               [12] 1075 	mov	r4,a
-      000AAB 74 11            [12] 1076 	mov	a,#(_font5x7 >> 8)
-      000AAD 35 F0            [12] 1077 	addc	a, b
-      000AAF FE               [12] 1078 	mov	r6,a
-      000AB0                       1079 00155$:
+      000C49 7D 00            [12] 1071 	mov	r5,#0x00
+      000C4B 75 F0 05         [24] 1072 	mov	b,#0x05
+      000C4E A4               [48] 1073 	mul	ab
+      000C4F 24 B5            [12] 1074 	add	a, #_font5x7
+      000C51 FC               [12] 1075 	mov	r4,a
+      000C52 74 12            [12] 1076 	mov	a,#(_font5x7 >> 8)
+      000C54 35 F0            [12] 1077 	addc	a, b
+      000C56 FE               [12] 1078 	mov	r6,a
+      000C57                       1079 00155$:
                                    1080 ;	my_oled.c:229: data[i] = font5x7[index][i];
-      000AB0 ED               [12] 1081 	mov	a,r5
-      000AB1 24 6F            [12] 1082 	add	a, #_oled_char_data_10000_47
-      000AB3 F9               [12] 1083 	mov	r1,a
-      000AB4 ED               [12] 1084 	mov	a,r5
-      000AB5 2C               [12] 1085 	add	a, r4
-      000AB6 F5 82            [12] 1086 	mov	dpl,a
-      000AB8 E4               [12] 1087 	clr	a
-      000AB9 3E               [12] 1088 	addc	a, r6
-      000ABA F5 83            [12] 1089 	mov	dph,a
-      000ABC E4               [12] 1090 	clr	a
-      000ABD 93               [24] 1091 	movc	a,@a+dptr
-      000ABE F7               [12] 1092 	mov	@r1,a
+      000C57 ED               [12] 1081 	mov	a,r5
+      000C58 24 4D            [12] 1082 	add	a, #_oled_char_data_10000_47
+      000C5A F9               [12] 1083 	mov	r1,a
+      000C5B ED               [12] 1084 	mov	a,r5
+      000C5C 2C               [12] 1085 	add	a, r4
+      000C5D F5 82            [12] 1086 	mov	dpl,a
+      000C5F E4               [12] 1087 	clr	a
+      000C60 3E               [12] 1088 	addc	a, r6
+      000C61 F5 83            [12] 1089 	mov	dph,a
+      000C63 E4               [12] 1090 	clr	a
+      000C64 93               [24] 1091 	movc	a,@a+dptr
+      000C65 F7               [12] 1092 	mov	@r1,a
                                    1093 ;	my_oled.c:228: for(i = 0; i < 5; i++)
-      000ABF 0D               [12] 1094 	inc	r5
-      000AC0 BD 05 00         [24] 1095 	cjne	r5,#0x05,00521$
-      000AC3                       1096 00521$:
-      000AC3 40 EB            [24] 1097 	jc	00155$
-      000AC5 02 0C E0         [24] 1098 	ljmp	00143$
-      000AC8                       1099 00142$:
+      000C66 0D               [12] 1094 	inc	r5
+      000C67 BD 05 00         [24] 1095 	cjne	r5,#0x05,00521$
+      000C6A                       1096 00521$:
+      000C6A 40 EB            [24] 1097 	jc	00155$
+      000C6C 02 0E 87         [24] 1098 	ljmp	00143$
+      000C6F                       1099 00142$:
                                    1100 ;	my_oled.c:231: else if(c >= '0' && c <= '9')
-      000AC8 BF 30 00         [24] 1101 	cjne	r7,#0x30,00523$
-      000ACB                       1102 00523$:
-      000ACB 40 30            [24] 1103 	jc	00138$
-      000ACD EF               [12] 1104 	mov	a,r7
-      000ACE 24 C6            [12] 1105 	add	a,#0xff - 0x39
-      000AD0 40 2B            [24] 1106 	jc	00138$
+      000C6F BF 30 00         [24] 1101 	cjne	r7,#0x30,00523$
+      000C72                       1102 00523$:
+      000C72 40 30            [24] 1103 	jc	00138$
+      000C74 EF               [12] 1104 	mov	a,r7
+      000C75 24 C6            [12] 1105 	add	a,#0xff - 0x39
+      000C77 40 2B            [24] 1106 	jc	00138$
                                    1107 ;	free result
                                    1108 ;	my_oled.c:233: index = 26 + c - '0';
-      000AD2 8F 06            [24] 1109 	mov	ar6,r7
-      000AD4 74 EA            [12] 1110 	mov	a,#0xea
-      000AD6 2E               [12] 1111 	add	a, r6
+      000C79 8F 06            [24] 1109 	mov	ar6,r7
+      000C7B 74 EA            [12] 1110 	mov	a,#0xea
+      000C7D 2E               [12] 1111 	add	a, r6
                                    1112 ;	my_oled.c:235: for(i = 0; i < 5; i++)
-      000AD7 7D 00            [12] 1113 	mov	r5,#0x00
-      000AD9 75 F0 05         [24] 1114 	mov	b,#0x05
-      000ADC A4               [48] 1115 	mul	ab
-      000ADD 24 11            [12] 1116 	add	a, #_font5x7
-      000ADF FC               [12] 1117 	mov	r4,a
-      000AE0 74 11            [12] 1118 	mov	a,#(_font5x7 >> 8)
-      000AE2 35 F0            [12] 1119 	addc	a, b
-      000AE4 FE               [12] 1120 	mov	r6,a
-      000AE5                       1121 00157$:
+      000C7E 7D 00            [12] 1113 	mov	r5,#0x00
+      000C80 75 F0 05         [24] 1114 	mov	b,#0x05
+      000C83 A4               [48] 1115 	mul	ab
+      000C84 24 B5            [12] 1116 	add	a, #_font5x7
+      000C86 FC               [12] 1117 	mov	r4,a
+      000C87 74 12            [12] 1118 	mov	a,#(_font5x7 >> 8)
+      000C89 35 F0            [12] 1119 	addc	a, b
+      000C8B FE               [12] 1120 	mov	r6,a
+      000C8C                       1121 00157$:
                                    1122 ;	my_oled.c:236: data[i] = font5x7[index][i];
-      000AE5 ED               [12] 1123 	mov	a,r5
-      000AE6 24 6F            [12] 1124 	add	a, #_oled_char_data_10000_47
-      000AE8 F9               [12] 1125 	mov	r1,a
-      000AE9 ED               [12] 1126 	mov	a,r5
-      000AEA 2C               [12] 1127 	add	a, r4
-      000AEB F5 82            [12] 1128 	mov	dpl,a
-      000AED E4               [12] 1129 	clr	a
-      000AEE 3E               [12] 1130 	addc	a, r6
-      000AEF F5 83            [12] 1131 	mov	dph,a
-      000AF1 E4               [12] 1132 	clr	a
-      000AF2 93               [24] 1133 	movc	a,@a+dptr
-      000AF3 F7               [12] 1134 	mov	@r1,a
+      000C8C ED               [12] 1123 	mov	a,r5
+      000C8D 24 4D            [12] 1124 	add	a, #_oled_char_data_10000_47
+      000C8F F9               [12] 1125 	mov	r1,a
+      000C90 ED               [12] 1126 	mov	a,r5
+      000C91 2C               [12] 1127 	add	a, r4
+      000C92 F5 82            [12] 1128 	mov	dpl,a
+      000C94 E4               [12] 1129 	clr	a
+      000C95 3E               [12] 1130 	addc	a, r6
+      000C96 F5 83            [12] 1131 	mov	dph,a
+      000C98 E4               [12] 1132 	clr	a
+      000C99 93               [24] 1133 	movc	a,@a+dptr
+      000C9A F7               [12] 1134 	mov	@r1,a
                                    1135 ;	my_oled.c:235: for(i = 0; i < 5; i++)
-      000AF4 0D               [12] 1136 	inc	r5
-      000AF5 BD 05 00         [24] 1137 	cjne	r5,#0x05,00526$
-      000AF8                       1138 00526$:
-      000AF8 40 EB            [24] 1139 	jc	00157$
-      000AFA 02 0C E0         [24] 1140 	ljmp	00143$
-      000AFD                       1141 00138$:
+      000C9B 0D               [12] 1136 	inc	r5
+      000C9C BD 05 00         [24] 1137 	cjne	r5,#0x05,00526$
+      000C9F                       1138 00526$:
+      000C9F 40 EB            [24] 1139 	jc	00157$
+      000CA1 02 0E 87         [24] 1140 	ljmp	00143$
+      000CA4                       1141 00138$:
                                    1142 ;	my_oled.c:240: switch(c)
-      000AFD BF 20 03         [24] 1143 	cjne	r7,#0x20,00528$
-      000B00 02 0C E0         [24] 1144 	ljmp	00143$
-      000B03                       1145 00528$:
-      000B03 BF 21 03         [24] 1146 	cjne	r7,#0x21,00529$
-      000B06 02 0B E3         [24] 1147 	ljmp	00113$
-      000B09                       1148 00529$:
-      000B09 BF 22 03         [24] 1149 	cjne	r7,#0x22,00530$
-      000B0C 02 0C 66         [24] 1150 	ljmp	00123$
-      000B0F                       1151 00530$:
-      000B0F BF 23 03         [24] 1152 	cjne	r7,#0x23,00531$
-      000B12 02 0C 79         [24] 1153 	ljmp	00125$
-      000B15                       1154 00531$:
-      000B15 BF 25 03         [24] 1155 	cjne	r7,#0x25,00532$
-      000B18 02 0C 4F         [24] 1156 	ljmp	00121$
-      000B1B                       1157 00532$:
-      000B1B BF 27 03         [24] 1158 	cjne	r7,#0x27,00533$
-      000B1E 02 0C 61         [24] 1159 	ljmp	00122$
-      000B21                       1160 00533$:
-      000B21 BF 28 03         [24] 1161 	cjne	r7,#0x28,00534$
-      000B24 02 0C 37         [24] 1162 	ljmp	00119$
-      000B27                       1163 00534$:
-      000B27 BF 29 03         [24] 1164 	cjne	r7,#0x29,00535$
-      000B2A 02 0C 43         [24] 1165 	ljmp	00120$
-      000B2D                       1166 00535$:
-      000B2D BF 2A 03         [24] 1167 	cjne	r7,#0x2a,00536$
-      000B30 02 0C 6E         [24] 1168 	ljmp	00124$
-      000B33                       1169 00536$:
-      000B33 BF 2B 03         [24] 1170 	cjne	r7,#0x2b,00537$
-      000B36 02 0C 1F         [24] 1171 	ljmp	00117$
-      000B39                       1172 00537$:
-      000B39 BF 2C 02         [24] 1173 	cjne	r7,#0x2c,00538$
-      000B3C 80 69            [24] 1174 	sjmp	00108$
-      000B3E                       1175 00538$:
-      000B3E BF 2D 02         [24] 1176 	cjne	r7,#0x2d,00539$
-      000B41 80 7C            [24] 1177 	sjmp	00111$
-      000B43                       1178 00539$:
-      000B43 BF 2E 02         [24] 1179 	cjne	r7,#0x2e,00540$
-      000B46 80 59            [24] 1180 	sjmp	00107$
-      000B48                       1181 00540$:
-      000B48 BF 2F 03         [24] 1182 	cjne	r7,#0x2f,00541$
-      000B4B 02 0B FB         [24] 1183 	ljmp	00115$
-      000B4E                       1184 00541$:
-      000B4E BF 3A 02         [24] 1185 	cjne	r7,#0x3a,00542$
-      000B51 80 5D            [24] 1186 	sjmp	00109$
-      000B53                       1187 00542$:
-      000B53 BF 3B 02         [24] 1188 	cjne	r7,#0x3b,00543$
-      000B56 80 5E            [24] 1189 	sjmp	00110$
-      000B58                       1190 00543$:
-      000B58 BF 3C 03         [24] 1191 	cjne	r7,#0x3c,00544$
-      000B5B 02 0C 8A         [24] 1192 	ljmp	00126$
-      000B5E                       1193 00544$:
-      000B5E BF 3D 03         [24] 1194 	cjne	r7,#0x3d,00545$
-      000B61 02 0C 2B         [24] 1195 	ljmp	00118$
-      000B64                       1196 00545$:
-      000B64 BF 3E 03         [24] 1197 	cjne	r7,#0x3e,00546$
-      000B67 02 0C 98         [24] 1198 	ljmp	00127$
-      000B6A                       1199 00546$:
-      000B6A BF 3F 02         [24] 1200 	cjne	r7,#0x3f,00547$
-      000B6D 80 7A            [24] 1201 	sjmp	00114$
-      000B6F                       1202 00547$:
-      000B6F BF 5B 03         [24] 1203 	cjne	r7,#0x5b,00548$
-      000B72 02 0C AB         [24] 1204 	ljmp	00129$
-      000B75                       1205 00548$:
-      000B75 BF 5C 03         [24] 1206 	cjne	r7,#0x5c,00549$
-      000B78 02 0C 0D         [24] 1207 	ljmp	00116$
-      000B7B                       1208 00549$:
-      000B7B BF 5D 03         [24] 1209 	cjne	r7,#0x5d,00550$
-      000B7E 02 0C B3         [24] 1210 	ljmp	00130$
-      000B81                       1211 00550$:
-      000B81 BF 5F 02         [24] 1212 	cjne	r7,#0x5f,00551$
-      000B84 80 4B            [24] 1213 	sjmp	00112$
-      000B86                       1214 00551$:
-      000B86 BF 7B 03         [24] 1215 	cjne	r7,#0x7b,00552$
-      000B89 02 0C BB         [24] 1216 	ljmp	00131$
-      000B8C                       1217 00552$:
-      000B8C BF 7C 03         [24] 1218 	cjne	r7,#0x7c,00553$
-      000B8F 02 0C A6         [24] 1219 	ljmp	00128$
-      000B92                       1220 00553$:
-      000B92 BF 7D 03         [24] 1221 	cjne	r7,#0x7d,00554$
-      000B95 02 0C C6         [24] 1222 	ljmp	00132$
-      000B98                       1223 00554$:
-      000B98 BF 7E 03         [24] 1224 	cjne	r7,#0x7e,00555$
-      000B9B 02 0C D1         [24] 1225 	ljmp	00133$
-      000B9E                       1226 00555$:
-      000B9E 02 0C E0         [24] 1227 	ljmp	00143$
+      000CA4 BF 20 03         [24] 1143 	cjne	r7,#0x20,00528$
+      000CA7 02 0E 87         [24] 1144 	ljmp	00143$
+      000CAA                       1145 00528$:
+      000CAA BF 21 03         [24] 1146 	cjne	r7,#0x21,00529$
+      000CAD 02 0D 8A         [24] 1147 	ljmp	00113$
+      000CB0                       1148 00529$:
+      000CB0 BF 22 03         [24] 1149 	cjne	r7,#0x22,00530$
+      000CB3 02 0E 0D         [24] 1150 	ljmp	00123$
+      000CB6                       1151 00530$:
+      000CB6 BF 23 03         [24] 1152 	cjne	r7,#0x23,00531$
+      000CB9 02 0E 20         [24] 1153 	ljmp	00125$
+      000CBC                       1154 00531$:
+      000CBC BF 25 03         [24] 1155 	cjne	r7,#0x25,00532$
+      000CBF 02 0D F6         [24] 1156 	ljmp	00121$
+      000CC2                       1157 00532$:
+      000CC2 BF 27 03         [24] 1158 	cjne	r7,#0x27,00533$
+      000CC5 02 0E 08         [24] 1159 	ljmp	00122$
+      000CC8                       1160 00533$:
+      000CC8 BF 28 03         [24] 1161 	cjne	r7,#0x28,00534$
+      000CCB 02 0D DE         [24] 1162 	ljmp	00119$
+      000CCE                       1163 00534$:
+      000CCE BF 29 03         [24] 1164 	cjne	r7,#0x29,00535$
+      000CD1 02 0D EA         [24] 1165 	ljmp	00120$
+      000CD4                       1166 00535$:
+      000CD4 BF 2A 03         [24] 1167 	cjne	r7,#0x2a,00536$
+      000CD7 02 0E 15         [24] 1168 	ljmp	00124$
+      000CDA                       1169 00536$:
+      000CDA BF 2B 03         [24] 1170 	cjne	r7,#0x2b,00537$
+      000CDD 02 0D C6         [24] 1171 	ljmp	00117$
+      000CE0                       1172 00537$:
+      000CE0 BF 2C 02         [24] 1173 	cjne	r7,#0x2c,00538$
+      000CE3 80 69            [24] 1174 	sjmp	00108$
+      000CE5                       1175 00538$:
+      000CE5 BF 2D 02         [24] 1176 	cjne	r7,#0x2d,00539$
+      000CE8 80 7C            [24] 1177 	sjmp	00111$
+      000CEA                       1178 00539$:
+      000CEA BF 2E 02         [24] 1179 	cjne	r7,#0x2e,00540$
+      000CED 80 59            [24] 1180 	sjmp	00107$
+      000CEF                       1181 00540$:
+      000CEF BF 2F 03         [24] 1182 	cjne	r7,#0x2f,00541$
+      000CF2 02 0D A2         [24] 1183 	ljmp	00115$
+      000CF5                       1184 00541$:
+      000CF5 BF 3A 02         [24] 1185 	cjne	r7,#0x3a,00542$
+      000CF8 80 5D            [24] 1186 	sjmp	00109$
+      000CFA                       1187 00542$:
+      000CFA BF 3B 02         [24] 1188 	cjne	r7,#0x3b,00543$
+      000CFD 80 5E            [24] 1189 	sjmp	00110$
+      000CFF                       1190 00543$:
+      000CFF BF 3C 03         [24] 1191 	cjne	r7,#0x3c,00544$
+      000D02 02 0E 31         [24] 1192 	ljmp	00126$
+      000D05                       1193 00544$:
+      000D05 BF 3D 03         [24] 1194 	cjne	r7,#0x3d,00545$
+      000D08 02 0D D2         [24] 1195 	ljmp	00118$
+      000D0B                       1196 00545$:
+      000D0B BF 3E 03         [24] 1197 	cjne	r7,#0x3e,00546$
+      000D0E 02 0E 3F         [24] 1198 	ljmp	00127$
+      000D11                       1199 00546$:
+      000D11 BF 3F 02         [24] 1200 	cjne	r7,#0x3f,00547$
+      000D14 80 7A            [24] 1201 	sjmp	00114$
+      000D16                       1202 00547$:
+      000D16 BF 5B 03         [24] 1203 	cjne	r7,#0x5b,00548$
+      000D19 02 0E 52         [24] 1204 	ljmp	00129$
+      000D1C                       1205 00548$:
+      000D1C BF 5C 03         [24] 1206 	cjne	r7,#0x5c,00549$
+      000D1F 02 0D B4         [24] 1207 	ljmp	00116$
+      000D22                       1208 00549$:
+      000D22 BF 5D 03         [24] 1209 	cjne	r7,#0x5d,00550$
+      000D25 02 0E 5A         [24] 1210 	ljmp	00130$
+      000D28                       1211 00550$:
+      000D28 BF 5F 02         [24] 1212 	cjne	r7,#0x5f,00551$
+      000D2B 80 4B            [24] 1213 	sjmp	00112$
+      000D2D                       1214 00551$:
+      000D2D BF 7B 03         [24] 1215 	cjne	r7,#0x7b,00552$
+      000D30 02 0E 62         [24] 1216 	ljmp	00131$
+      000D33                       1217 00552$:
+      000D33 BF 7C 03         [24] 1218 	cjne	r7,#0x7c,00553$
+      000D36 02 0E 4D         [24] 1219 	ljmp	00128$
+      000D39                       1220 00553$:
+      000D39 BF 7D 03         [24] 1221 	cjne	r7,#0x7d,00554$
+      000D3C 02 0E 6D         [24] 1222 	ljmp	00132$
+      000D3F                       1223 00554$:
+      000D3F BF 7E 03         [24] 1224 	cjne	r7,#0x7e,00555$
+      000D42 02 0E 78         [24] 1225 	ljmp	00133$
+      000D45                       1226 00555$:
+      000D45 02 0E 87         [24] 1227 	ljmp	00143$
                                    1228 ;	my_oled.c:242: case '.':
-      000BA1                       1229 00107$:
+      000D48                       1229 00107$:
                                    1230 ;	my_oled.c:243: data[2] = 0x60;
-      000BA1 75 71 60         [24] 1231 	mov	(_oled_char_data_10000_47 + 0x0002),#0x60
+      000D48 75 4F 60         [24] 1231 	mov	(_oled_char_data_10000_47 + 0x0002),#0x60
                                    1232 ;	my_oled.c:244: break;
-      000BA4 02 0C E0         [24] 1233 	ljmp	00143$
+      000D4B 02 0E 87         [24] 1233 	ljmp	00143$
                                    1234 ;	my_oled.c:246: case ',':
-      000BA7                       1235 00108$:
+      000D4E                       1235 00108$:
                                    1236 ;	my_oled.c:247: data[2] = 0x60;
-      000BA7 75 71 60         [24] 1237 	mov	(_oled_char_data_10000_47 + 0x0002),#0x60
+      000D4E 75 4F 60         [24] 1237 	mov	(_oled_char_data_10000_47 + 0x0002),#0x60
                                    1238 ;	my_oled.c:248: data[3] = 0x40;
-      000BAA 75 72 40         [24] 1239 	mov	(_oled_char_data_10000_47 + 0x0003),#0x40
+      000D51 75 50 40         [24] 1239 	mov	(_oled_char_data_10000_47 + 0x0003),#0x40
                                    1240 ;	my_oled.c:249: break;
-      000BAD 02 0C E0         [24] 1241 	ljmp	00143$
+      000D54 02 0E 87         [24] 1241 	ljmp	00143$
                                    1242 ;	my_oled.c:251: case ':':
-      000BB0                       1243 00109$:
+      000D57                       1243 00109$:
                                    1244 ;	my_oled.c:252: data[2] = 0x36;
-      000BB0 75 71 36         [24] 1245 	mov	(_oled_char_data_10000_47 + 0x0002),#0x36
+      000D57 75 4F 36         [24] 1245 	mov	(_oled_char_data_10000_47 + 0x0002),#0x36
                                    1246 ;	my_oled.c:253: break;
-      000BB3 02 0C E0         [24] 1247 	ljmp	00143$
+      000D5A 02 0E 87         [24] 1247 	ljmp	00143$
                                    1248 ;	my_oled.c:255: case ';':
-      000BB6                       1249 00110$:
+      000D5D                       1249 00110$:
                                    1250 ;	my_oled.c:256: data[2] = 0x36;
-      000BB6 75 71 36         [24] 1251 	mov	(_oled_char_data_10000_47 + 0x0002),#0x36
+      000D5D 75 4F 36         [24] 1251 	mov	(_oled_char_data_10000_47 + 0x0002),#0x36
                                    1252 ;	my_oled.c:257: data[3] = 0x40;
-      000BB9 75 72 40         [24] 1253 	mov	(_oled_char_data_10000_47 + 0x0003),#0x40
+      000D60 75 50 40         [24] 1253 	mov	(_oled_char_data_10000_47 + 0x0003),#0x40
                                    1254 ;	my_oled.c:258: break;
-      000BBC 02 0C E0         [24] 1255 	ljmp	00143$
+      000D63 02 0E 87         [24] 1255 	ljmp	00143$
                                    1256 ;	my_oled.c:260: case '-':
-      000BBF                       1257 00111$:
+      000D66                       1257 00111$:
                                    1258 ;	my_oled.c:261: data[0] = 0x08;
-      000BBF 75 6F 08         [24] 1259 	mov	_oled_char_data_10000_47,#0x08
+      000D66 75 4D 08         [24] 1259 	mov	_oled_char_data_10000_47,#0x08
                                    1260 ;	my_oled.c:262: data[1] = 0x08;
-      000BC2 75 70 08         [24] 1261 	mov	(_oled_char_data_10000_47 + 0x0001),#0x08
+      000D69 75 4E 08         [24] 1261 	mov	(_oled_char_data_10000_47 + 0x0001),#0x08
                                    1262 ;	my_oled.c:263: data[2] = 0x08;
-      000BC5 75 71 08         [24] 1263 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
+      000D6C 75 4F 08         [24] 1263 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
                                    1264 ;	my_oled.c:264: data[3] = 0x08;
-      000BC8 75 72 08         [24] 1265 	mov	(_oled_char_data_10000_47 + 0x0003),#0x08
+      000D6F 75 50 08         [24] 1265 	mov	(_oled_char_data_10000_47 + 0x0003),#0x08
                                    1266 ;	my_oled.c:265: data[4] = 0x08;
-      000BCB 75 73 08         [24] 1267 	mov	(_oled_char_data_10000_47 + 0x0004),#0x08
+      000D72 75 51 08         [24] 1267 	mov	(_oled_char_data_10000_47 + 0x0004),#0x08
                                    1268 ;	my_oled.c:266: break;
-      000BCE 02 0C E0         [24] 1269 	ljmp	00143$
+      000D75 02 0E 87         [24] 1269 	ljmp	00143$
                                    1270 ;	my_oled.c:268: case '_':
-      000BD1                       1271 00112$:
+      000D78                       1271 00112$:
                                    1272 ;	my_oled.c:269: data[0] = 0x40;
-      000BD1 75 6F 40         [24] 1273 	mov	_oled_char_data_10000_47,#0x40
+      000D78 75 4D 40         [24] 1273 	mov	_oled_char_data_10000_47,#0x40
                                    1274 ;	my_oled.c:270: data[1] = 0x40;
-      000BD4 75 70 40         [24] 1275 	mov	(_oled_char_data_10000_47 + 0x0001),#0x40
+      000D7B 75 4E 40         [24] 1275 	mov	(_oled_char_data_10000_47 + 0x0001),#0x40
                                    1276 ;	my_oled.c:271: data[2] = 0x40;
-      000BD7 75 71 40         [24] 1277 	mov	(_oled_char_data_10000_47 + 0x0002),#0x40
+      000D7E 75 4F 40         [24] 1277 	mov	(_oled_char_data_10000_47 + 0x0002),#0x40
                                    1278 ;	my_oled.c:272: data[3] = 0x40;
-      000BDA 75 72 40         [24] 1279 	mov	(_oled_char_data_10000_47 + 0x0003),#0x40
+      000D81 75 50 40         [24] 1279 	mov	(_oled_char_data_10000_47 + 0x0003),#0x40
                                    1280 ;	my_oled.c:273: data[4] = 0x40;
-      000BDD 75 73 40         [24] 1281 	mov	(_oled_char_data_10000_47 + 0x0004),#0x40
+      000D84 75 51 40         [24] 1281 	mov	(_oled_char_data_10000_47 + 0x0004),#0x40
                                    1282 ;	my_oled.c:274: break;
-      000BE0 02 0C E0         [24] 1283 	ljmp	00143$
+      000D87 02 0E 87         [24] 1283 	ljmp	00143$
                                    1284 ;	my_oled.c:276: case '!':
-      000BE3                       1285 00113$:
+      000D8A                       1285 00113$:
                                    1286 ;	my_oled.c:277: data[2] = 0x5F;
-      000BE3 75 71 5F         [24] 1287 	mov	(_oled_char_data_10000_47 + 0x0002),#0x5f
+      000D8A 75 4F 5F         [24] 1287 	mov	(_oled_char_data_10000_47 + 0x0002),#0x5f
                                    1288 ;	my_oled.c:278: break;
-      000BE6 02 0C E0         [24] 1289 	ljmp	00143$
+      000D8D 02 0E 87         [24] 1289 	ljmp	00143$
                                    1290 ;	my_oled.c:280: case '?':
-      000BE9                       1291 00114$:
+      000D90                       1291 00114$:
                                    1292 ;	my_oled.c:281: data[0] = 0x02;
-      000BE9 75 6F 02         [24] 1293 	mov	_oled_char_data_10000_47,#0x02
+      000D90 75 4D 02         [24] 1293 	mov	_oled_char_data_10000_47,#0x02
                                    1294 ;	my_oled.c:282: data[1] = 0x01;
-      000BEC 75 70 01         [24] 1295 	mov	(_oled_char_data_10000_47 + 0x0001),#0x01
+      000D93 75 4E 01         [24] 1295 	mov	(_oled_char_data_10000_47 + 0x0001),#0x01
                                    1296 ;	my_oled.c:283: data[2] = 0x51;
-      000BEF 75 71 51         [24] 1297 	mov	(_oled_char_data_10000_47 + 0x0002),#0x51
+      000D96 75 4F 51         [24] 1297 	mov	(_oled_char_data_10000_47 + 0x0002),#0x51
                                    1298 ;	my_oled.c:284: data[3] = 0x09;
-      000BF2 75 72 09         [24] 1299 	mov	(_oled_char_data_10000_47 + 0x0003),#0x09
+      000D99 75 50 09         [24] 1299 	mov	(_oled_char_data_10000_47 + 0x0003),#0x09
                                    1300 ;	my_oled.c:285: data[4] = 0x06;
-      000BF5 75 73 06         [24] 1301 	mov	(_oled_char_data_10000_47 + 0x0004),#0x06
+      000D9C 75 51 06         [24] 1301 	mov	(_oled_char_data_10000_47 + 0x0004),#0x06
                                    1302 ;	my_oled.c:286: break;
-      000BF8 02 0C E0         [24] 1303 	ljmp	00143$
+      000D9F 02 0E 87         [24] 1303 	ljmp	00143$
                                    1304 ;	my_oled.c:288: case '/':
-      000BFB                       1305 00115$:
+      000DA2                       1305 00115$:
                                    1306 ;	my_oled.c:289: data[0] = 0x20;
-      000BFB 75 6F 20         [24] 1307 	mov	_oled_char_data_10000_47,#0x20
+      000DA2 75 4D 20         [24] 1307 	mov	_oled_char_data_10000_47,#0x20
                                    1308 ;	my_oled.c:290: data[1] = 0x10;
-      000BFE 75 70 10         [24] 1309 	mov	(_oled_char_data_10000_47 + 0x0001),#0x10
+      000DA5 75 4E 10         [24] 1309 	mov	(_oled_char_data_10000_47 + 0x0001),#0x10
                                    1310 ;	my_oled.c:291: data[2] = 0x08;
-      000C01 75 71 08         [24] 1311 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
+      000DA8 75 4F 08         [24] 1311 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
                                    1312 ;	my_oled.c:292: data[3] = 0x04;
-      000C04 75 72 04         [24] 1313 	mov	(_oled_char_data_10000_47 + 0x0003),#0x04
+      000DAB 75 50 04         [24] 1313 	mov	(_oled_char_data_10000_47 + 0x0003),#0x04
                                    1314 ;	my_oled.c:293: data[4] = 0x02;
-      000C07 75 73 02         [24] 1315 	mov	(_oled_char_data_10000_47 + 0x0004),#0x02
+      000DAE 75 51 02         [24] 1315 	mov	(_oled_char_data_10000_47 + 0x0004),#0x02
                                    1316 ;	my_oled.c:294: break;
-      000C0A 02 0C E0         [24] 1317 	ljmp	00143$
+      000DB1 02 0E 87         [24] 1317 	ljmp	00143$
                                    1318 ;	my_oled.c:296: case '\\':
-      000C0D                       1319 00116$:
+      000DB4                       1319 00116$:
                                    1320 ;	my_oled.c:297: data[0] = 0x02;
-      000C0D 75 6F 02         [24] 1321 	mov	_oled_char_data_10000_47,#0x02
+      000DB4 75 4D 02         [24] 1321 	mov	_oled_char_data_10000_47,#0x02
                                    1322 ;	my_oled.c:298: data[1] = 0x04;
-      000C10 75 70 04         [24] 1323 	mov	(_oled_char_data_10000_47 + 0x0001),#0x04
+      000DB7 75 4E 04         [24] 1323 	mov	(_oled_char_data_10000_47 + 0x0001),#0x04
                                    1324 ;	my_oled.c:299: data[2] = 0x08;
-      000C13 75 71 08         [24] 1325 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
+      000DBA 75 4F 08         [24] 1325 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
                                    1326 ;	my_oled.c:300: data[3] = 0x10;
-      000C16 75 72 10         [24] 1327 	mov	(_oled_char_data_10000_47 + 0x0003),#0x10
+      000DBD 75 50 10         [24] 1327 	mov	(_oled_char_data_10000_47 + 0x0003),#0x10
                                    1328 ;	my_oled.c:301: data[4] = 0x20;
-      000C19 75 73 20         [24] 1329 	mov	(_oled_char_data_10000_47 + 0x0004),#0x20
+      000DC0 75 51 20         [24] 1329 	mov	(_oled_char_data_10000_47 + 0x0004),#0x20
                                    1330 ;	my_oled.c:302: break;
-      000C1C 02 0C E0         [24] 1331 	ljmp	00143$
+      000DC3 02 0E 87         [24] 1331 	ljmp	00143$
                                    1332 ;	my_oled.c:304: case '+':
-      000C1F                       1333 00117$:
+      000DC6                       1333 00117$:
                                    1334 ;	my_oled.c:305: data[1] = 0x08;
-      000C1F 75 70 08         [24] 1335 	mov	(_oled_char_data_10000_47 + 0x0001),#0x08
+      000DC6 75 4E 08         [24] 1335 	mov	(_oled_char_data_10000_47 + 0x0001),#0x08
                                    1336 ;	my_oled.c:306: data[2] = 0x1C;
-      000C22 75 71 1C         [24] 1337 	mov	(_oled_char_data_10000_47 + 0x0002),#0x1c
+      000DC9 75 4F 1C         [24] 1337 	mov	(_oled_char_data_10000_47 + 0x0002),#0x1c
                                    1338 ;	my_oled.c:307: data[3] = 0x08;
-      000C25 75 72 08         [24] 1339 	mov	(_oled_char_data_10000_47 + 0x0003),#0x08
+      000DCC 75 50 08         [24] 1339 	mov	(_oled_char_data_10000_47 + 0x0003),#0x08
                                    1340 ;	my_oled.c:308: break;
-      000C28 02 0C E0         [24] 1341 	ljmp	00143$
+      000DCF 02 0E 87         [24] 1341 	ljmp	00143$
                                    1342 ;	my_oled.c:310: case '=':
-      000C2B                       1343 00118$:
+      000DD2                       1343 00118$:
                                    1344 ;	my_oled.c:311: data[1] = 0x14;
-      000C2B 75 70 14         [24] 1345 	mov	(_oled_char_data_10000_47 + 0x0001),#0x14
+      000DD2 75 4E 14         [24] 1345 	mov	(_oled_char_data_10000_47 + 0x0001),#0x14
                                    1346 ;	my_oled.c:312: data[2] = 0x14;
-      000C2E 75 71 14         [24] 1347 	mov	(_oled_char_data_10000_47 + 0x0002),#0x14
+      000DD5 75 4F 14         [24] 1347 	mov	(_oled_char_data_10000_47 + 0x0002),#0x14
                                    1348 ;	my_oled.c:313: data[3] = 0x14;
-      000C31 75 72 14         [24] 1349 	mov	(_oled_char_data_10000_47 + 0x0003),#0x14
+      000DD8 75 50 14         [24] 1349 	mov	(_oled_char_data_10000_47 + 0x0003),#0x14
                                    1350 ;	my_oled.c:314: break;
-      000C34 02 0C E0         [24] 1351 	ljmp	00143$
+      000DDB 02 0E 87         [24] 1351 	ljmp	00143$
                                    1352 ;	my_oled.c:316: case '(':
-      000C37                       1353 00119$:
+      000DDE                       1353 00119$:
                                    1354 ;	my_oled.c:317: data[1] = 0x1C;
-      000C37 75 70 1C         [24] 1355 	mov	(_oled_char_data_10000_47 + 0x0001),#0x1c
+      000DDE 75 4E 1C         [24] 1355 	mov	(_oled_char_data_10000_47 + 0x0001),#0x1c
                                    1356 ;	my_oled.c:318: data[2] = 0x22;
-      000C3A 75 71 22         [24] 1357 	mov	(_oled_char_data_10000_47 + 0x0002),#0x22
+      000DE1 75 4F 22         [24] 1357 	mov	(_oled_char_data_10000_47 + 0x0002),#0x22
                                    1358 ;	my_oled.c:319: data[3] = 0x41;
-      000C3D 75 72 41         [24] 1359 	mov	(_oled_char_data_10000_47 + 0x0003),#0x41
+      000DE4 75 50 41         [24] 1359 	mov	(_oled_char_data_10000_47 + 0x0003),#0x41
                                    1360 ;	my_oled.c:320: break;
-      000C40 02 0C E0         [24] 1361 	ljmp	00143$
+      000DE7 02 0E 87         [24] 1361 	ljmp	00143$
                                    1362 ;	my_oled.c:322: case ')':
-      000C43                       1363 00120$:
+      000DEA                       1363 00120$:
                                    1364 ;	my_oled.c:323: data[1] = 0x41;
-      000C43 75 70 41         [24] 1365 	mov	(_oled_char_data_10000_47 + 0x0001),#0x41
+      000DEA 75 4E 41         [24] 1365 	mov	(_oled_char_data_10000_47 + 0x0001),#0x41
                                    1366 ;	my_oled.c:324: data[2] = 0x22;
-      000C46 75 71 22         [24] 1367 	mov	(_oled_char_data_10000_47 + 0x0002),#0x22
+      000DED 75 4F 22         [24] 1367 	mov	(_oled_char_data_10000_47 + 0x0002),#0x22
                                    1368 ;	my_oled.c:325: data[3] = 0x1C;
-      000C49 75 72 1C         [24] 1369 	mov	(_oled_char_data_10000_47 + 0x0003),#0x1c
+      000DF0 75 50 1C         [24] 1369 	mov	(_oled_char_data_10000_47 + 0x0003),#0x1c
                                    1370 ;	my_oled.c:326: break;
-      000C4C 02 0C E0         [24] 1371 	ljmp	00143$
+      000DF3 02 0E 87         [24] 1371 	ljmp	00143$
                                    1372 ;	my_oled.c:328: case '%':
-      000C4F                       1373 00121$:
+      000DF6                       1373 00121$:
                                    1374 ;	my_oled.c:329: data[0] = 0x23;
-      000C4F 75 6F 23         [24] 1375 	mov	_oled_char_data_10000_47,#0x23
+      000DF6 75 4D 23         [24] 1375 	mov	_oled_char_data_10000_47,#0x23
                                    1376 ;	my_oled.c:330: data[1] = 0x13;
-      000C52 75 70 13         [24] 1377 	mov	(_oled_char_data_10000_47 + 0x0001),#0x13
+      000DF9 75 4E 13         [24] 1377 	mov	(_oled_char_data_10000_47 + 0x0001),#0x13
                                    1378 ;	my_oled.c:331: data[2] = 0x08;
-      000C55 75 71 08         [24] 1379 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
+      000DFC 75 4F 08         [24] 1379 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
                                    1380 ;	my_oled.c:332: data[3] = 0x64;
-      000C58 75 72 64         [24] 1381 	mov	(_oled_char_data_10000_47 + 0x0003),#0x64
+      000DFF 75 50 64         [24] 1381 	mov	(_oled_char_data_10000_47 + 0x0003),#0x64
                                    1382 ;	my_oled.c:333: data[4] = 0x62;
-      000C5B 75 73 62         [24] 1383 	mov	(_oled_char_data_10000_47 + 0x0004),#0x62
+      000E02 75 51 62         [24] 1383 	mov	(_oled_char_data_10000_47 + 0x0004),#0x62
                                    1384 ;	my_oled.c:334: break;
-      000C5E 02 0C E0         [24] 1385 	ljmp	00143$
+      000E05 02 0E 87         [24] 1385 	ljmp	00143$
                                    1386 ;	my_oled.c:336: case '\'':
-      000C61                       1387 00122$:
+      000E08                       1387 00122$:
                                    1388 ;	my_oled.c:337: data[2] = 0x07;
-      000C61 75 71 07         [24] 1389 	mov	(_oled_char_data_10000_47 + 0x0002),#0x07
+      000E08 75 4F 07         [24] 1389 	mov	(_oled_char_data_10000_47 + 0x0002),#0x07
                                    1390 ;	my_oled.c:338: break;
                                    1391 ;	my_oled.c:340: case 0x22:     /* for char ' " ' */
-      000C64 80 7A            [24] 1392 	sjmp	00143$
-      000C66                       1393 00123$:
+      000E0B 80 7A            [24] 1392 	sjmp	00143$
+      000E0D                       1393 00123$:
                                    1394 ;	my_oled.c:341: data[1] = 0x03;
-      000C66 75 70 03         [24] 1395 	mov	(_oled_char_data_10000_47 + 0x0001),#0x03
+      000E0D 75 4E 03         [24] 1395 	mov	(_oled_char_data_10000_47 + 0x0001),#0x03
                                    1396 ;	my_oled.c:342: data[3] = 0x03;
-      000C69 75 72 03         [24] 1397 	mov	(_oled_char_data_10000_47 + 0x0003),#0x03
+      000E10 75 50 03         [24] 1397 	mov	(_oled_char_data_10000_47 + 0x0003),#0x03
                                    1398 ;	my_oled.c:343: break;
                                    1399 ;	my_oled.c:345: case '*':
-      000C6C 80 72            [24] 1400 	sjmp	00143$
-      000C6E                       1401 00124$:
+      000E13 80 72            [24] 1400 	sjmp	00143$
+      000E15                       1401 00124$:
                                    1402 ;	my_oled.c:346: data[1] = 0x14;
-      000C6E 75 70 14         [24] 1403 	mov	(_oled_char_data_10000_47 + 0x0001),#0x14
+      000E15 75 4E 14         [24] 1403 	mov	(_oled_char_data_10000_47 + 0x0001),#0x14
                                    1404 ;	my_oled.c:347: data[2] = 0x08;
-      000C71 75 71 08         [24] 1405 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
+      000E18 75 4F 08         [24] 1405 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
                                    1406 ;	my_oled.c:348: data[3] = 0x14;
-      000C74 75 72 14         [24] 1407 	mov	(_oled_char_data_10000_47 + 0x0003),#0x14
+      000E1B 75 50 14         [24] 1407 	mov	(_oled_char_data_10000_47 + 0x0003),#0x14
                                    1408 ;	my_oled.c:349: break;
                                    1409 ;	my_oled.c:351: case '#':
-      000C77 80 67            [24] 1410 	sjmp	00143$
-      000C79                       1411 00125$:
+      000E1E 80 67            [24] 1410 	sjmp	00143$
+      000E20                       1411 00125$:
                                    1412 ;	my_oled.c:352: data[0] = 0x14;
-      000C79 75 6F 14         [24] 1413 	mov	_oled_char_data_10000_47,#0x14
+      000E20 75 4D 14         [24] 1413 	mov	_oled_char_data_10000_47,#0x14
                                    1414 ;	my_oled.c:353: data[1] = 0x7F;
-      000C7C 75 70 7F         [24] 1415 	mov	(_oled_char_data_10000_47 + 0x0001),#0x7f
+      000E23 75 4E 7F         [24] 1415 	mov	(_oled_char_data_10000_47 + 0x0001),#0x7f
                                    1416 ;	my_oled.c:354: data[2] = 0x14;
-      000C7F 75 71 14         [24] 1417 	mov	(_oled_char_data_10000_47 + 0x0002),#0x14
+      000E26 75 4F 14         [24] 1417 	mov	(_oled_char_data_10000_47 + 0x0002),#0x14
                                    1418 ;	my_oled.c:355: data[3] = 0x7F;
-      000C82 75 72 7F         [24] 1419 	mov	(_oled_char_data_10000_47 + 0x0003),#0x7f
+      000E29 75 50 7F         [24] 1419 	mov	(_oled_char_data_10000_47 + 0x0003),#0x7f
                                    1420 ;	my_oled.c:356: data[4] = 0x14;
-      000C85 75 73 14         [24] 1421 	mov	(_oled_char_data_10000_47 + 0x0004),#0x14
+      000E2C 75 51 14         [24] 1421 	mov	(_oled_char_data_10000_47 + 0x0004),#0x14
                                    1422 ;	my_oled.c:357: break;
                                    1423 ;	my_oled.c:359: case '<':
-      000C88 80 56            [24] 1424 	sjmp	00143$
-      000C8A                       1425 00126$:
+      000E2F 80 56            [24] 1424 	sjmp	00143$
+      000E31                       1425 00126$:
                                    1426 ;	my_oled.c:360: data[0] = 0x08;
-      000C8A 75 6F 08         [24] 1427 	mov	_oled_char_data_10000_47,#0x08
+      000E31 75 4D 08         [24] 1427 	mov	_oled_char_data_10000_47,#0x08
                                    1428 ;	my_oled.c:361: data[1] = 0x14;
-      000C8D 75 70 14         [24] 1429 	mov	(_oled_char_data_10000_47 + 0x0001),#0x14
+      000E34 75 4E 14         [24] 1429 	mov	(_oled_char_data_10000_47 + 0x0001),#0x14
                                    1430 ;	my_oled.c:362: data[2] = 0x22;
-      000C90 75 71 22         [24] 1431 	mov	(_oled_char_data_10000_47 + 0x0002),#0x22
+      000E37 75 4F 22         [24] 1431 	mov	(_oled_char_data_10000_47 + 0x0002),#0x22
                                    1432 ;	my_oled.c:363: data[3] = 0x41;
-      000C93 75 72 41         [24] 1433 	mov	(_oled_char_data_10000_47 + 0x0003),#0x41
+      000E3A 75 50 41         [24] 1433 	mov	(_oled_char_data_10000_47 + 0x0003),#0x41
                                    1434 ;	my_oled.c:364: break;
                                    1435 ;	my_oled.c:366: case '>':
-      000C96 80 48            [24] 1436 	sjmp	00143$
-      000C98                       1437 00127$:
+      000E3D 80 48            [24] 1436 	sjmp	00143$
+      000E3F                       1437 00127$:
                                    1438 ;	my_oled.c:367: data[0] = 0x41;
-      000C98 75 6F 41         [24] 1439 	mov	_oled_char_data_10000_47,#0x41
+      000E3F 75 4D 41         [24] 1439 	mov	_oled_char_data_10000_47,#0x41
                                    1440 ;	my_oled.c:368: data[1] = 0x22;
-      000C9B 75 70 22         [24] 1441 	mov	(_oled_char_data_10000_47 + 0x0001),#0x22
+      000E42 75 4E 22         [24] 1441 	mov	(_oled_char_data_10000_47 + 0x0001),#0x22
                                    1442 ;	my_oled.c:369: data[2] = 0x14;
-      000C9E 75 71 14         [24] 1443 	mov	(_oled_char_data_10000_47 + 0x0002),#0x14
+      000E45 75 4F 14         [24] 1443 	mov	(_oled_char_data_10000_47 + 0x0002),#0x14
                                    1444 ;	my_oled.c:370: data[3] = 0x08;
-      000CA1 75 72 08         [24] 1445 	mov	(_oled_char_data_10000_47 + 0x0003),#0x08
+      000E48 75 50 08         [24] 1445 	mov	(_oled_char_data_10000_47 + 0x0003),#0x08
                                    1446 ;	my_oled.c:371: break;
                                    1447 ;	my_oled.c:373: case '|':
-      000CA4 80 3A            [24] 1448 	sjmp	00143$
-      000CA6                       1449 00128$:
+      000E4B 80 3A            [24] 1448 	sjmp	00143$
+      000E4D                       1449 00128$:
                                    1450 ;	my_oled.c:374: data[2] = 0x7F;
-      000CA6 75 71 7F         [24] 1451 	mov	(_oled_char_data_10000_47 + 0x0002),#0x7f
+      000E4D 75 4F 7F         [24] 1451 	mov	(_oled_char_data_10000_47 + 0x0002),#0x7f
                                    1452 ;	my_oled.c:375: break;
                                    1453 ;	my_oled.c:377: case '[':
-      000CA9 80 35            [24] 1454 	sjmp	00143$
-      000CAB                       1455 00129$:
+      000E50 80 35            [24] 1454 	sjmp	00143$
+      000E52                       1455 00129$:
                                    1456 ;	my_oled.c:378: data[1] = 0x7F;
-      000CAB 75 70 7F         [24] 1457 	mov	(_oled_char_data_10000_47 + 0x0001),#0x7f
+      000E52 75 4E 7F         [24] 1457 	mov	(_oled_char_data_10000_47 + 0x0001),#0x7f
                                    1458 ;	my_oled.c:379: data[2] = 0x41;
-      000CAE 75 71 41         [24] 1459 	mov	(_oled_char_data_10000_47 + 0x0002),#0x41
+      000E55 75 4F 41         [24] 1459 	mov	(_oled_char_data_10000_47 + 0x0002),#0x41
                                    1460 ;	my_oled.c:380: break;
                                    1461 ;	my_oled.c:382: case ']':
-      000CB1 80 2D            [24] 1462 	sjmp	00143$
-      000CB3                       1463 00130$:
+      000E58 80 2D            [24] 1462 	sjmp	00143$
+      000E5A                       1463 00130$:
                                    1464 ;	my_oled.c:383: data[2] = 0x41;
-      000CB3 75 71 41         [24] 1465 	mov	(_oled_char_data_10000_47 + 0x0002),#0x41
+      000E5A 75 4F 41         [24] 1465 	mov	(_oled_char_data_10000_47 + 0x0002),#0x41
                                    1466 ;	my_oled.c:384: data[3] = 0x7F;
-      000CB6 75 72 7F         [24] 1467 	mov	(_oled_char_data_10000_47 + 0x0003),#0x7f
+      000E5D 75 50 7F         [24] 1467 	mov	(_oled_char_data_10000_47 + 0x0003),#0x7f
                                    1468 ;	my_oled.c:385: break;
                                    1469 ;	my_oled.c:387: case '{':
-      000CB9 80 25            [24] 1470 	sjmp	00143$
-      000CBB                       1471 00131$:
+      000E60 80 25            [24] 1470 	sjmp	00143$
+      000E62                       1471 00131$:
                                    1472 ;	my_oled.c:388: data[1] = 0x08;
-      000CBB 75 70 08         [24] 1473 	mov	(_oled_char_data_10000_47 + 0x0001),#0x08
+      000E62 75 4E 08         [24] 1473 	mov	(_oled_char_data_10000_47 + 0x0001),#0x08
                                    1474 ;	my_oled.c:389: data[2] = 0x36;
-      000CBE 75 71 36         [24] 1475 	mov	(_oled_char_data_10000_47 + 0x0002),#0x36
+      000E65 75 4F 36         [24] 1475 	mov	(_oled_char_data_10000_47 + 0x0002),#0x36
                                    1476 ;	my_oled.c:390: data[3] = 0x41;
-      000CC1 75 72 41         [24] 1477 	mov	(_oled_char_data_10000_47 + 0x0003),#0x41
+      000E68 75 50 41         [24] 1477 	mov	(_oled_char_data_10000_47 + 0x0003),#0x41
                                    1478 ;	my_oled.c:391: break;
                                    1479 ;	my_oled.c:393: case '}':
-      000CC4 80 1A            [24] 1480 	sjmp	00143$
-      000CC6                       1481 00132$:
+      000E6B 80 1A            [24] 1480 	sjmp	00143$
+      000E6D                       1481 00132$:
                                    1482 ;	my_oled.c:394: data[1] = 0x41;
-      000CC6 75 70 41         [24] 1483 	mov	(_oled_char_data_10000_47 + 0x0001),#0x41
+      000E6D 75 4E 41         [24] 1483 	mov	(_oled_char_data_10000_47 + 0x0001),#0x41
                                    1484 ;	my_oled.c:395: data[2] = 0x36;
-      000CC9 75 71 36         [24] 1485 	mov	(_oled_char_data_10000_47 + 0x0002),#0x36
+      000E70 75 4F 36         [24] 1485 	mov	(_oled_char_data_10000_47 + 0x0002),#0x36
                                    1486 ;	my_oled.c:396: data[3] = 0x08;
-      000CCC 75 72 08         [24] 1487 	mov	(_oled_char_data_10000_47 + 0x0003),#0x08
+      000E73 75 50 08         [24] 1487 	mov	(_oled_char_data_10000_47 + 0x0003),#0x08
                                    1488 ;	my_oled.c:397: break;
                                    1489 ;	my_oled.c:399: case '~':
-      000CCF 80 0F            [24] 1490 	sjmp	00143$
-      000CD1                       1491 00133$:
+      000E76 80 0F            [24] 1490 	sjmp	00143$
+      000E78                       1491 00133$:
                                    1492 ;	my_oled.c:400: data[0] = 0x08;
-      000CD1 75 6F 08         [24] 1493 	mov	_oled_char_data_10000_47,#0x08
+      000E78 75 4D 08         [24] 1493 	mov	_oled_char_data_10000_47,#0x08
                                    1494 ;	my_oled.c:401: data[1] = 0x04;
-      000CD4 75 70 04         [24] 1495 	mov	(_oled_char_data_10000_47 + 0x0001),#0x04
+      000E7B 75 4E 04         [24] 1495 	mov	(_oled_char_data_10000_47 + 0x0001),#0x04
                                    1496 ;	my_oled.c:402: data[2] = 0x08;
-      000CD7 75 71 08         [24] 1497 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
+      000E7E 75 4F 08         [24] 1497 	mov	(_oled_char_data_10000_47 + 0x0002),#0x08
                                    1498 ;	my_oled.c:403: data[3] = 0x10;
-      000CDA 75 72 10         [24] 1499 	mov	(_oled_char_data_10000_47 + 0x0003),#0x10
+      000E81 75 50 10         [24] 1499 	mov	(_oled_char_data_10000_47 + 0x0003),#0x10
                                    1500 ;	my_oled.c:404: data[4] = 0x08;
-      000CDD 75 73 08         [24] 1501 	mov	(_oled_char_data_10000_47 + 0x0004),#0x08
+      000E84 75 51 08         [24] 1501 	mov	(_oled_char_data_10000_47 + 0x0004),#0x08
                                    1502 ;	my_oled.c:410: }
-      000CE0                       1503 00143$:
+      000E87                       1503 00143$:
                                    1504 ;	my_oled.c:413: if((unsigned int)oled_column + 6 > 128)
-      000CE0 AE 57            [24] 1505 	mov	r6,_oled_column
-      000CE2 7F 00            [12] 1506 	mov	r7,#0x00
-      000CE4 74 06            [12] 1507 	mov	a,#0x06
-      000CE6 2E               [12] 1508 	add	a, r6
-      000CE7 FE               [12] 1509 	mov	r6,a
-      000CE8 E4               [12] 1510 	clr	a
-      000CE9 3F               [12] 1511 	addc	a, r7
-      000CEA FF               [12] 1512 	mov	r7,a
-      000CEB C3               [12] 1513 	clr	c
-      000CEC 74 80            [12] 1514 	mov	a,#0x80
-      000CEE 9E               [12] 1515 	subb	a,r6
-      000CEF E4               [12] 1516 	clr	a
-      000CF0 9F               [12] 1517 	subb	a,r7
-      000CF1 50 17            [24] 1518 	jnc	00148$
+      000E87 AE 35            [24] 1505 	mov	r6,_oled_column
+      000E89 7F 00            [12] 1506 	mov	r7,#0x00
+      000E8B 74 06            [12] 1507 	mov	a,#0x06
+      000E8D 2E               [12] 1508 	add	a, r6
+      000E8E FE               [12] 1509 	mov	r6,a
+      000E8F E4               [12] 1510 	clr	a
+      000E90 3F               [12] 1511 	addc	a, r7
+      000E91 FF               [12] 1512 	mov	r7,a
+      000E92 C3               [12] 1513 	clr	c
+      000E93 74 80            [12] 1514 	mov	a,#0x80
+      000E95 9E               [12] 1515 	subb	a,r6
+      000E96 E4               [12] 1516 	clr	a
+      000E97 9F               [12] 1517 	subb	a,r7
+      000E98 50 17            [24] 1518 	jnc	00148$
                                    1519 ;	free result
                                    1520 ;	my_oled.c:415: oled_page++;
-      000CF3 05 56            [12] 1521 	inc	_oled_page
+      000E9A 05 34            [12] 1521 	inc	_oled_page
                                    1522 ;	my_oled.c:416: oled_column = 0;
-      000CF5 75 57 00         [24] 1523 	mov	_oled_column,#0x00
+      000E9C 75 35 00         [24] 1523 	mov	_oled_column,#0x00
                                    1524 ;	my_oled.c:418: if(oled_page > 7)
-      000CF8 E5 56            [12] 1525 	mov	a,_oled_page
-      000CFA 24 F8            [12] 1526 	add	a,#0xff - 0x07
-      000CFC 50 03            [24] 1527 	jnc	00146$
+      000E9F E5 34            [12] 1525 	mov	a,_oled_page
+      000EA1 24 F8            [12] 1526 	add	a,#0xff - 0x07
+      000EA3 50 03            [24] 1527 	jnc	00146$
                                    1528 ;	free result
                                    1529 ;	my_oled.c:419: oled_page = 0;
-      000CFE 75 56 00         [24] 1530 	mov	_oled_page,#0x00
-      000D01                       1531 00146$:
+      000EA5 75 34 00         [24] 1530 	mov	_oled_page,#0x00
+      000EA8                       1531 00146$:
                                    1532 ;	my_oled.c:421: oled_set_position(oled_page, oled_column);
-      000D01 75 5E 00         [24] 1533 	mov	_oled_set_position_PARM_2,#0x00
-      000D04 85 56 82         [24] 1534 	mov	dpl, _oled_page
-      000D07 12 09 35         [24] 1535 	lcall	_oled_set_position
-      000D0A                       1536 00148$:
+      000EA8 75 3C 00         [24] 1533 	mov	_oled_set_position_PARM_2,#0x00
+      000EAB 85 34 82         [24] 1534 	mov	dpl, _oled_page
+      000EAE 12 0A DC         [24] 1535 	lcall	_oled_set_position
+      000EB1                       1536 00148$:
                                    1537 ;	my_oled.c:424: i2c_write_transaction(0x40, data, 6);
-      000D0A 75 58 6F         [24] 1538 	mov	_i2c_write_transaction_PARM_2,#_oled_char_data_10000_47
-      000D0D 75 59 00         [24] 1539 	mov	(_i2c_write_transaction_PARM_2 + 1),#0x00
-      000D10 75 5A 40         [24] 1540 	mov	(_i2c_write_transaction_PARM_2 + 2),#0x40
-      000D13 75 5B 06         [24] 1541 	mov	_i2c_write_transaction_PARM_3,#0x06
-      000D16 75 82 40         [24] 1542 	mov	dpl, #0x40
-      000D19 12 08 A3         [24] 1543 	lcall	_i2c_write_transaction
+      000EB1 75 36 4D         [24] 1538 	mov	_i2c_write_transaction_PARM_2,#_oled_char_data_10000_47
+      000EB4 75 37 00         [24] 1539 	mov	(_i2c_write_transaction_PARM_2 + 1),#0x00
+      000EB7 75 38 40         [24] 1540 	mov	(_i2c_write_transaction_PARM_2 + 2),#0x40
+      000EBA 75 39 06         [24] 1541 	mov	_i2c_write_transaction_PARM_3,#0x06
+      000EBD 75 82 40         [24] 1542 	mov	dpl, #0x40
+      000EC0 12 0A 4A         [24] 1543 	lcall	_i2c_write_transaction
                                    1544 ;	my_oled.c:425: oled_column += 6;
-      000D1C AF 57            [24] 1545 	mov	r7,_oled_column
-      000D1E 74 06            [12] 1546 	mov	a,#0x06
-      000D20 2F               [12] 1547 	add	a, r7
+      000EC3 AF 35            [24] 1545 	mov	r7,_oled_column
+      000EC5 74 06            [12] 1546 	mov	a,#0x06
+      000EC7 2F               [12] 1547 	add	a, r7
                                    1548 ;	my_oled.c:427: if(oled_column >= 128)
-      000D21 F5 57            [12] 1549 	mov	_oled_column,a
-      000D23 C3               [12] 1550 	clr	c
-      000D24 94 80            [12] 1551 	subb	a,#0x80
-      000D26 40 17            [24] 1552 	jc	00159$
+      000EC8 F5 35            [12] 1549 	mov	_oled_column,a
+      000ECA C3               [12] 1550 	clr	c
+      000ECB 94 80            [12] 1551 	subb	a,#0x80
+      000ECD 40 17            [24] 1552 	jc	00159$
                                    1553 ;	my_oled.c:429: oled_column = 0;
-      000D28 75 57 00         [24] 1554 	mov	_oled_column,#0x00
+      000ECF 75 35 00         [24] 1554 	mov	_oled_column,#0x00
                                    1555 ;	my_oled.c:430: oled_page++;
-      000D2B 05 56            [12] 1556 	inc	_oled_page
+      000ED2 05 34            [12] 1556 	inc	_oled_page
                                    1557 ;	my_oled.c:432: if(oled_page > 7)
-      000D2D E5 56            [12] 1558 	mov	a,_oled_page
-      000D2F 24 F8            [12] 1559 	add	a,#0xff - 0x07
-      000D31 50 03            [24] 1560 	jnc	00150$
+      000ED4 E5 34            [12] 1558 	mov	a,_oled_page
+      000ED6 24 F8            [12] 1559 	add	a,#0xff - 0x07
+      000ED8 50 03            [24] 1560 	jnc	00150$
                                    1561 ;	free result
                                    1562 ;	my_oled.c:433: oled_page = 0;
-      000D33 75 56 00         [24] 1563 	mov	_oled_page,#0x00
-      000D36                       1564 00150$:
+      000EDA 75 34 00         [24] 1563 	mov	_oled_page,#0x00
+      000EDD                       1564 00150$:
                                    1565 ;	my_oled.c:435: oled_set_position(oled_page, oled_column);
-      000D36 75 5E 00         [24] 1566 	mov	_oled_set_position_PARM_2,#0x00
-      000D39 85 56 82         [24] 1567 	mov	dpl, _oled_page
+      000EDD 75 3C 00         [24] 1566 	mov	_oled_set_position_PARM_2,#0x00
+      000EE0 85 34 82         [24] 1567 	mov	dpl, _oled_page
                                    1568 ;	my_oled.c:437: }
-      000D3C 02 09 35         [24] 1569 	ljmp	_oled_set_position
-      000D3F                       1570 00159$:
-      000D3F 22               [24] 1571 	ret
+      000EE3 02 0A DC         [24] 1569 	ljmp	_oled_set_position
+      000EE6                       1570 00159$:
+      000EE6 22               [24] 1571 	ret
                                    1572 ;------------------------------------------------------------
                                    1573 ;Allocation info for local variables in function 'oled_string'
                                    1574 ;------------------------------------------------------------
@@ -1578,269 +1578,269 @@
                                    1578 ;	-----------------------------------------
                                    1579 ;	 function oled_string
                                    1580 ;	-----------------------------------------
-      000D40                       1581 _oled_string:
-      000D40 AD 82            [24] 1582 	mov	r5, dpl
-      000D42 AE 83            [24] 1583 	mov	r6, dph
-      000D44 AF F0            [24] 1584 	mov	r7, b
+      000EE7                       1581 _oled_string:
+      000EE7 AD 82            [24] 1582 	mov	r5, dpl
+      000EE9 AE 83            [24] 1583 	mov	r6, dph
+      000EEB AF F0            [24] 1584 	mov	r7, b
                                    1585 ;	my_oled.c:441: while(*str)
-      000D46                       1586 00109$:
-      000D46 8D 82            [24] 1587 	mov	dpl,r5
-      000D48 8E 83            [24] 1588 	mov	dph,r6
-      000D4A 8F F0            [24] 1589 	mov	b,r7
-      000D4C 12 10 20         [24] 1590 	lcall	__gptrget
-      000D4F FC               [12] 1591 	mov	r4,a
-      000D50 60 67            [24] 1592 	jz	00112$
+      000EED                       1586 00109$:
+      000EED 8D 82            [24] 1587 	mov	dpl,r5
+      000EEF 8E 83            [24] 1588 	mov	dph,r6
+      000EF1 8F F0            [24] 1589 	mov	b,r7
+      000EF3 12 11 C7         [24] 1590 	lcall	__gptrget
+      000EF6 FC               [12] 1591 	mov	r4,a
+      000EF7 60 67            [24] 1592 	jz	00112$
                                    1593 ;	my_oled.c:443: if(*str == '\n')
-      000D52 BC 0A 2A         [24] 1594 	cjne	r4,#0x0a,00107$
+      000EF9 BC 0A 2A         [24] 1594 	cjne	r4,#0x0a,00107$
                                    1595 ;	my_oled.c:445: oled_page++;
-      000D55 05 56            [12] 1596 	inc	_oled_page
+      000EFC 05 34            [12] 1596 	inc	_oled_page
                                    1597 ;	my_oled.c:447: if(oled_page > 7)
-      000D57 E5 56            [12] 1598 	mov	a,_oled_page
-      000D59 24 F8            [12] 1599 	add	a,#0xff - 0x07
-      000D5B 50 03            [24] 1600 	jnc	00102$
+      000EFE E5 34            [12] 1598 	mov	a,_oled_page
+      000F00 24 F8            [12] 1599 	add	a,#0xff - 0x07
+      000F02 50 03            [24] 1600 	jnc	00102$
                                    1601 ;	free result
                                    1602 ;	my_oled.c:448: oled_page = 0;
-      000D5D 75 56 00         [24] 1603 	mov	_oled_page,#0x00
-      000D60                       1604 00102$:
+      000F04 75 34 00         [24] 1603 	mov	_oled_page,#0x00
+      000F07                       1604 00102$:
                                    1605 ;	my_oled.c:450: oled_column = 0;
-      000D60 75 57 00         [24] 1606 	mov	_oled_column,#0x00
+      000F07 75 35 00         [24] 1606 	mov	_oled_column,#0x00
                                    1607 ;	my_oled.c:451: oled_set_position(oled_page, oled_column);
-      000D63 75 5E 00         [24] 1608 	mov	_oled_set_position_PARM_2,#0x00
-      000D66 85 56 82         [24] 1609 	mov	dpl, _oled_page
-      000D69 C0 07            [24] 1610 	push	ar7
-      000D6B C0 06            [24] 1611 	push	ar6
-      000D6D C0 05            [24] 1612 	push	ar5
-      000D6F 12 09 35         [24] 1613 	lcall	_oled_set_position
-      000D72 D0 05            [24] 1614 	pop	ar5
-      000D74 D0 06            [24] 1615 	pop	ar6
-      000D76 D0 07            [24] 1616 	pop	ar7
+      000F0A 75 3C 00         [24] 1608 	mov	_oled_set_position_PARM_2,#0x00
+      000F0D 85 34 82         [24] 1609 	mov	dpl, _oled_page
+      000F10 C0 07            [24] 1610 	push	ar7
+      000F12 C0 06            [24] 1611 	push	ar6
+      000F14 C0 05            [24] 1612 	push	ar5
+      000F16 12 0A DC         [24] 1613 	lcall	_oled_set_position
+      000F19 D0 05            [24] 1614 	pop	ar5
+      000F1B D0 06            [24] 1615 	pop	ar6
+      000F1D D0 07            [24] 1616 	pop	ar7
                                    1617 ;	my_oled.c:452: str++;
-      000D78 0D               [12] 1618 	inc	r5
-      000D79 BD 00 CA         [24] 1619 	cjne	r5,#0x00,00109$
-      000D7C 0E               [12] 1620 	inc	r6
-      000D7D 80 C7            [24] 1621 	sjmp	00109$
-      000D7F                       1622 00107$:
+      000F1F 0D               [12] 1618 	inc	r5
+      000F20 BD 00 CA         [24] 1619 	cjne	r5,#0x00,00109$
+      000F23 0E               [12] 1620 	inc	r6
+      000F24 80 C7            [24] 1621 	sjmp	00109$
+      000F26                       1622 00107$:
                                    1623 ;	my_oled.c:454: else if(*str == '\r')
-      000D7F BC 0D 1F         [24] 1624 	cjne	r4,#0x0d,00104$
+      000F26 BC 0D 1F         [24] 1624 	cjne	r4,#0x0d,00104$
                                    1625 ;	my_oled.c:456: oled_column = 0;
-      000D82 75 57 00         [24] 1626 	mov	_oled_column,#0x00
+      000F29 75 35 00         [24] 1626 	mov	_oled_column,#0x00
                                    1627 ;	my_oled.c:457: oled_set_position(oled_page, oled_column);
-      000D85 75 5E 00         [24] 1628 	mov	_oled_set_position_PARM_2,#0x00
-      000D88 85 56 82         [24] 1629 	mov	dpl, _oled_page
-      000D8B C0 07            [24] 1630 	push	ar7
-      000D8D C0 06            [24] 1631 	push	ar6
-      000D8F C0 05            [24] 1632 	push	ar5
-      000D91 12 09 35         [24] 1633 	lcall	_oled_set_position
-      000D94 D0 05            [24] 1634 	pop	ar5
-      000D96 D0 06            [24] 1635 	pop	ar6
-      000D98 D0 07            [24] 1636 	pop	ar7
+      000F2C 75 3C 00         [24] 1628 	mov	_oled_set_position_PARM_2,#0x00
+      000F2F 85 34 82         [24] 1629 	mov	dpl, _oled_page
+      000F32 C0 07            [24] 1630 	push	ar7
+      000F34 C0 06            [24] 1631 	push	ar6
+      000F36 C0 05            [24] 1632 	push	ar5
+      000F38 12 0A DC         [24] 1633 	lcall	_oled_set_position
+      000F3B D0 05            [24] 1634 	pop	ar5
+      000F3D D0 06            [24] 1635 	pop	ar6
+      000F3F D0 07            [24] 1636 	pop	ar7
                                    1637 ;	my_oled.c:458: str++;
-      000D9A 0D               [12] 1638 	inc	r5
-      000D9B BD 00 A8         [24] 1639 	cjne	r5,#0x00,00109$
-      000D9E 0E               [12] 1640 	inc	r6
-      000D9F 80 A5            [24] 1641 	sjmp	00109$
-      000DA1                       1642 00104$:
+      000F41 0D               [12] 1638 	inc	r5
+      000F42 BD 00 A8         [24] 1639 	cjne	r5,#0x00,00109$
+      000F45 0E               [12] 1640 	inc	r6
+      000F46 80 A5            [24] 1641 	sjmp	00109$
+      000F48                       1642 00104$:
                                    1643 ;	my_oled.c:462: oled_char((unsigned char)*str++);
-      000DA1 8C 82            [24] 1644 	mov	dpl,r4
-      000DA3 0D               [12] 1645 	inc	r5
-      000DA4 BD 00 01         [24] 1646 	cjne	r5,#0x00,00157$
-      000DA7 0E               [12] 1647 	inc	r6
-      000DA8                       1648 00157$:
-      000DA8 C0 07            [24] 1649 	push	ar7
-      000DAA C0 06            [24] 1650 	push	ar6
-      000DAC C0 05            [24] 1651 	push	ar5
-      000DAE 12 0A 73         [24] 1652 	lcall	_oled_char
-      000DB1 D0 05            [24] 1653 	pop	ar5
-      000DB3 D0 06            [24] 1654 	pop	ar6
-      000DB5 D0 07            [24] 1655 	pop	ar7
-      000DB7 80 8D            [24] 1656 	sjmp	00109$
-      000DB9                       1657 00112$:
+      000F48 8C 82            [24] 1644 	mov	dpl,r4
+      000F4A 0D               [12] 1645 	inc	r5
+      000F4B BD 00 01         [24] 1646 	cjne	r5,#0x00,00157$
+      000F4E 0E               [12] 1647 	inc	r6
+      000F4F                       1648 00157$:
+      000F4F C0 07            [24] 1649 	push	ar7
+      000F51 C0 06            [24] 1650 	push	ar6
+      000F53 C0 05            [24] 1651 	push	ar5
+      000F55 12 0C 1A         [24] 1652 	lcall	_oled_char
+      000F58 D0 05            [24] 1653 	pop	ar5
+      000F5A D0 06            [24] 1654 	pop	ar6
+      000F5C D0 07            [24] 1655 	pop	ar7
+      000F5E 80 8D            [24] 1656 	sjmp	00109$
+      000F60                       1657 00112$:
                                    1658 ;	my_oled.c:465: }
-      000DB9 22               [24] 1659 	ret
+      000F60 22               [24] 1659 	ret
                                    1660 	.area CSEG    (CODE)
                                    1661 	.area CONST   (CODE)
                                    1662 	.area CONST   (CODE)
-      001111                       1663 _font5x7:
-      001111 7E                    1664 	.db #0x7e	; 126
-      001112 11                    1665 	.db #0x11	; 17
-      001113 11                    1666 	.db #0x11	; 17
-      001114 11                    1667 	.db #0x11	; 17
-      001115 7E                    1668 	.db #0x7e	; 126
-      001116 7F                    1669 	.db #0x7f	; 127
-      001117 49                    1670 	.db #0x49	; 73	'I'
-      001118 49                    1671 	.db #0x49	; 73	'I'
-      001119 49                    1672 	.db #0x49	; 73	'I'
-      00111A 36                    1673 	.db #0x36	; 54	'6'
-      00111B 3E                    1674 	.db #0x3e	; 62
-      00111C 41                    1675 	.db #0x41	; 65	'A'
-      00111D 41                    1676 	.db #0x41	; 65	'A'
-      00111E 41                    1677 	.db #0x41	; 65	'A'
-      00111F 22                    1678 	.db #0x22	; 34
-      001120 7F                    1679 	.db #0x7f	; 127
-      001121 41                    1680 	.db #0x41	; 65	'A'
-      001122 41                    1681 	.db #0x41	; 65	'A'
-      001123 22                    1682 	.db #0x22	; 34
-      001124 1C                    1683 	.db #0x1c	; 28
-      001125 7F                    1684 	.db #0x7f	; 127
-      001126 49                    1685 	.db #0x49	; 73	'I'
-      001127 49                    1686 	.db #0x49	; 73	'I'
-      001128 49                    1687 	.db #0x49	; 73	'I'
-      001129 41                    1688 	.db #0x41	; 65	'A'
-      00112A 7F                    1689 	.db #0x7f	; 127
-      00112B 09                    1690 	.db #0x09	; 9
-      00112C 09                    1691 	.db #0x09	; 9
-      00112D 09                    1692 	.db #0x09	; 9
-      00112E 01                    1693 	.db #0x01	; 1
-      00112F 3E                    1694 	.db #0x3e	; 62
-      001130 41                    1695 	.db #0x41	; 65	'A'
-      001131 49                    1696 	.db #0x49	; 73	'I'
-      001132 49                    1697 	.db #0x49	; 73	'I'
-      001133 7A                    1698 	.db #0x7a	; 122	'z'
-      001134 7F                    1699 	.db #0x7f	; 127
-      001135 08                    1700 	.db #0x08	; 8
-      001136 08                    1701 	.db #0x08	; 8
-      001137 08                    1702 	.db #0x08	; 8
-      001138 7F                    1703 	.db #0x7f	; 127
-      001139 00                    1704 	.db #0x00	; 0
-      00113A 41                    1705 	.db #0x41	; 65	'A'
-      00113B 7F                    1706 	.db #0x7f	; 127
-      00113C 41                    1707 	.db #0x41	; 65	'A'
-      00113D 00                    1708 	.db #0x00	; 0
-      00113E 20                    1709 	.db #0x20	; 32
-      00113F 40                    1710 	.db #0x40	; 64
-      001140 41                    1711 	.db #0x41	; 65	'A'
-      001141 3F                    1712 	.db #0x3f	; 63
-      001142 01                    1713 	.db #0x01	; 1
-      001143 7F                    1714 	.db #0x7f	; 127
-      001144 08                    1715 	.db #0x08	; 8
-      001145 14                    1716 	.db #0x14	; 20
-      001146 22                    1717 	.db #0x22	; 34
-      001147 41                    1718 	.db #0x41	; 65	'A'
-      001148 7F                    1719 	.db #0x7f	; 127
-      001149 40                    1720 	.db #0x40	; 64
-      00114A 40                    1721 	.db #0x40	; 64
-      00114B 40                    1722 	.db #0x40	; 64
-      00114C 40                    1723 	.db #0x40	; 64
-      00114D 7F                    1724 	.db #0x7f	; 127
-      00114E 02                    1725 	.db #0x02	; 2
-      00114F 0C                    1726 	.db #0x0c	; 12
-      001150 02                    1727 	.db #0x02	; 2
-      001151 7F                    1728 	.db #0x7f	; 127
-      001152 7F                    1729 	.db #0x7f	; 127
-      001153 04                    1730 	.db #0x04	; 4
-      001154 08                    1731 	.db #0x08	; 8
-      001155 10                    1732 	.db #0x10	; 16
-      001156 7F                    1733 	.db #0x7f	; 127
-      001157 3E                    1734 	.db #0x3e	; 62
-      001158 41                    1735 	.db #0x41	; 65	'A'
-      001159 41                    1736 	.db #0x41	; 65	'A'
-      00115A 41                    1737 	.db #0x41	; 65	'A'
-      00115B 3E                    1738 	.db #0x3e	; 62
-      00115C 7F                    1739 	.db #0x7f	; 127
-      00115D 09                    1740 	.db #0x09	; 9
-      00115E 09                    1741 	.db #0x09	; 9
-      00115F 09                    1742 	.db #0x09	; 9
-      001160 06                    1743 	.db #0x06	; 6
-      001161 3E                    1744 	.db #0x3e	; 62
-      001162 41                    1745 	.db #0x41	; 65	'A'
-      001163 51                    1746 	.db #0x51	; 81	'Q'
-      001164 21                    1747 	.db #0x21	; 33
-      001165 5E                    1748 	.db #0x5e	; 94
-      001166 7F                    1749 	.db #0x7f	; 127
-      001167 09                    1750 	.db #0x09	; 9
-      001168 19                    1751 	.db #0x19	; 25
-      001169 29                    1752 	.db #0x29	; 41
-      00116A 46                    1753 	.db #0x46	; 70	'F'
-      00116B 26                    1754 	.db #0x26	; 38
-      00116C 49                    1755 	.db #0x49	; 73	'I'
-      00116D 49                    1756 	.db #0x49	; 73	'I'
-      00116E 49                    1757 	.db #0x49	; 73	'I'
-      00116F 32                    1758 	.db #0x32	; 50	'2'
-      001170 01                    1759 	.db #0x01	; 1
-      001171 01                    1760 	.db #0x01	; 1
-      001172 7F                    1761 	.db #0x7f	; 127
-      001173 01                    1762 	.db #0x01	; 1
-      001174 01                    1763 	.db #0x01	; 1
-      001175 3F                    1764 	.db #0x3f	; 63
-      001176 40                    1765 	.db #0x40	; 64
-      001177 40                    1766 	.db #0x40	; 64
-      001178 40                    1767 	.db #0x40	; 64
-      001179 3F                    1768 	.db #0x3f	; 63
-      00117A 1F                    1769 	.db #0x1f	; 31
-      00117B 20                    1770 	.db #0x20	; 32
-      00117C 40                    1771 	.db #0x40	; 64
-      00117D 20                    1772 	.db #0x20	; 32
-      00117E 1F                    1773 	.db #0x1f	; 31
-      00117F 3F                    1774 	.db #0x3f	; 63
-      001180 40                    1775 	.db #0x40	; 64
-      001181 38                    1776 	.db #0x38	; 56	'8'
-      001182 40                    1777 	.db #0x40	; 64
-      001183 3F                    1778 	.db #0x3f	; 63
-      001184 63                    1779 	.db #0x63	; 99	'c'
-      001185 14                    1780 	.db #0x14	; 20
-      001186 08                    1781 	.db #0x08	; 8
-      001187 14                    1782 	.db #0x14	; 20
-      001188 63                    1783 	.db #0x63	; 99	'c'
-      001189 07                    1784 	.db #0x07	; 7
-      00118A 08                    1785 	.db #0x08	; 8
-      00118B 70                    1786 	.db #0x70	; 112	'p'
-      00118C 08                    1787 	.db #0x08	; 8
-      00118D 07                    1788 	.db #0x07	; 7
-      00118E 61                    1789 	.db #0x61	; 97	'a'
-      00118F 51                    1790 	.db #0x51	; 81	'Q'
-      001190 49                    1791 	.db #0x49	; 73	'I'
-      001191 45                    1792 	.db #0x45	; 69	'E'
-      001192 43                    1793 	.db #0x43	; 67	'C'
-      001193 3E                    1794 	.db #0x3e	; 62
-      001194 45                    1795 	.db #0x45	; 69	'E'
-      001195 49                    1796 	.db #0x49	; 73	'I'
-      001196 51                    1797 	.db #0x51	; 81	'Q'
-      001197 3E                    1798 	.db #0x3e	; 62
-      001198 00                    1799 	.db #0x00	; 0
-      001199 42                    1800 	.db #0x42	; 66	'B'
-      00119A 7F                    1801 	.db #0x7f	; 127
-      00119B 40                    1802 	.db #0x40	; 64
-      00119C 00                    1803 	.db #0x00	; 0
-      00119D 42                    1804 	.db #0x42	; 66	'B'
-      00119E 61                    1805 	.db #0x61	; 97	'a'
-      00119F 51                    1806 	.db #0x51	; 81	'Q'
-      0011A0 49                    1807 	.db #0x49	; 73	'I'
-      0011A1 46                    1808 	.db #0x46	; 70	'F'
-      0011A2 21                    1809 	.db #0x21	; 33
-      0011A3 41                    1810 	.db #0x41	; 65	'A'
-      0011A4 45                    1811 	.db #0x45	; 69	'E'
-      0011A5 4B                    1812 	.db #0x4b	; 75	'K'
-      0011A6 31                    1813 	.db #0x31	; 49	'1'
-      0011A7 18                    1814 	.db #0x18	; 24
-      0011A8 14                    1815 	.db #0x14	; 20
-      0011A9 12                    1816 	.db #0x12	; 18
-      0011AA 7F                    1817 	.db #0x7f	; 127
-      0011AB 10                    1818 	.db #0x10	; 16
-      0011AC 27                    1819 	.db #0x27	; 39
-      0011AD 45                    1820 	.db #0x45	; 69	'E'
-      0011AE 45                    1821 	.db #0x45	; 69	'E'
-      0011AF 45                    1822 	.db #0x45	; 69	'E'
-      0011B0 39                    1823 	.db #0x39	; 57	'9'
-      0011B1 3C                    1824 	.db #0x3c	; 60
-      0011B2 4A                    1825 	.db #0x4a	; 74	'J'
-      0011B3 49                    1826 	.db #0x49	; 73	'I'
-      0011B4 49                    1827 	.db #0x49	; 73	'I'
-      0011B5 30                    1828 	.db #0x30	; 48	'0'
-      0011B6 01                    1829 	.db #0x01	; 1
-      0011B7 71                    1830 	.db #0x71	; 113	'q'
-      0011B8 09                    1831 	.db #0x09	; 9
-      0011B9 05                    1832 	.db #0x05	; 5
-      0011BA 03                    1833 	.db #0x03	; 3
-      0011BB 36                    1834 	.db #0x36	; 54	'6'
-      0011BC 49                    1835 	.db #0x49	; 73	'I'
-      0011BD 49                    1836 	.db #0x49	; 73	'I'
-      0011BE 49                    1837 	.db #0x49	; 73	'I'
-      0011BF 36                    1838 	.db #0x36	; 54	'6'
-      0011C0 06                    1839 	.db #0x06	; 6
-      0011C1 49                    1840 	.db #0x49	; 73	'I'
-      0011C2 49                    1841 	.db #0x49	; 73	'I'
-      0011C3 29                    1842 	.db #0x29	; 41
-      0011C4 1E                    1843 	.db #0x1e	; 30
+      0012B5                       1663 _font5x7:
+      0012B5 7E                    1664 	.db #0x7e	; 126
+      0012B6 11                    1665 	.db #0x11	; 17
+      0012B7 11                    1666 	.db #0x11	; 17
+      0012B8 11                    1667 	.db #0x11	; 17
+      0012B9 7E                    1668 	.db #0x7e	; 126
+      0012BA 7F                    1669 	.db #0x7f	; 127
+      0012BB 49                    1670 	.db #0x49	; 73	'I'
+      0012BC 49                    1671 	.db #0x49	; 73	'I'
+      0012BD 49                    1672 	.db #0x49	; 73	'I'
+      0012BE 36                    1673 	.db #0x36	; 54	'6'
+      0012BF 3E                    1674 	.db #0x3e	; 62
+      0012C0 41                    1675 	.db #0x41	; 65	'A'
+      0012C1 41                    1676 	.db #0x41	; 65	'A'
+      0012C2 41                    1677 	.db #0x41	; 65	'A'
+      0012C3 22                    1678 	.db #0x22	; 34
+      0012C4 7F                    1679 	.db #0x7f	; 127
+      0012C5 41                    1680 	.db #0x41	; 65	'A'
+      0012C6 41                    1681 	.db #0x41	; 65	'A'
+      0012C7 22                    1682 	.db #0x22	; 34
+      0012C8 1C                    1683 	.db #0x1c	; 28
+      0012C9 7F                    1684 	.db #0x7f	; 127
+      0012CA 49                    1685 	.db #0x49	; 73	'I'
+      0012CB 49                    1686 	.db #0x49	; 73	'I'
+      0012CC 49                    1687 	.db #0x49	; 73	'I'
+      0012CD 41                    1688 	.db #0x41	; 65	'A'
+      0012CE 7F                    1689 	.db #0x7f	; 127
+      0012CF 09                    1690 	.db #0x09	; 9
+      0012D0 09                    1691 	.db #0x09	; 9
+      0012D1 09                    1692 	.db #0x09	; 9
+      0012D2 01                    1693 	.db #0x01	; 1
+      0012D3 3E                    1694 	.db #0x3e	; 62
+      0012D4 41                    1695 	.db #0x41	; 65	'A'
+      0012D5 49                    1696 	.db #0x49	; 73	'I'
+      0012D6 49                    1697 	.db #0x49	; 73	'I'
+      0012D7 7A                    1698 	.db #0x7a	; 122	'z'
+      0012D8 7F                    1699 	.db #0x7f	; 127
+      0012D9 08                    1700 	.db #0x08	; 8
+      0012DA 08                    1701 	.db #0x08	; 8
+      0012DB 08                    1702 	.db #0x08	; 8
+      0012DC 7F                    1703 	.db #0x7f	; 127
+      0012DD 00                    1704 	.db #0x00	; 0
+      0012DE 41                    1705 	.db #0x41	; 65	'A'
+      0012DF 7F                    1706 	.db #0x7f	; 127
+      0012E0 41                    1707 	.db #0x41	; 65	'A'
+      0012E1 00                    1708 	.db #0x00	; 0
+      0012E2 20                    1709 	.db #0x20	; 32
+      0012E3 40                    1710 	.db #0x40	; 64
+      0012E4 41                    1711 	.db #0x41	; 65	'A'
+      0012E5 3F                    1712 	.db #0x3f	; 63
+      0012E6 01                    1713 	.db #0x01	; 1
+      0012E7 7F                    1714 	.db #0x7f	; 127
+      0012E8 08                    1715 	.db #0x08	; 8
+      0012E9 14                    1716 	.db #0x14	; 20
+      0012EA 22                    1717 	.db #0x22	; 34
+      0012EB 41                    1718 	.db #0x41	; 65	'A'
+      0012EC 7F                    1719 	.db #0x7f	; 127
+      0012ED 40                    1720 	.db #0x40	; 64
+      0012EE 40                    1721 	.db #0x40	; 64
+      0012EF 40                    1722 	.db #0x40	; 64
+      0012F0 40                    1723 	.db #0x40	; 64
+      0012F1 7F                    1724 	.db #0x7f	; 127
+      0012F2 02                    1725 	.db #0x02	; 2
+      0012F3 0C                    1726 	.db #0x0c	; 12
+      0012F4 02                    1727 	.db #0x02	; 2
+      0012F5 7F                    1728 	.db #0x7f	; 127
+      0012F6 7F                    1729 	.db #0x7f	; 127
+      0012F7 04                    1730 	.db #0x04	; 4
+      0012F8 08                    1731 	.db #0x08	; 8
+      0012F9 10                    1732 	.db #0x10	; 16
+      0012FA 7F                    1733 	.db #0x7f	; 127
+      0012FB 3E                    1734 	.db #0x3e	; 62
+      0012FC 41                    1735 	.db #0x41	; 65	'A'
+      0012FD 41                    1736 	.db #0x41	; 65	'A'
+      0012FE 41                    1737 	.db #0x41	; 65	'A'
+      0012FF 3E                    1738 	.db #0x3e	; 62
+      001300 7F                    1739 	.db #0x7f	; 127
+      001301 09                    1740 	.db #0x09	; 9
+      001302 09                    1741 	.db #0x09	; 9
+      001303 09                    1742 	.db #0x09	; 9
+      001304 06                    1743 	.db #0x06	; 6
+      001305 3E                    1744 	.db #0x3e	; 62
+      001306 41                    1745 	.db #0x41	; 65	'A'
+      001307 51                    1746 	.db #0x51	; 81	'Q'
+      001308 21                    1747 	.db #0x21	; 33
+      001309 5E                    1748 	.db #0x5e	; 94
+      00130A 7F                    1749 	.db #0x7f	; 127
+      00130B 09                    1750 	.db #0x09	; 9
+      00130C 19                    1751 	.db #0x19	; 25
+      00130D 29                    1752 	.db #0x29	; 41
+      00130E 46                    1753 	.db #0x46	; 70	'F'
+      00130F 26                    1754 	.db #0x26	; 38
+      001310 49                    1755 	.db #0x49	; 73	'I'
+      001311 49                    1756 	.db #0x49	; 73	'I'
+      001312 49                    1757 	.db #0x49	; 73	'I'
+      001313 32                    1758 	.db #0x32	; 50	'2'
+      001314 01                    1759 	.db #0x01	; 1
+      001315 01                    1760 	.db #0x01	; 1
+      001316 7F                    1761 	.db #0x7f	; 127
+      001317 01                    1762 	.db #0x01	; 1
+      001318 01                    1763 	.db #0x01	; 1
+      001319 3F                    1764 	.db #0x3f	; 63
+      00131A 40                    1765 	.db #0x40	; 64
+      00131B 40                    1766 	.db #0x40	; 64
+      00131C 40                    1767 	.db #0x40	; 64
+      00131D 3F                    1768 	.db #0x3f	; 63
+      00131E 1F                    1769 	.db #0x1f	; 31
+      00131F 20                    1770 	.db #0x20	; 32
+      001320 40                    1771 	.db #0x40	; 64
+      001321 20                    1772 	.db #0x20	; 32
+      001322 1F                    1773 	.db #0x1f	; 31
+      001323 3F                    1774 	.db #0x3f	; 63
+      001324 40                    1775 	.db #0x40	; 64
+      001325 38                    1776 	.db #0x38	; 56	'8'
+      001326 40                    1777 	.db #0x40	; 64
+      001327 3F                    1778 	.db #0x3f	; 63
+      001328 63                    1779 	.db #0x63	; 99	'c'
+      001329 14                    1780 	.db #0x14	; 20
+      00132A 08                    1781 	.db #0x08	; 8
+      00132B 14                    1782 	.db #0x14	; 20
+      00132C 63                    1783 	.db #0x63	; 99	'c'
+      00132D 07                    1784 	.db #0x07	; 7
+      00132E 08                    1785 	.db #0x08	; 8
+      00132F 70                    1786 	.db #0x70	; 112	'p'
+      001330 08                    1787 	.db #0x08	; 8
+      001331 07                    1788 	.db #0x07	; 7
+      001332 61                    1789 	.db #0x61	; 97	'a'
+      001333 51                    1790 	.db #0x51	; 81	'Q'
+      001334 49                    1791 	.db #0x49	; 73	'I'
+      001335 45                    1792 	.db #0x45	; 69	'E'
+      001336 43                    1793 	.db #0x43	; 67	'C'
+      001337 3E                    1794 	.db #0x3e	; 62
+      001338 45                    1795 	.db #0x45	; 69	'E'
+      001339 49                    1796 	.db #0x49	; 73	'I'
+      00133A 51                    1797 	.db #0x51	; 81	'Q'
+      00133B 3E                    1798 	.db #0x3e	; 62
+      00133C 00                    1799 	.db #0x00	; 0
+      00133D 42                    1800 	.db #0x42	; 66	'B'
+      00133E 7F                    1801 	.db #0x7f	; 127
+      00133F 40                    1802 	.db #0x40	; 64
+      001340 00                    1803 	.db #0x00	; 0
+      001341 42                    1804 	.db #0x42	; 66	'B'
+      001342 61                    1805 	.db #0x61	; 97	'a'
+      001343 51                    1806 	.db #0x51	; 81	'Q'
+      001344 49                    1807 	.db #0x49	; 73	'I'
+      001345 46                    1808 	.db #0x46	; 70	'F'
+      001346 21                    1809 	.db #0x21	; 33
+      001347 41                    1810 	.db #0x41	; 65	'A'
+      001348 45                    1811 	.db #0x45	; 69	'E'
+      001349 4B                    1812 	.db #0x4b	; 75	'K'
+      00134A 31                    1813 	.db #0x31	; 49	'1'
+      00134B 18                    1814 	.db #0x18	; 24
+      00134C 14                    1815 	.db #0x14	; 20
+      00134D 12                    1816 	.db #0x12	; 18
+      00134E 7F                    1817 	.db #0x7f	; 127
+      00134F 10                    1818 	.db #0x10	; 16
+      001350 27                    1819 	.db #0x27	; 39
+      001351 45                    1820 	.db #0x45	; 69	'E'
+      001352 45                    1821 	.db #0x45	; 69	'E'
+      001353 45                    1822 	.db #0x45	; 69	'E'
+      001354 39                    1823 	.db #0x39	; 57	'9'
+      001355 3C                    1824 	.db #0x3c	; 60
+      001356 4A                    1825 	.db #0x4a	; 74	'J'
+      001357 49                    1826 	.db #0x49	; 73	'I'
+      001358 49                    1827 	.db #0x49	; 73	'I'
+      001359 30                    1828 	.db #0x30	; 48	'0'
+      00135A 01                    1829 	.db #0x01	; 1
+      00135B 71                    1830 	.db #0x71	; 113	'q'
+      00135C 09                    1831 	.db #0x09	; 9
+      00135D 05                    1832 	.db #0x05	; 5
+      00135E 03                    1833 	.db #0x03	; 3
+      00135F 36                    1834 	.db #0x36	; 54	'6'
+      001360 49                    1835 	.db #0x49	; 73	'I'
+      001361 49                    1836 	.db #0x49	; 73	'I'
+      001362 49                    1837 	.db #0x49	; 73	'I'
+      001363 36                    1838 	.db #0x36	; 54	'6'
+      001364 06                    1839 	.db #0x06	; 6
+      001365 49                    1840 	.db #0x49	; 73	'I'
+      001366 49                    1841 	.db #0x49	; 73	'I'
+      001367 29                    1842 	.db #0x29	; 41
+      001368 1E                    1843 	.db #0x1e	; 30
                                    1844 	.area CSEG    (CODE)
                                    1845 	.area XINIT   (CODE)
                                    1846 	.area CABS    (ABS,CODE)

@@ -505,7 +505,7 @@
                                     505 ;divisor       Allocated to registers r4 r5 r6 r7 
                                     506 ;reload        Allocated to registers r4 
                                     507 ;------------------------------------------------------------
-                                    508 ;	my_uart.c:5: uart_u8 uart_init(uart_u32 baud)
+                                    508 ;	my_uart.c:4: uart_u8 uart_init(uart_u32 baud)
                                     509 ;	-----------------------------------------
                                     510 ;	 function uart_init
                                     511 ;	-----------------------------------------
@@ -522,17 +522,17 @@
       000002 AD 83            [24]  522 	mov	r5,dph
       000004 AE F0            [24]  523 	mov	r6,b
       000006 FF               [12]  524 	mov	r7,a
-                                    525 ;	my_uart.c:10: if (baud == 0)
+                                    525 ;	my_uart.c:9: if (baud == 0)
       000007 EC               [12]  526 	mov	a,r4
       000008 4D               [12]  527 	orl	a,r5
       000009 4E               [12]  528 	orl	a,r6
       00000A 4F               [12]  529 	orl	a,r7
-                                    530 ;	my_uart.c:11: return 0;
+                                    530 ;	my_uart.c:10: return 0;
       00000B 70 03            [24]  531 	jnz	00102$
       00000D F5 82            [12]  532 	mov	dpl,a
       00000F 22               [24]  533 	ret
       000010                        534 00102$:
-                                    535 ;	my_uart.c:13: divisor = (UART_FOSC_HZ + (96UL * baud))
+                                    535 ;	my_uart.c:12: divisor = (UART_FOSC_HZ + (96UL * baud))
       000010 8C*00            [24]  536 	mov	__mullong_PARM_2,r4
       000012 8D*01            [24]  537 	mov	(__mullong_PARM_2 + 1),r5
       000014 8E*02            [24]  538 	mov	(__mullong_PARM_2 + 2),r6
@@ -562,7 +562,7 @@
       000040 74 01            [12]  562 	mov	a,#0x01
       000042 3B               [12]  563 	addc	a, r3
       000043 FB               [12]  564 	mov	r3,a
-                                    565 ;	my_uart.c:14: / (192UL * baud);
+                                    565 ;	my_uart.c:13: / (192UL * baud);
       000044 8C*00            [24]  566 	mov	__mullong_PARM_2,r4
       000046 8D*01            [24]  567 	mov	(__mullong_PARM_2 + 1),r5
       000048 8E*02            [24]  568 	mov	(__mullong_PARM_2 + 2),r6
@@ -583,7 +583,7 @@
       00006A D0 01            [24]  583 	pop	ar1
       00006C D0 02            [24]  584 	pop	ar2
       00006E D0 03            [24]  585 	pop	ar3
-                                    586 ;	my_uart.c:16: if (divisor == 0 || divisor > 255UL)
+                                    586 ;	my_uart.c:15: if (divisor == 0 || divisor > 255UL)
       000070 88 82            [24]  587 	mov	dpl, r0
       000072 89 83            [24]  588 	mov	dph, r1
       000074 8A F0            [24]  589 	mov	b, r2
@@ -610,66 +610,66 @@
       000091 50 04            [24]  610 	jnc	00104$
                                     611 ;	free result
       000093                        612 00103$:
-                                    613 ;	my_uart.c:17: return 0;
+                                    613 ;	my_uart.c:16: return 0;
       000093 75 82 00         [24]  614 	mov	dpl, #0x00
       000096 22               [24]  615 	ret
       000097                        616 00104$:
-                                    617 ;	my_uart.c:19: reload = (uart_u8)(256UL - divisor);
+                                    617 ;	my_uart.c:18: reload = (uart_u8)(256UL - divisor);
       000097 C3               [12]  618 	clr	c
       000098 E4               [12]  619 	clr	a
       000099 9C               [12]  620 	subb	a,r4
       00009A FC               [12]  621 	mov	r4,a
-                                    622 ;	my_uart.c:21: ES = 0;
+                                    622 ;	my_uart.c:20: ES = 0;
                                     623 ;	assignBit
       00009B C2 AC            [12]  624 	clr	_ES
-                                    625 ;	my_uart.c:23: TR1 = 0;
+                                    625 ;	my_uart.c:22: TR1 = 0;
                                     626 ;	assignBit
       00009D C2 8E            [12]  627 	clr	_TR1
-                                    628 ;	my_uart.c:24: TMOD = (TMOD & 0x0F) | 0x20;
+                                    628 ;	my_uart.c:23: TMOD = (TMOD & 0x0F) | 0x20;
       00009F E5 89            [12]  629 	mov	a,_TMOD
       0000A1 54 0F            [12]  630 	anl	a,#0x0f
       0000A3 44 20            [12]  631 	orl	a,#0x20
       0000A5 F5 89            [12]  632 	mov	_TMOD,a
-                                    633 ;	my_uart.c:26: PCON |= 0x80;
+                                    633 ;	my_uart.c:25: PCON |= 0x80;
       0000A7 43 87 80         [24]  634 	orl	_PCON,#0x80
-                                    635 ;	my_uart.c:28: TH1 = reload;
+                                    635 ;	my_uart.c:27: TH1 = reload;
       0000AA 8C 8D            [24]  636 	mov	_TH1,r4
-                                    637 ;	my_uart.c:29: TL1 = reload;
+                                    637 ;	my_uart.c:28: TL1 = reload;
       0000AC 8C 8B            [24]  638 	mov	_TL1,r4
-                                    639 ;	my_uart.c:31: SCON = 0x50;
+                                    639 ;	my_uart.c:30: SCON = 0x50;
       0000AE 75 98 50         [24]  640 	mov	_SCON,#0x50
-                                    641 ;	my_uart.c:33: TI = 0;
+                                    641 ;	my_uart.c:32: TI = 0;
                                     642 ;	assignBit
       0000B1 C2 99            [12]  643 	clr	_TI
-                                    644 ;	my_uart.c:34: RI = 0;
+                                    644 ;	my_uart.c:33: RI = 0;
                                     645 ;	assignBit
       0000B3 C2 98            [12]  646 	clr	_RI
-                                    647 ;	my_uart.c:36: TR1 = 1;
+                                    647 ;	my_uart.c:35: TR1 = 1;
                                     648 ;	assignBit
       0000B5 D2 8E            [12]  649 	setb	_TR1
-                                    650 ;	my_uart.c:38: return 1;
+                                    650 ;	my_uart.c:37: return 1;
       0000B7 75 82 01         [24]  651 	mov	dpl, #0x01
-                                    652 ;	my_uart.c:39: }
+                                    652 ;	my_uart.c:38: }
       0000BA 22               [24]  653 	ret
                                     654 ;------------------------------------------------------------
                                     655 ;Allocation info for local variables in function 'uart_write_byte'
                                     656 ;------------------------------------------------------------
                                     657 ;data          Allocated to registers 
                                     658 ;------------------------------------------------------------
-                                    659 ;	my_uart.c:41: void uart_write_byte(uart_u8 data)
+                                    659 ;	my_uart.c:40: void uart_write_byte(uart_u8 data)
                                     660 ;	-----------------------------------------
                                     661 ;	 function uart_write_byte
                                     662 ;	-----------------------------------------
       0000BB                        663 _uart_write_byte:
       0000BB 85 82 99         [24]  664 	mov	_SBUF,dpl
-                                    665 ;	my_uart.c:45: while (TI == 0);
+                                    665 ;	my_uart.c:44: while (TI == 0);
       0000BE                        666 00101$:
-                                    667 ;	my_uart.c:47: TI = 0;
+                                    667 ;	my_uart.c:46: TI = 0;
                                     668 ;	assignBit
       0000BE 10 99 02         [24]  669 	jbc	_TI,00120$
       0000C1 80 FB            [24]  670 	sjmp	00101$
       0000C3                        671 00120$:
-                                    672 ;	my_uart.c:48: }
+                                    672 ;	my_uart.c:47: }
       0000C3 22               [24]  673 	ret
                                     674 ;------------------------------------------------------------
                                     675 ;Allocation info for local variables in function 'uart_write_buffer'
@@ -678,7 +678,7 @@
                                     678 ;data          Allocated to registers r5 r6 r7 
                                     679 ;i             Allocated to registers r3 r4 
                                     680 ;------------------------------------------------------------
-                                    681 ;	my_uart.c:50: void uart_write_buffer(const uart_u8 *data, uart_u16 length)
+                                    681 ;	my_uart.c:49: void uart_write_buffer(const uart_u8 *data, uart_u16 length)
                                     682 ;	-----------------------------------------
                                     683 ;	 function uart_write_buffer
                                     684 ;	-----------------------------------------
@@ -686,7 +686,7 @@
       0000C4 AD 82            [24]  686 	mov	r5, dpl
       0000C6 AE 83            [24]  687 	mov	r6, dph
       0000C8 AF F0            [24]  688 	mov	r7, b
-                                    689 ;	my_uart.c:54: for (i = 0; i < length; i++)
+                                    689 ;	my_uart.c:53: for (i = 0; i < length; i++)
       0000CA 7B 00            [12]  690 	mov	r3,#0x00
       0000CC 7C 00            [12]  691 	mov	r4,#0x00
       0000CE                        692 00103$:
@@ -696,7 +696,7 @@
       0000D2 EC               [12]  696 	mov	a,r4
       0000D3 95*01            [12]  697 	subb	a,(_uart_write_buffer_PARM_2 + 1)
       0000D5 50 31            [24]  698 	jnc	00105$
-                                    699 ;	my_uart.c:55: uart_write_byte(data[i]);
+                                    699 ;	my_uart.c:54: uart_write_byte(data[i]);
       0000D7 EB               [12]  700 	mov	a,r3
       0000D8 2D               [12]  701 	add	a, r5
       0000D9 F8               [12]  702 	mov	r0,a
@@ -720,20 +720,20 @@
       0000FB D0 05            [24]  720 	pop	ar5
       0000FD D0 06            [24]  721 	pop	ar6
       0000FF D0 07            [24]  722 	pop	ar7
-                                    723 ;	my_uart.c:54: for (i = 0; i < length; i++)
+                                    723 ;	my_uart.c:53: for (i = 0; i < length; i++)
       000101 0B               [12]  724 	inc	r3
       000102 BB 00 C9         [24]  725 	cjne	r3,#0x00,00103$
       000105 0C               [12]  726 	inc	r4
       000106 80 C6            [24]  727 	sjmp	00103$
       000108                        728 00105$:
-                                    729 ;	my_uart.c:56: }
+                                    729 ;	my_uart.c:55: }
       000108 22               [24]  730 	ret
                                     731 ;------------------------------------------------------------
                                     732 ;Allocation info for local variables in function 'uart_write_string'
                                     733 ;------------------------------------------------------------
                                     734 ;str           Allocated to registers r5 r6 r7 
                                     735 ;------------------------------------------------------------
-                                    736 ;	my_uart.c:58: void uart_write_string(const char *str)
+                                    736 ;	my_uart.c:57: void uart_write_string(const char *str)
                                     737 ;	-----------------------------------------
                                     738 ;	 function uart_write_string
                                     739 ;	-----------------------------------------
@@ -741,7 +741,7 @@
       000109 AD 82            [24]  741 	mov	r5, dpl
       00010B AE 83            [24]  742 	mov	r6, dph
       00010D AF F0            [24]  743 	mov	r7, b
-                                    744 ;	my_uart.c:60: while (*str != '\0')
+                                    744 ;	my_uart.c:59: while (*str != '\0')
       00010F                        745 00101$:
       00010F 8D 82            [24]  746 	mov	dpl,r5
       000111 8E 83            [24]  747 	mov	dph,r6
@@ -749,7 +749,7 @@
       000115 12r00r00         [24]  749 	lcall	__gptrget
       000118 FC               [12]  750 	mov	r4,a
       000119 60 18            [24]  751 	jz	00104$
-                                    752 ;	my_uart.c:62: uart_write_byte((uart_u8)*str);
+                                    752 ;	my_uart.c:61: uart_write_byte((uart_u8)*str);
       00011B 8C 82            [24]  753 	mov	dpl, r4
       00011D C0 07            [24]  754 	push	ar7
       00011F C0 06            [24]  755 	push	ar6
@@ -758,23 +758,23 @@
       000126 D0 05            [24]  758 	pop	ar5
       000128 D0 06            [24]  759 	pop	ar6
       00012A D0 07            [24]  760 	pop	ar7
-                                    761 ;	my_uart.c:63: str++;
+                                    761 ;	my_uart.c:62: str++;
       00012C 0D               [12]  762 	inc	r5
       00012D BD 00 DF         [24]  763 	cjne	r5,#0x00,00101$
       000130 0E               [12]  764 	inc	r6
       000131 80 DC            [24]  765 	sjmp	00101$
       000133                        766 00104$:
-                                    767 ;	my_uart.c:65: }
+                                    767 ;	my_uart.c:64: }
       000133 22               [24]  768 	ret
                                     769 ;------------------------------------------------------------
                                     770 ;Allocation info for local variables in function 'uart_available'
                                     771 ;------------------------------------------------------------
-                                    772 ;	my_uart.c:67: uart_u8 uart_available(void)
+                                    772 ;	my_uart.c:66: uart_u8 uart_available(void)
                                     773 ;	-----------------------------------------
                                     774 ;	 function uart_available
                                     775 ;	-----------------------------------------
       000134                        776 _uart_available:
-                                    777 ;	my_uart.c:69: return RI ? 1 : 0;
+                                    777 ;	my_uart.c:68: return RI ? 1 : 0;
       000134 30 98 04         [24]  778 	jnb	_RI,00103$
       000137 7F 01            [12]  779 	mov	r7,#0x01
       000139 80 02            [24]  780 	sjmp	00104$
@@ -782,14 +782,14 @@
       00013B 7F 00            [12]  782 	mov	r7,#0x00
       00013D                        783 00104$:
       00013D 8F 82            [24]  784 	mov	dpl,r7
-                                    785 ;	my_uart.c:70: }
+                                    785 ;	my_uart.c:69: }
       00013F 22               [24]  786 	ret
                                     787 ;------------------------------------------------------------
                                     788 ;Allocation info for local variables in function 'uart_read_byte'
                                     789 ;------------------------------------------------------------
                                     790 ;data          Allocated to registers r5 r6 r7 
                                     791 ;------------------------------------------------------------
-                                    792 ;	my_uart.c:72: uart_u8 uart_read_byte(uart_u8 *data)
+                                    792 ;	my_uart.c:71: uart_u8 uart_read_byte(uart_u8 *data)
                                     793 ;	-----------------------------------------
                                     794 ;	 function uart_read_byte
                                     795 ;	-----------------------------------------
@@ -797,31 +797,31 @@
       000140 AD 82            [24]  797 	mov	r5, dpl
       000142 AE 83            [24]  798 	mov	r6, dph
       000144 AF F0            [24]  799 	mov	r7, b
-                                    800 ;	my_uart.c:74: if (RI == 0)
+                                    800 ;	my_uart.c:73: if (RI == 0)
       000146 20 98 04         [24]  801 	jb	_RI,00102$
-                                    802 ;	my_uart.c:75: return 0;
+                                    802 ;	my_uart.c:74: return 0;
       000149 75 82 00         [24]  803 	mov	dpl, #0x00
       00014C 22               [24]  804 	ret
       00014D                        805 00102$:
-                                    806 ;	my_uart.c:77: *data = SBUF;
+                                    806 ;	my_uart.c:76: *data = SBUF;
       00014D 8D 82            [24]  807 	mov	dpl,r5
       00014F 8E 83            [24]  808 	mov	dph,r6
       000151 8F F0            [24]  809 	mov	b,r7
       000153 E5 99            [12]  810 	mov	a,_SBUF
       000155 12r00r00         [24]  811 	lcall	__gptrput
-                                    812 ;	my_uart.c:78: RI = 0;
+                                    812 ;	my_uart.c:77: RI = 0;
                                     813 ;	assignBit
       000158 C2 98            [12]  814 	clr	_RI
-                                    815 ;	my_uart.c:80: return 1;
+                                    815 ;	my_uart.c:79: return 1;
       00015A 75 82 01         [24]  816 	mov	dpl, #0x01
-                                    817 ;	my_uart.c:81: }
+                                    817 ;	my_uart.c:80: }
       00015D 22               [24]  818 	ret
                                     819 ;------------------------------------------------------------
                                     820 ;Allocation info for local variables in function 'uart_read_byte_blocking'
                                     821 ;------------------------------------------------------------
                                     822 ;data          Allocated to registers r5 r6 r7 
                                     823 ;------------------------------------------------------------
-                                    824 ;	my_uart.c:83: uart_u8 uart_read_byte_blocking(uart_u8 *data)
+                                    824 ;	my_uart.c:82: uart_u8 uart_read_byte_blocking(uart_u8 *data)
                                     825 ;	-----------------------------------------
                                     826 ;	 function uart_read_byte_blocking
                                     827 ;	-----------------------------------------
@@ -829,21 +829,21 @@
       00015E AD 82            [24]  829 	mov	r5, dpl
       000160 AE 83            [24]  830 	mov	r6, dph
       000162 AF F0            [24]  831 	mov	r7, b
-                                    832 ;	my_uart.c:85: while (RI == 0);
+                                    832 ;	my_uart.c:84: while (RI == 0);
       000164                        833 00101$:
       000164 30 98 FD         [24]  834 	jnb	_RI,00101$
-                                    835 ;	my_uart.c:87: *data = SBUF;
+                                    835 ;	my_uart.c:86: *data = SBUF;
       000167 8D 82            [24]  836 	mov	dpl,r5
       000169 8E 83            [24]  837 	mov	dph,r6
       00016B 8F F0            [24]  838 	mov	b,r7
       00016D E5 99            [12]  839 	mov	a,_SBUF
       00016F 12r00r00         [24]  840 	lcall	__gptrput
-                                    841 ;	my_uart.c:88: RI = 0;
+                                    841 ;	my_uart.c:87: RI = 0;
                                     842 ;	assignBit
       000172 C2 98            [12]  843 	clr	_RI
-                                    844 ;	my_uart.c:90: return 1;
+                                    844 ;	my_uart.c:89: return 1;
       000174 75 82 01         [24]  845 	mov	dpl, #0x01
-                                    846 ;	my_uart.c:91: }
+                                    846 ;	my_uart.c:90: }
       000177 22               [24]  847 	ret
                                     848 	.area CSEG    (CODE)
                                     849 	.area CONST   (CODE)

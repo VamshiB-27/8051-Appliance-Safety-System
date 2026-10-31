@@ -6,16 +6,17 @@
 
 #define RELAY_PIN P2_6
 #define BUZZER_PIN P2_7
-
-#define RX_BUFFER_SIZE 64
+#define RED_LED_PIN P2_1
+#define GREEN_LED_PIN P2_0
+#define RX_BUFFER_SIZE 32
 
 volatile unsigned long int delay_time_ms = 0;
-volatile unsigned short int time_ms = 0;
 
 static unsigned char rx_buffer[RX_BUFFER_SIZE];
 static unsigned char rx_length = 0;
 static unsigned char relay_state = 0;
 static unsigned char buzzer_state = 0;
+static unsigned char parse_index = 0;
 
 void delay_us(unsigned int value)
 {
@@ -45,74 +46,194 @@ void timer0_isr(void) __interrupt(1)
     {
         count = 0;
         delay_time_ms++;
-        time_ms++;
-
-        if (time_ms >= 1000)
-            time_ms = 0;
     }
 }
 
-static void oled_clear_line(unsigned char page)
+static void oled_clear_region(unsigned char page,
+                              unsigned char column,
+                              unsigned char characters)
 {
     unsigned char i;
 
-    oled_set_position(page, 0);
+    oled_set_position(page, column);
 
-    for (i = 0; i < 20; i++)
+    for (i = 0; i < characters; i++)
         oled_char(' ');
 }
 
-static void oled_show_status(void)
+static void oled_clear_error(void)
 {
-    oled_clear_line(0);
-    oled_set_position(0, 0);
-    oled_string("APPLIANCE SAFETY");
-
-    oled_clear_line(2);
-    oled_set_position(2, 0);
-    oled_string("RELAY: ");
-
-    oled_string(relay_state ? "ON" : "OFF");
-
-    oled_clear_line(4);
-    oled_set_position(4, 0);
-    oled_string("BUZZER: ");
-
-    oled_string(buzzer_state ? "ON" : "OFF");
-
-    oled_clear_line(6);
-    oled_set_position(6, 0);
-    oled_string("SYSTEM READY");
+    oled_clear_region(5, 0, 21);
+    oled_clear_region(7, 0, 21);
 }
 
-static void oled_show_data(char *data)
+static unsigned char oled_print_field(unsigned char comma_expected)
 {
-    unsigned char i;
-    unsigned char row = 0;
-    unsigned char column = 0;
+    unsigned char count = 0;
 
+    if (rx_buffer[parse_index] == '\0')
+        return 0;
+
+    while (rx_buffer[parse_index] != '\0' &&
+           rx_buffer[parse_index] != ',')
+    {
+        if (count < 20)
+            oled_char(rx_buffer[parse_index]);
+
+        count++;
+        parse_index++;
+    }
+
+    if (count == 0)
+        return 0;
+
+    if (comma_expected)
+    {
+        if (rx_buffer[parse_index] != ',')
+            return 0;
+
+        parse_index++;
+    }
+
+    return 1;
+}
+
+static void oled_initial_screen(void)
+{
     oled_clear();
 
     oled_set_position(0, 0);
-    oled_string("LIVE MEASUREMENTS");
+    oled_string("V:--");
 
-    for (i = 0; data[i] != '\0' && row < 3; i++)
+    oled_set_position(0, 66);
+    oled_string("F:--");
+
+    oled_set_position(1, 0);
+    oled_string("I:--");
+
+    oled_set_position(1, 66);
+    oled_string("E:--");
+
+    oled_set_position(2, 0);
+    oled_string("P:--");
+
+    oled_set_position(2, 66);
+    oled_string("L:--");
+
+    oled_set_position(3, 0);
+    oled_string("PF:--");
+
+    oled_set_position(5, 0);
+    oled_string("ERROR:");
+
+    oled_set_position(7, 0);
+    oled_string("NO ERROR");
+}
+
+static void process_data1(void)
+{
+    parse_index = 6;
+
+    oled_clear_region(0, 0, 10);
+    oled_set_position(0, 0);
+    oled_string("V:");
+
+    if (!oled_print_field(1))
+        return;
+
+    oled_clear_region(1, 0, 10);
+    oled_set_position(1, 0);
+    oled_string("I:");
+
+    if (!oled_print_field(1))
+        return;
+
+    oled_char('A');
+
+    oled_clear_region(2, 0, 10);
+    oled_set_position(2, 0);
+    oled_string("P:");
+
+    if (!oled_print_field(1))
+        return;
+
+    oled_char('W');
+
+    oled_clear_region(3, 0, 10);
+    oled_set_position(3, 0);
+    oled_string("PF:");
+
+    oled_print_field(0);
+}
+
+static void process_data2(void)
+{
+    parse_index = 6;
+
+    oled_clear_region(0, 66, 10);
+    oled_set_position(0, 66);
+    oled_string("F:");
+
+    if (!oled_print_field(1))
+        return;
+
+    oled_string("Hz");
+
+    oled_clear_region(1, 66, 10);
+    oled_set_position(1, 66);
+    oled_string("E:");
+
+    if (!oled_print_field(1))
+        return;
+
+    oled_string("kWh");
+
+    oled_clear_region(2, 66, 10);
+    oled_set_position(2, 66);
+    oled_string("L:");
+
+    if (!oled_print_field(0))
+        return;
+
+    oled_char('A');
+}
+
+static void process_error(void)
+{
+    unsigned char i;
+
+    parse_index = 6;
+
+    oled_clear_error();
+
+    oled_set_position(5, 0);
+    oled_string("ERROR:");
+
+    oled_set_position(7, 0);
+
+    if (rx_buffer[parse_index] == 'N' &&
+        rx_buffer[parse_index + 1] == 'O' &&
+        rx_buffer[parse_index + 2] == 'N' &&
+        rx_buffer[parse_index + 3] == 'E' &&
+        rx_buffer[parse_index + 4] == '\0')
     {
-        if (data[i] == ',')
-        {
-            row++;
-            column = 0;
+        oled_string("NO ERROR");
+        return;
+    }
 
-            oled_set_position(row * 2, 0);
-        }
-        else
-        {
-            if (column < 20)
-            {
-                oled_char(data[i]);
-                column++;
-            }
-        }
+    if (rx_buffer[parse_index] == '\0')
+    {
+        oled_string("UNKNOWN ERROR");
+        return;
+    }
+
+    for (i = 0; i < 21; i++)
+    {
+        if (rx_buffer[parse_index] == '\0')
+            break;
+
+        oled_char(rx_buffer[parse_index]);
+        parse_index++;
     }
 }
 
@@ -133,8 +254,6 @@ static void process_command(char *command)
             relay_state = 1;
 
             uart_write_string("RELAY,ON\r\n");
-            oled_show_status();
-
             return;
         }
 
@@ -147,8 +266,6 @@ static void process_command(char *command)
             relay_state = 0;
 
             uart_write_string("RELAY,OFF\r\n");
-            oled_show_status();
-
             return;
         }
     }
@@ -165,12 +282,12 @@ static void process_command(char *command)
             command[8] == 'N' &&
             command[9] == '\0')
         {
+            GREEN_LED_PIN = 1;
+            RED_LED_PIN = 0;
             BUZZER_PIN = 0;
             buzzer_state = 1;
 
             uart_write_string("BUZZER,ON\r\n");
-            oled_show_status();
-
             return;
         }
 
@@ -179,12 +296,12 @@ static void process_command(char *command)
             command[9] == 'F' &&
             command[10] == '\0')
         {
+            RED_LED_PIN = 1;
+            GREEN_LED_PIN = 0;
             BUZZER_PIN = 1;
             buzzer_state = 0;
 
             uart_write_string("BUZZER,OFF\r\n");
-            oled_show_status();
-
             return;
         }
     }
@@ -203,23 +320,6 @@ static void process_command(char *command)
         uart_write_string(buzzer_state ? "ON" : "OFF");
         uart_write_string("\r\n");
 
-        oled_show_status();
-
-        return;
-    }
-
-    if (command[0] == 'H' &&
-        command[1] == 'E' &&
-        command[2] == 'L' &&
-        command[3] == 'P' &&
-        command[4] == '\0')
-    {
-        uart_write_string("RELAY,ON\r\n");
-        uart_write_string("RELAY,OFF\r\n");
-        uart_write_string("BUZZER,ON\r\n");
-        uart_write_string("BUZZER,OFF\r\n");
-        uart_write_string("STATUS\r\n");
-
         return;
     }
 
@@ -227,24 +327,32 @@ static void process_command(char *command)
         command[1] == 'A' &&
         command[2] == 'T' &&
         command[3] == 'A' &&
-        command[4] == ',')
+        command[4] == '1' &&
+        command[5] == ',')
     {
-        oled_show_data(command);
-
+        process_data1();
         return;
     }
 
-    if (command[0] == 'L' &&
-        command[1] >= '0' &&
-        command[1] <= '3' &&
-        command[2] == ':')
+    if (command[0] == 'D' &&
+        command[1] == 'A' &&
+        command[2] == 'T' &&
+        command[3] == 'A' &&
+        command[4] == '2' &&
+        command[5] == ',')
     {
-        unsigned char page = (command[1] - '0') * 2;
+        process_data2();
+        return;
+    }
 
-        oled_clear_line(page);
-        oled_set_position(page, 0);
-        oled_string(command + 3);
-
+    if (command[0] == 'E' &&
+        command[1] == 'R' &&
+        command[2] == 'R' &&
+        command[3] == 'O' &&
+        command[4] == 'R' &&
+        command[5] == ',')
+    {
+        process_error();
         return;
     }
 }
@@ -296,6 +404,7 @@ void main(void)
 
     RELAY_PIN = 1;
     BUZZER_PIN = 1;
+    GREEN_LED_PIN = 0;
 
     relay_state = 0;
     buzzer_state = 0;
@@ -305,12 +414,13 @@ void main(void)
     EA = 1;
 
     oled_init();
-    oled_clear();
+    oled_initial_screen();
 
     uart_status = uart_init(9600);
 
     if (!uart_status)
     {
+        oled_clear();
         oled_set_position(0, 0);
         oled_string("UART INIT FAILED");
 
@@ -320,9 +430,6 @@ void main(void)
         while (1);
     }
 
-    oled_show_status();
-
-    uart_write_string("APPLIANCE SAFETY V0.1\r\n");
     uart_write_string("UART READY\r\n");
 
     while (1)

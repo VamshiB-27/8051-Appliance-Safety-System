@@ -505,7 +505,7 @@ _uart_write_buffer_PARM_2:
 ;divisor       Allocated to registers r4 r5 r6 r7 
 ;reload        Allocated to registers r4 
 ;------------------------------------------------------------
-;	my_uart.c:5: uart_u8 uart_init(uart_u32 baud)
+;	my_uart.c:4: uart_u8 uart_init(uart_u32 baud)
 ;	-----------------------------------------
 ;	 function uart_init
 ;	-----------------------------------------
@@ -522,17 +522,17 @@ _uart_init:
 	mov	r5,dph
 	mov	r6,b
 	mov	r7,a
-;	my_uart.c:10: if (baud == 0)
+;	my_uart.c:9: if (baud == 0)
 	mov	a,r4
 	orl	a,r5
 	orl	a,r6
 	orl	a,r7
-;	my_uart.c:11: return 0;
+;	my_uart.c:10: return 0;
 	jnz	00102$
 	mov	dpl,a
 	ret
 00102$:
-;	my_uart.c:13: divisor = (UART_FOSC_HZ + (96UL * baud))
+;	my_uart.c:12: divisor = (UART_FOSC_HZ + (96UL * baud))
 	mov	__mullong_PARM_2,r4
 	mov	(__mullong_PARM_2 + 1),r5
 	mov	(__mullong_PARM_2 + 2),r6
@@ -562,7 +562,7 @@ _uart_init:
 	mov	a,#0x01
 	addc	a, r3
 	mov	r3,a
-;	my_uart.c:14: / (192UL * baud);
+;	my_uart.c:13: / (192UL * baud);
 	mov	__mullong_PARM_2,r4
 	mov	(__mullong_PARM_2 + 1),r5
 	mov	(__mullong_PARM_2 + 2),r6
@@ -583,7 +583,7 @@ _uart_init:
 	pop	ar1
 	pop	ar2
 	pop	ar3
-;	my_uart.c:16: if (divisor == 0 || divisor > 255UL)
+;	my_uart.c:15: if (divisor == 0 || divisor > 255UL)
 	mov	dpl, r0
 	mov	dph, r1
 	mov	b, r2
@@ -610,66 +610,66 @@ _uart_init:
 	jnc	00104$
 ;	free result
 00103$:
-;	my_uart.c:17: return 0;
+;	my_uart.c:16: return 0;
 	mov	dpl, #0x00
 	ret
 00104$:
-;	my_uart.c:19: reload = (uart_u8)(256UL - divisor);
+;	my_uart.c:18: reload = (uart_u8)(256UL - divisor);
 	clr	c
 	clr	a
 	subb	a,r4
 	mov	r4,a
-;	my_uart.c:21: ES = 0;
+;	my_uart.c:20: ES = 0;
 ;	assignBit
 	clr	_ES
-;	my_uart.c:23: TR1 = 0;
+;	my_uart.c:22: TR1 = 0;
 ;	assignBit
 	clr	_TR1
-;	my_uart.c:24: TMOD = (TMOD & 0x0F) | 0x20;
+;	my_uart.c:23: TMOD = (TMOD & 0x0F) | 0x20;
 	mov	a,_TMOD
 	anl	a,#0x0f
 	orl	a,#0x20
 	mov	_TMOD,a
-;	my_uart.c:26: PCON |= 0x80;
+;	my_uart.c:25: PCON |= 0x80;
 	orl	_PCON,#0x80
-;	my_uart.c:28: TH1 = reload;
+;	my_uart.c:27: TH1 = reload;
 	mov	_TH1,r4
-;	my_uart.c:29: TL1 = reload;
+;	my_uart.c:28: TL1 = reload;
 	mov	_TL1,r4
-;	my_uart.c:31: SCON = 0x50;
+;	my_uart.c:30: SCON = 0x50;
 	mov	_SCON,#0x50
-;	my_uart.c:33: TI = 0;
+;	my_uart.c:32: TI = 0;
 ;	assignBit
 	clr	_TI
-;	my_uart.c:34: RI = 0;
+;	my_uart.c:33: RI = 0;
 ;	assignBit
 	clr	_RI
-;	my_uart.c:36: TR1 = 1;
+;	my_uart.c:35: TR1 = 1;
 ;	assignBit
 	setb	_TR1
-;	my_uart.c:38: return 1;
+;	my_uart.c:37: return 1;
 	mov	dpl, #0x01
-;	my_uart.c:39: }
+;	my_uart.c:38: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'uart_write_byte'
 ;------------------------------------------------------------
 ;data          Allocated to registers 
 ;------------------------------------------------------------
-;	my_uart.c:41: void uart_write_byte(uart_u8 data)
+;	my_uart.c:40: void uart_write_byte(uart_u8 data)
 ;	-----------------------------------------
 ;	 function uart_write_byte
 ;	-----------------------------------------
 _uart_write_byte:
 	mov	_SBUF,dpl
-;	my_uart.c:45: while (TI == 0);
+;	my_uart.c:44: while (TI == 0);
 00101$:
-;	my_uart.c:47: TI = 0;
+;	my_uart.c:46: TI = 0;
 ;	assignBit
 	jbc	_TI,00120$
 	sjmp	00101$
 00120$:
-;	my_uart.c:48: }
+;	my_uart.c:47: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'uart_write_buffer'
@@ -678,7 +678,7 @@ _uart_write_byte:
 ;data          Allocated to registers r5 r6 r7 
 ;i             Allocated to registers r3 r4 
 ;------------------------------------------------------------
-;	my_uart.c:50: void uart_write_buffer(const uart_u8 *data, uart_u16 length)
+;	my_uart.c:49: void uart_write_buffer(const uart_u8 *data, uart_u16 length)
 ;	-----------------------------------------
 ;	 function uart_write_buffer
 ;	-----------------------------------------
@@ -686,7 +686,7 @@ _uart_write_buffer:
 	mov	r5, dpl
 	mov	r6, dph
 	mov	r7, b
-;	my_uart.c:54: for (i = 0; i < length; i++)
+;	my_uart.c:53: for (i = 0; i < length; i++)
 	mov	r3,#0x00
 	mov	r4,#0x00
 00103$:
@@ -696,7 +696,7 @@ _uart_write_buffer:
 	mov	a,r4
 	subb	a,(_uart_write_buffer_PARM_2 + 1)
 	jnc	00105$
-;	my_uart.c:55: uart_write_byte(data[i]);
+;	my_uart.c:54: uart_write_byte(data[i]);
 	mov	a,r3
 	add	a, r5
 	mov	r0,a
@@ -720,20 +720,20 @@ _uart_write_buffer:
 	pop	ar5
 	pop	ar6
 	pop	ar7
-;	my_uart.c:54: for (i = 0; i < length; i++)
+;	my_uart.c:53: for (i = 0; i < length; i++)
 	inc	r3
 	cjne	r3,#0x00,00103$
 	inc	r4
 	sjmp	00103$
 00105$:
-;	my_uart.c:56: }
+;	my_uart.c:55: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'uart_write_string'
 ;------------------------------------------------------------
 ;str           Allocated to registers r5 r6 r7 
 ;------------------------------------------------------------
-;	my_uart.c:58: void uart_write_string(const char *str)
+;	my_uart.c:57: void uart_write_string(const char *str)
 ;	-----------------------------------------
 ;	 function uart_write_string
 ;	-----------------------------------------
@@ -741,7 +741,7 @@ _uart_write_string:
 	mov	r5, dpl
 	mov	r6, dph
 	mov	r7, b
-;	my_uart.c:60: while (*str != '\0')
+;	my_uart.c:59: while (*str != '\0')
 00101$:
 	mov	dpl,r5
 	mov	dph,r6
@@ -749,7 +749,7 @@ _uart_write_string:
 	lcall	__gptrget
 	mov	r4,a
 	jz	00104$
-;	my_uart.c:62: uart_write_byte((uart_u8)*str);
+;	my_uart.c:61: uart_write_byte((uart_u8)*str);
 	mov	dpl, r4
 	push	ar7
 	push	ar6
@@ -758,23 +758,23 @@ _uart_write_string:
 	pop	ar5
 	pop	ar6
 	pop	ar7
-;	my_uart.c:63: str++;
+;	my_uart.c:62: str++;
 	inc	r5
 	cjne	r5,#0x00,00101$
 	inc	r6
 	sjmp	00101$
 00104$:
-;	my_uart.c:65: }
+;	my_uart.c:64: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'uart_available'
 ;------------------------------------------------------------
-;	my_uart.c:67: uart_u8 uart_available(void)
+;	my_uart.c:66: uart_u8 uart_available(void)
 ;	-----------------------------------------
 ;	 function uart_available
 ;	-----------------------------------------
 _uart_available:
-;	my_uart.c:69: return RI ? 1 : 0;
+;	my_uart.c:68: return RI ? 1 : 0;
 	jnb	_RI,00103$
 	mov	r7,#0x01
 	sjmp	00104$
@@ -782,14 +782,14 @@ _uart_available:
 	mov	r7,#0x00
 00104$:
 	mov	dpl,r7
-;	my_uart.c:70: }
+;	my_uart.c:69: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'uart_read_byte'
 ;------------------------------------------------------------
 ;data          Allocated to registers r5 r6 r7 
 ;------------------------------------------------------------
-;	my_uart.c:72: uart_u8 uart_read_byte(uart_u8 *data)
+;	my_uart.c:71: uart_u8 uart_read_byte(uart_u8 *data)
 ;	-----------------------------------------
 ;	 function uart_read_byte
 ;	-----------------------------------------
@@ -797,31 +797,31 @@ _uart_read_byte:
 	mov	r5, dpl
 	mov	r6, dph
 	mov	r7, b
-;	my_uart.c:74: if (RI == 0)
+;	my_uart.c:73: if (RI == 0)
 	jb	_RI,00102$
-;	my_uart.c:75: return 0;
+;	my_uart.c:74: return 0;
 	mov	dpl, #0x00
 	ret
 00102$:
-;	my_uart.c:77: *data = SBUF;
+;	my_uart.c:76: *data = SBUF;
 	mov	dpl,r5
 	mov	dph,r6
 	mov	b,r7
 	mov	a,_SBUF
 	lcall	__gptrput
-;	my_uart.c:78: RI = 0;
+;	my_uart.c:77: RI = 0;
 ;	assignBit
 	clr	_RI
-;	my_uart.c:80: return 1;
+;	my_uart.c:79: return 1;
 	mov	dpl, #0x01
-;	my_uart.c:81: }
+;	my_uart.c:80: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'uart_read_byte_blocking'
 ;------------------------------------------------------------
 ;data          Allocated to registers r5 r6 r7 
 ;------------------------------------------------------------
-;	my_uart.c:83: uart_u8 uart_read_byte_blocking(uart_u8 *data)
+;	my_uart.c:82: uart_u8 uart_read_byte_blocking(uart_u8 *data)
 ;	-----------------------------------------
 ;	 function uart_read_byte_blocking
 ;	-----------------------------------------
@@ -829,21 +829,21 @@ _uart_read_byte_blocking:
 	mov	r5, dpl
 	mov	r6, dph
 	mov	r7, b
-;	my_uart.c:85: while (RI == 0);
+;	my_uart.c:84: while (RI == 0);
 00101$:
 	jnb	_RI,00101$
-;	my_uart.c:87: *data = SBUF;
+;	my_uart.c:86: *data = SBUF;
 	mov	dpl,r5
 	mov	dph,r6
 	mov	b,r7
 	mov	a,_SBUF
 	lcall	__gptrput
-;	my_uart.c:88: RI = 0;
+;	my_uart.c:87: RI = 0;
 ;	assignBit
 	clr	_RI
-;	my_uart.c:90: return 1;
+;	my_uart.c:89: return 1;
 	mov	dpl, #0x01
-;	my_uart.c:91: }
+;	my_uart.c:90: }
 	ret
 	.area CSEG    (CODE)
 	.area CONST   (CODE)

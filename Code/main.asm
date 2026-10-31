@@ -219,7 +219,6 @@
 	.globl _DPL
 	.globl _SP
 	.globl _P0
-	.globl _time_ms
 	.globl _delay_time_ms
 	.globl _delay_us
 	.globl _delay_ms
@@ -444,21 +443,23 @@ _EP6INT	=	0x00fe
 	.area DSEG    (DATA)
 _delay_time_ms::
 	.ds 4
-_time_ms::
-	.ds 2
 _rx_buffer:
-	.ds 64
+	.ds 32
 _rx_length:
 	.ds 1
 _relay_state:
 	.ds 1
 _buzzer_state:
 	.ds 1
+_parse_index:
+	.ds 1
 _timer0_isr_count_10000_28:
 	.ds 1
-_oled_show_data_data_10000_37:
-	.ds 3
-_uart_receive_process_data_10000_69:
+_oled_clear_region_PARM_2:
+	.ds 1
+_oled_clear_region_PARM_3:
+	.ds 1
+_uart_receive_process_data_10000_89:
 	.ds 1
 ;--------------------------------------------------------
 ; overlayable items in internal ram
@@ -596,23 +597,22 @@ sdcc_atomic_compare_exchange_gptr_impl::
 ;------------------------------------------------------------
 ;count         Allocated with name '_timer0_isr_count_10000_28'
 ;------------------------------------------------------------
-;	main.c:39: static unsigned char count = 0;
+;	main.c:40: static unsigned char count = 0;
 	mov	_timer0_isr_count_10000_28,#0x00
-;	main.c:12: volatile unsigned long int delay_time_ms = 0;
+;	main.c:13: volatile unsigned long int delay_time_ms = 0;
 	clr	a
 	mov	_delay_time_ms,a
 	mov	(_delay_time_ms + 1),a
 	mov	(_delay_time_ms + 2),a
 	mov	(_delay_time_ms + 3),a
-;	main.c:13: volatile unsigned short int time_ms = 0;
-	mov	_time_ms,a
-	mov	(_time_ms + 1),a
 ;	main.c:16: static unsigned char rx_length = 0;
 	mov	_rx_length,a
 ;	main.c:17: static unsigned char relay_state = 0;
 	mov	_relay_state,a
 ;	main.c:18: static unsigned char buzzer_state = 0;
 	mov	_buzzer_state,a
+;	main.c:19: static unsigned char parse_index = 0;
+	mov	_parse_index,a
 	.area GSFINAL (CODE)
 	ljmp	__sdcc_program_startup
 ;--------------------------------------------------------
@@ -635,7 +635,7 @@ __sdcc_program_exit:
 ;value         Allocated to registers r6 r7 
 ;i             Allocated to registers r5 
 ;------------------------------------------------------------
-;	main.c:20: void delay_us(unsigned int value)
+;	main.c:21: void delay_us(unsigned int value)
 ;	-----------------------------------------
 ;	 function delay_us
 ;	-----------------------------------------
@@ -650,7 +650,7 @@ _delay_us:
 	ar0 = 0x00
 	mov	r6, dpl
 	mov	r7, dph
-;	main.c:24: while (value--)
+;	main.c:25: while (value--)
 00102$:
 	mov	ar4,r6
 	mov	ar5,r7
@@ -661,20 +661,20 @@ _delay_us:
 	mov	a,r4
 	orl	a,r5
 	jz	00108$
-;	main.c:26: for (i = 0; i < 4; i++);
+;	main.c:27: for (i = 0; i < 4; i++);
 	mov	r5,#0x04
 00107$:
 	djnz	r5,00107$
 	sjmp	00102$
 00108$:
-;	main.c:28: }
+;	main.c:29: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'delay_ms'
 ;------------------------------------------------------------
 ;value         Allocated to registers r4 r5 r6 r7 
 ;------------------------------------------------------------
-;	main.c:30: void delay_ms(unsigned long int value)
+;	main.c:31: void delay_ms(unsigned long int value)
 ;	-----------------------------------------
 ;	 function delay_ms
 ;	-----------------------------------------
@@ -683,13 +683,13 @@ _delay_ms:
 	mov	r5,dph
 	mov	r6,b
 	mov	r7,a
-;	main.c:32: delay_time_ms = 0;
+;	main.c:33: delay_time_ms = 0;
 	clr	a
 	mov	_delay_time_ms,a
 	mov	(_delay_time_ms + 1),a
 	mov	(_delay_time_ms + 2),a
 	mov	(_delay_time_ms + 3),a
-;	main.c:34: while (delay_time_ms < value);
+;	main.c:35: while (delay_time_ms < value);
 00101$:
 	clr	c
 	mov	a,_delay_time_ms
@@ -701,14 +701,14 @@ _delay_ms:
 	mov	a,(_delay_time_ms + 3)
 	subb	a,r7
 	jc	00101$
-;	main.c:35: }
+;	main.c:36: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'timer0_isr'
 ;------------------------------------------------------------
 ;count         Allocated with name '_timer0_isr_count_10000_28'
 ;------------------------------------------------------------
-;	main.c:37: void timer0_isr(void) __interrupt(1)
+;	main.c:38: void timer0_isr(void) __interrupt(1)
 ;	-----------------------------------------
 ;	 function timer0_isr
 ;	-----------------------------------------
@@ -720,18 +720,18 @@ _timer0_isr:
 	push	ar4
 	push	psw
 	mov	psw,#0x00
-;	main.c:41: TF0 = 0;
+;	main.c:42: TF0 = 0;
 ;	assignBit
 	clr	_TF0
-;	main.c:42: count++;
+;	main.c:43: count++;
 	inc	_timer0_isr_count_10000_28
-;	main.c:44: if (count >= 10)
+;	main.c:45: if (count >= 10)
 	mov	a,#0x100 - 0x0a
 	add	a,_timer0_isr_count_10000_28
-	jnc	00105$
-;	main.c:46: count = 0;
+	jnc	00103$
+;	main.c:47: count = 0;
 	mov	_timer0_isr_count_10000_28,#0x00
-;	main.c:47: delay_time_ms++;
+;	main.c:48: delay_time_ms++;
 	mov	r4,_delay_time_ms
 	mov	r5,(_delay_time_ms + 1)
 	mov	r6,(_delay_time_ms + 2)
@@ -748,30 +748,8 @@ _timer0_isr:
 	clr	a
 	addc	a, r7
 	mov	(_delay_time_ms + 3),a
-;	main.c:48: time_ms++;
-	mov	r6,_time_ms
-	mov	r7,(_time_ms + 1)
-	mov	a,#0x01
-	add	a, r6
-	mov	_time_ms,a
-	clr	a
-	addc	a, r7
-	mov	(_time_ms + 1),a
-;	main.c:50: if (time_ms >= 1000)
-	mov	r6,_time_ms
-	mov	r7,(_time_ms + 1)
-	clr	c
-	mov	a,r6
-	subb	a,#0xe8
-	mov	a,r7
-	subb	a,#0x03
-	jc	00105$
-;	main.c:51: time_ms = 0;
-	clr	a
-	mov	_time_ms,a
-	mov	(_time_ms + 1),a
-00105$:
-;	main.c:53: }
+00103$:
+;	main.c:50: }
 	pop	psw
 	pop	ar4
 	pop	ar5
@@ -783,235 +761,527 @@ _timer0_isr:
 ;	eliminated unneeded push/pop dph
 ;	eliminated unneeded push/pop b
 ;------------------------------------------------------------
-;Allocation info for local variables in function 'oled_clear_line'
+;Allocation info for local variables in function 'oled_clear_region'
 ;------------------------------------------------------------
+;column        Allocated with name '_oled_clear_region_PARM_2'
+;characters    Allocated with name '_oled_clear_region_PARM_3'
 ;page          Allocated to registers r7 
 ;i             Allocated to registers r7 
 ;------------------------------------------------------------
-;	main.c:55: static void oled_clear_line(unsigned char page)
+;	main.c:52: static void oled_clear_region(unsigned char page,
 ;	-----------------------------------------
-;	 function oled_clear_line
+;	 function oled_clear_region
 ;	-----------------------------------------
-_oled_clear_line:
-;	main.c:59: oled_set_position(page, 0);
-	mov	_oled_set_position_PARM_2,#0x00
+_oled_clear_region:
+;	main.c:58: oled_set_position(page, column);
+	mov	_oled_set_position_PARM_2,_oled_clear_region_PARM_2
 	lcall	_oled_set_position
-;	main.c:61: for (i = 0; i < 20; i++)
+;	main.c:60: for (i = 0; i < characters; i++)
 	mov	r7,#0x00
-00102$:
-;	main.c:62: oled_char(' ');
+00103$:
+	clr	c
+	mov	a,r7
+	subb	a,_oled_clear_region_PARM_3
+	jnc	00105$
+;	main.c:61: oled_char(' ');
 	mov	dpl, #0x20
 	push	ar7
 	lcall	_oled_char
 	pop	ar7
-;	main.c:61: for (i = 0; i < 20; i++)
+;	main.c:60: for (i = 0; i < characters; i++)
 	inc	r7
-	cjne	r7,#0x14,00113$
-00113$:
-	jc	00102$
-;	main.c:63: }
+	sjmp	00103$
+00105$:
+;	main.c:62: }
 	ret
 ;------------------------------------------------------------
-;Allocation info for local variables in function 'oled_show_status'
+;Allocation info for local variables in function 'oled_clear_error'
 ;------------------------------------------------------------
-;	main.c:65: static void oled_show_status(void)
+;	main.c:64: static void oled_clear_error(void)
 ;	-----------------------------------------
-;	 function oled_show_status
+;	 function oled_clear_error
 ;	-----------------------------------------
-_oled_show_status:
-;	main.c:67: oled_clear_line(0);
+_oled_clear_error:
+;	main.c:66: oled_clear_region(5, 0, 21);
+	mov	_oled_clear_region_PARM_2,#0x00
+	mov	_oled_clear_region_PARM_3,#0x15
+	mov	dpl, #0x05
+	lcall	_oled_clear_region
+;	main.c:67: oled_clear_region(7, 0, 21);
+	mov	_oled_clear_region_PARM_2,#0x00
+	mov	_oled_clear_region_PARM_3,#0x15
+	mov	dpl, #0x07
+;	main.c:68: }
+	ljmp	_oled_clear_region
+;------------------------------------------------------------
+;Allocation info for local variables in function 'oled_print_field'
+;------------------------------------------------------------
+;comma_expected Allocated to registers r7 
+;count         Allocated to registers r6 
+;------------------------------------------------------------
+;	main.c:70: static unsigned char oled_print_field(unsigned char comma_expected)
+;	-----------------------------------------
+;	 function oled_print_field
+;	-----------------------------------------
+_oled_print_field:
+	mov	r7, dpl
+;	main.c:72: unsigned char count = 0;
+	mov	r6,#0x00
+;	main.c:74: if (rx_buffer[parse_index] == '\0')
+	mov	a,_parse_index
+	add	a, #_rx_buffer
+	mov	r1,a
+	mov	a,@r1
+;	main.c:75: return 0;
+	jnz	00106$
+	mov	dpl,a
+;	main.c:77: while (rx_buffer[parse_index] != '\0' &&
+	ret
+00106$:
+	mov	a,_parse_index
+	add	a, #_rx_buffer
+	mov	r1,a
+	mov	a,@r1
+	mov	r5,a
+	jz	00108$
+;	main.c:78: rx_buffer[parse_index] != ',')
+	cjne	r5,#0x2c,00175$
+	sjmp	00108$
+00175$:
+;	main.c:80: if (count < 20)
+	cjne	r6,#0x14,00176$
+00176$:
+	jnc	00104$
+;	main.c:81: oled_char(rx_buffer[parse_index]);
+	mov	dpl, r5
+	push	ar7
+	push	ar6
+	lcall	_oled_char
+	pop	ar6
+	pop	ar7
+00104$:
+;	main.c:83: count++;
+	inc	r6
+;	main.c:84: parse_index++;
+	inc	_parse_index
+	sjmp	00106$
+00108$:
+;	main.c:87: if (count == 0)
+	mov	a,r6
+;	main.c:88: return 0;
+	jnz	00110$
+	mov	dpl,a
+	ret
+00110$:
+;	main.c:90: if (comma_expected)
+	mov	a,r7
+	jz	00114$
+;	main.c:92: if (rx_buffer[parse_index] != ',')
+	mov	a,_parse_index
+	add	a, #_rx_buffer
+	mov	r1,a
+	mov	ar7,@r1
+	cjne	r7,#0x2c,00180$
+	sjmp	00112$
+00180$:
+;	main.c:93: return 0;
 	mov	dpl, #0x00
-	lcall	_oled_clear_line
-;	main.c:68: oled_set_position(0, 0);
+	ret
+00112$:
+;	main.c:95: parse_index++;
+	inc	_parse_index
+00114$:
+;	main.c:98: return 1;
+	mov	dpl, #0x01
+;	main.c:99: }
+	ret
+;------------------------------------------------------------
+;Allocation info for local variables in function 'oled_initial_screen'
+;------------------------------------------------------------
+;	main.c:101: static void oled_initial_screen(void)
+;	-----------------------------------------
+;	 function oled_initial_screen
+;	-----------------------------------------
+_oled_initial_screen:
+;	main.c:103: oled_clear();
+	lcall	_oled_clear
+;	main.c:105: oled_set_position(0, 0);
 	mov	_oled_set_position_PARM_2,#0x00
 	mov	dpl, #0x00
 	lcall	_oled_set_position
-;	main.c:69: oled_string("APPLIANCE SAFETY");
+;	main.c:106: oled_string("V:--");
 	mov	dptr,#___str_0
 	mov	b, #0x80
 	lcall	_oled_string
-;	main.c:71: oled_clear_line(2);
-	mov	dpl, #0x02
-	lcall	_oled_clear_line
-;	main.c:72: oled_set_position(2, 0);
-	mov	_oled_set_position_PARM_2,#0x00
-	mov	dpl, #0x02
+;	main.c:108: oled_set_position(0, 66);
+	mov	_oled_set_position_PARM_2,#0x42
+	mov	dpl, #0x00
 	lcall	_oled_set_position
-;	main.c:73: oled_string("RELAY: ");
+;	main.c:109: oled_string("F:--");
 	mov	dptr,#___str_1
 	mov	b, #0x80
 	lcall	_oled_string
-;	main.c:75: oled_string(relay_state ? "ON" : "OFF");
-	mov	a,_relay_state
-	jz	00103$
-	mov	r6,#___str_2
-	mov	r7,#(___str_2 >> 8)
-	sjmp	00104$
-00103$:
-	mov	r6,#___str_3
-	mov	r7,#(___str_3 >> 8)
-00104$:
-	mov	r5,#0x80
-	mov	dpl, r6
-	mov	dph, r7
-	mov	b, r5
-	lcall	_oled_string
-;	main.c:77: oled_clear_line(4);
-	mov	dpl, #0x04
-	lcall	_oled_clear_line
-;	main.c:78: oled_set_position(4, 0);
+;	main.c:111: oled_set_position(1, 0);
 	mov	_oled_set_position_PARM_2,#0x00
-	mov	dpl, #0x04
+	mov	dpl, #0x01
 	lcall	_oled_set_position
-;	main.c:79: oled_string("BUZZER: ");
+;	main.c:112: oled_string("I:--");
+	mov	dptr,#___str_2
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:114: oled_set_position(1, 66);
+	mov	_oled_set_position_PARM_2,#0x42
+	mov	dpl, #0x01
+	lcall	_oled_set_position
+;	main.c:115: oled_string("E:--");
+	mov	dptr,#___str_3
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:117: oled_set_position(2, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x02
+	lcall	_oled_set_position
+;	main.c:118: oled_string("P:--");
 	mov	dptr,#___str_4
 	mov	b, #0x80
 	lcall	_oled_string
-;	main.c:81: oled_string(buzzer_state ? "ON" : "OFF");
-	mov	a,_buzzer_state
-	jz	00105$
-	mov	r6,#___str_2
-	mov	r7,#(___str_2 >> 8)
-	sjmp	00106$
-00105$:
-	mov	r6,#___str_3
-	mov	r7,#(___str_3 >> 8)
-00106$:
-	mov	r5,#0x80
-	mov	dpl, r6
-	mov	dph, r7
-	mov	b, r5
-	lcall	_oled_string
-;	main.c:83: oled_clear_line(6);
-	mov	dpl, #0x06
-	lcall	_oled_clear_line
-;	main.c:84: oled_set_position(6, 0);
-	mov	_oled_set_position_PARM_2,#0x00
-	mov	dpl, #0x06
+;	main.c:120: oled_set_position(2, 66);
+	mov	_oled_set_position_PARM_2,#0x42
+	mov	dpl, #0x02
 	lcall	_oled_set_position
-;	main.c:85: oled_string("SYSTEM READY");
+;	main.c:121: oled_string("L:--");
 	mov	dptr,#___str_5
 	mov	b, #0x80
-;	main.c:86: }
-	ljmp	_oled_string
-;------------------------------------------------------------
-;Allocation info for local variables in function 'oled_show_data'
-;------------------------------------------------------------
-;data          Allocated with name '_oled_show_data_data_10000_37'
-;i             Allocated to registers r2 
-;row           Allocated to registers r4 
-;column        Allocated to registers r3 
-;------------------------------------------------------------
-;	main.c:88: static void oled_show_data(char *data)
-;	-----------------------------------------
-;	 function oled_show_data
-;	-----------------------------------------
-_oled_show_data:
-	mov	_oled_show_data_data_10000_37,dpl
-	mov	(_oled_show_data_data_10000_37 + 1),dph
-	mov	(_oled_show_data_data_10000_37 + 2),b
-;	main.c:91: unsigned char row = 0;
-	mov	r4,#0x00
-;	main.c:92: unsigned char column = 0;
-	mov	r3,#0x00
-;	main.c:94: oled_clear();
-	push	ar4
-	push	ar3
-	lcall	_oled_clear
-;	main.c:96: oled_set_position(0, 0);
+	lcall	_oled_string
+;	main.c:123: oled_set_position(3, 0);
 	mov	_oled_set_position_PARM_2,#0x00
-	mov	dpl, #0x00
+	mov	dpl, #0x03
 	lcall	_oled_set_position
-;	main.c:97: oled_string("LIVE MEASUREMENTS");
+;	main.c:124: oled_string("PF:--");
 	mov	dptr,#___str_6
 	mov	b, #0x80
 	lcall	_oled_string
-	pop	ar3
-	pop	ar4
-;	main.c:99: for (i = 0; data[i] != '\0' && row < 3; i++)
-	mov	r2,#0x00
-00109$:
-	mov	a,r2
-	add	a, _oled_show_data_data_10000_37
-	mov	r0,a
-	clr	a
-	addc	a, (_oled_show_data_data_10000_37 + 1)
-	mov	r1,a
-	mov	r7,(_oled_show_data_data_10000_37 + 2)
-	mov	dpl,r0
-	mov	dph,r1
-	mov	b,r7
-	lcall	__gptrget
-	mov	r7,a
-	jz	00111$
-	cjne	r4,#0x03,00149$
-00149$:
-	jnc	00111$
-;	main.c:101: if (data[i] == ',')
-	cjne	r7,#0x2c,00104$
-;	main.c:103: row++;
-	inc	r4
-;	main.c:104: column = 0;
-	mov	r3,#0x00
-;	main.c:106: oled_set_position(row * 2, 0);
-	mov	a,r4
-	add	a,r4
-	mov	dpl,a
-	mov	_oled_set_position_PARM_2,r3
-	push	ar4
-	push	ar3
-	push	ar2
+;	main.c:126: oled_set_position(5, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x05
 	lcall	_oled_set_position
-	pop	ar2
-	pop	ar3
-	pop	ar4
-	sjmp	00110$
+;	main.c:127: oled_string("ERROR:");
+	mov	dptr,#___str_7
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:129: oled_set_position(7, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x07
+	lcall	_oled_set_position
+;	main.c:130: oled_string("NO ERROR");
+	mov	dptr,#___str_8
+	mov	b, #0x80
+;	main.c:131: }
+	ljmp	_oled_string
+;------------------------------------------------------------
+;Allocation info for local variables in function 'process_data1'
+;------------------------------------------------------------
+;	main.c:133: static void process_data1(void)
+;	-----------------------------------------
+;	 function process_data1
+;	-----------------------------------------
+_process_data1:
+;	main.c:135: parse_index = 6;
+	mov	_parse_index,#0x06
+;	main.c:137: oled_clear_region(0, 0, 10);
+	mov	_oled_clear_region_PARM_2,#0x00
+	mov	_oled_clear_region_PARM_3,#0x0a
+	mov	dpl, #0x00
+	lcall	_oled_clear_region
+;	main.c:138: oled_set_position(0, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x00
+	lcall	_oled_set_position
+;	main.c:139: oled_string("V:");
+	mov	dptr,#___str_9
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:141: if (!oled_print_field(1))
+	mov	dpl, #0x01
+	lcall	_oled_print_field
+	mov	a, dpl
+	jnz	00102$
+;	main.c:142: return;
+	ret
+00102$:
+;	main.c:144: oled_clear_region(1, 0, 10);
+	mov	_oled_clear_region_PARM_2,#0x00
+	mov	_oled_clear_region_PARM_3,#0x0a
+	mov	dpl, #0x01
+	lcall	_oled_clear_region
+;	main.c:145: oled_set_position(1, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x01
+	lcall	_oled_set_position
+;	main.c:146: oled_string("I:");
+	mov	dptr,#___str_10
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:148: if (!oled_print_field(1))
+	mov	dpl, #0x01
+	lcall	_oled_print_field
+	mov	a, dpl
+	jnz	00104$
+;	main.c:149: return;
+	ret
 00104$:
-;	main.c:110: if (column < 20)
-	cjne	r3,#0x14,00153$
-00153$:
-	jnc	00110$
-;	main.c:112: oled_char(data[i]);
-	mov	dpl, r7
-	push	ar4
-	push	ar3
-	push	ar2
+;	main.c:151: oled_char('A');
+	mov	dpl, #0x41
 	lcall	_oled_char
-	pop	ar2
-	pop	ar3
-	pop	ar4
-;	main.c:113: column++;
-	inc	r3
-00110$:
-;	main.c:99: for (i = 0; data[i] != '\0' && row < 3; i++)
-	inc	r2
-	sjmp	00109$
-00111$:
-;	main.c:117: }
+;	main.c:153: oled_clear_region(2, 0, 10);
+	mov	_oled_clear_region_PARM_2,#0x00
+	mov	_oled_clear_region_PARM_3,#0x0a
+	mov	dpl, #0x02
+	lcall	_oled_clear_region
+;	main.c:154: oled_set_position(2, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x02
+	lcall	_oled_set_position
+;	main.c:155: oled_string("P:");
+	mov	dptr,#___str_11
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:157: if (!oled_print_field(1))
+	mov	dpl, #0x01
+	lcall	_oled_print_field
+	mov	a, dpl
+	jnz	00106$
+;	main.c:158: return;
+	ret
+00106$:
+;	main.c:160: oled_char('W');
+	mov	dpl, #0x57
+	lcall	_oled_char
+;	main.c:162: oled_clear_region(3, 0, 10);
+	mov	_oled_clear_region_PARM_2,#0x00
+	mov	_oled_clear_region_PARM_3,#0x0a
+	mov	dpl, #0x03
+	lcall	_oled_clear_region
+;	main.c:163: oled_set_position(3, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x03
+	lcall	_oled_set_position
+;	main.c:164: oled_string("PF:");
+	mov	dptr,#___str_12
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:166: oled_print_field(0);
+	mov	dpl, #0x00
+;	main.c:167: }
+	ljmp	_oled_print_field
+;------------------------------------------------------------
+;Allocation info for local variables in function 'process_data2'
+;------------------------------------------------------------
+;	main.c:169: static void process_data2(void)
+;	-----------------------------------------
+;	 function process_data2
+;	-----------------------------------------
+_process_data2:
+;	main.c:171: parse_index = 6;
+	mov	_parse_index,#0x06
+;	main.c:173: oled_clear_region(0, 66, 10);
+	mov	_oled_clear_region_PARM_2,#0x42
+	mov	_oled_clear_region_PARM_3,#0x0a
+	mov	dpl, #0x00
+	lcall	_oled_clear_region
+;	main.c:174: oled_set_position(0, 66);
+	mov	_oled_set_position_PARM_2,#0x42
+	mov	dpl, #0x00
+	lcall	_oled_set_position
+;	main.c:175: oled_string("F:");
+	mov	dptr,#___str_13
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:177: if (!oled_print_field(1))
+	mov	dpl, #0x01
+	lcall	_oled_print_field
+	mov	a, dpl
+	jnz	00102$
+;	main.c:178: return;
+	ret
+00102$:
+;	main.c:180: oled_string("Hz");
+	mov	dptr,#___str_14
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:182: oled_clear_region(1, 66, 10);
+	mov	_oled_clear_region_PARM_2,#0x42
+	mov	_oled_clear_region_PARM_3,#0x0a
+	mov	dpl, #0x01
+	lcall	_oled_clear_region
+;	main.c:183: oled_set_position(1, 66);
+	mov	_oled_set_position_PARM_2,#0x42
+	mov	dpl, #0x01
+	lcall	_oled_set_position
+;	main.c:184: oled_string("E:");
+	mov	dptr,#___str_15
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:186: if (!oled_print_field(1))
+	mov	dpl, #0x01
+	lcall	_oled_print_field
+	mov	a, dpl
+	jnz	00104$
+;	main.c:187: return;
+	ret
+00104$:
+;	main.c:189: oled_string("kWh");
+	mov	dptr,#___str_16
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:191: oled_clear_region(2, 66, 10);
+	mov	_oled_clear_region_PARM_2,#0x42
+	mov	_oled_clear_region_PARM_3,#0x0a
+	mov	dpl, #0x02
+	lcall	_oled_clear_region
+;	main.c:192: oled_set_position(2, 66);
+	mov	_oled_set_position_PARM_2,#0x42
+	mov	dpl, #0x02
+	lcall	_oled_set_position
+;	main.c:193: oled_string("L:");
+	mov	dptr,#___str_17
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:195: if (!oled_print_field(0))
+	mov	dpl, #0x00
+	lcall	_oled_print_field
+	mov	a, dpl
+	jnz	00106$
+;	main.c:196: return;
+	ret
+00106$:
+;	main.c:198: oled_char('A');
+	mov	dpl, #0x41
+;	main.c:199: }
+	ljmp	_oled_char
+;------------------------------------------------------------
+;Allocation info for local variables in function 'process_error'
+;------------------------------------------------------------
+;i             Allocated to registers r7 
+;------------------------------------------------------------
+;	main.c:201: static void process_error(void)
+;	-----------------------------------------
+;	 function process_error
+;	-----------------------------------------
+_process_error:
+;	main.c:205: parse_index = 6;
+	mov	_parse_index,#0x06
+;	main.c:207: oled_clear_error();
+	lcall	_oled_clear_error
+;	main.c:209: oled_set_position(5, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x05
+	lcall	_oled_set_position
+;	main.c:210: oled_string("ERROR:");
+	mov	dptr,#___str_7
+	mov	b, #0x80
+	lcall	_oled_string
+;	main.c:212: oled_set_position(7, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x07
+	lcall	_oled_set_position
+;	main.c:214: if (rx_buffer[parse_index] == 'N' &&
+	mov	a,_parse_index
+	add	a, #_rx_buffer
+	mov	r1,a
+	mov	ar7,@r1
+	cjne	r7,#0x4e,00102$
+;	main.c:215: rx_buffer[parse_index + 1] == 'O' &&
+	mov	a,_parse_index
+	mov	r6,a
+	inc	a
+	add	a, #_rx_buffer
+	mov	r1,a
+	mov	ar5,@r1
+	cjne	r5,#0x4f,00102$
+;	main.c:216: rx_buffer[parse_index + 2] == 'N' &&
+	mov	a,#0x02
+	add	a, r6
+	add	a, #_rx_buffer
+	mov	r1,a
+	mov	ar5,@r1
+	cjne	r5,#0x4e,00102$
+;	main.c:217: rx_buffer[parse_index + 3] == 'E' &&
+	mov	a,#0x03
+	add	a, r6
+	add	a, #_rx_buffer
+	mov	r1,a
+	mov	ar5,@r1
+	cjne	r5,#0x45,00102$
+;	main.c:218: rx_buffer[parse_index + 4] == '\0')
+	mov	a,#0x04
+	add	a, r6
+	add	a, #_rx_buffer
+	mov	r1,a
+	mov	a,@r1
+	jnz	00102$
+;	main.c:220: oled_string("NO ERROR");
+	mov	dptr,#___str_8
+	mov	b, #0x80
+;	main.c:221: return;
+	ljmp	_oled_string
+00102$:
+;	main.c:224: if (rx_buffer[parse_index] == '\0')
+	mov	a,r7
+	jnz	00108$
+;	main.c:226: oled_string("UNKNOWN ERROR");
+	mov	dptr,#___str_18
+	mov	b, #0x80
+;	main.c:227: return;
+	ljmp	_oled_string
+00108$:
+;	main.c:230: for (i = 0; i < 21; i++)
+	mov	r7,#0x00
+00112$:
+;	main.c:232: if (rx_buffer[parse_index] == '\0')
+	mov	a,_parse_index
+	add	a, #_rx_buffer
+	mov	r1,a
+	mov	a,@r1
+	mov	r6,a
+	jz	00114$
+;	main.c:235: oled_char(rx_buffer[parse_index]);
+	mov	dpl, r6
+	push	ar7
+	lcall	_oled_char
+	pop	ar7
+;	main.c:236: parse_index++;
+	inc	_parse_index
+;	main.c:230: for (i = 0; i < 21; i++)
+	inc	r7
+	cjne	r7,#0x15,00183$
+00183$:
+	jc	00112$
+00114$:
+;	main.c:238: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'process_command'
 ;------------------------------------------------------------
 ;command       Allocated to registers r5 r6 r7 
-;page          Allocated to registers r4 
 ;------------------------------------------------------------
-;	main.c:119: static void process_command(char *command)
+;	main.c:240: static void process_command(char *command)
 ;	-----------------------------------------
 ;	 function process_command
 ;	-----------------------------------------
 _process_command:
-;	main.c:121: if (command[0] == 'R' &&
+;	main.c:242: if (command[0] == 'R' &&
 	mov	r5,dpl
 	mov	r6,dph
 	mov	r7,b
 	lcall	__gptrget
 	mov	r4,a
-	cjne	r4,#0x52,00515$
-	sjmp	00516$
-00515$:
+	cjne	r4,#0x52,00547$
+	sjmp	00548$
+00547$:
 	ljmp	00111$
-00516$:
-;	main.c:122: command[1] == 'E' &&
+00548$:
+;	main.c:243: command[1] == 'E' &&
 	mov	a,#0x01
 	add	a, r5
 	mov	r1,a
@@ -1024,12 +1294,12 @@ _process_command:
 	mov	b,r3
 	lcall	__gptrget
 	mov	r1,a
-	cjne	r1,#0x45,00517$
-	sjmp	00518$
-00517$:
+	cjne	r1,#0x45,00549$
+	sjmp	00550$
+00549$:
 	ljmp	00111$
-00518$:
-;	main.c:123: command[2] == 'L' &&
+00550$:
+;	main.c:244: command[2] == 'L' &&
 	mov	a,#0x02
 	add	a, r5
 	mov	r1,a
@@ -1042,12 +1312,12 @@ _process_command:
 	mov	b,r3
 	lcall	__gptrget
 	mov	r1,a
-	cjne	r1,#0x4c,00519$
-	sjmp	00520$
-00519$:
+	cjne	r1,#0x4c,00551$
+	sjmp	00552$
+00551$:
 	ljmp	00111$
-00520$:
-;	main.c:124: command[3] == 'A' &&
+00552$:
+;	main.c:245: command[3] == 'A' &&
 	mov	a,#0x03
 	add	a, r5
 	mov	r1,a
@@ -1060,12 +1330,12 @@ _process_command:
 	mov	b,r3
 	lcall	__gptrget
 	mov	r1,a
-	cjne	r1,#0x41,00521$
-	sjmp	00522$
-00521$:
+	cjne	r1,#0x41,00553$
+	sjmp	00554$
+00553$:
 	ljmp	00111$
-00522$:
-;	main.c:125: command[4] == 'Y' &&
+00554$:
+;	main.c:246: command[4] == 'Y' &&
 	mov	a,#0x04
 	add	a, r5
 	mov	r1,a
@@ -1078,12 +1348,12 @@ _process_command:
 	mov	b,r3
 	lcall	__gptrget
 	mov	r1,a
-	cjne	r1,#0x59,00523$
-	sjmp	00524$
-00523$:
+	cjne	r1,#0x59,00555$
+	sjmp	00556$
+00555$:
 	ljmp	00111$
-00524$:
-;	main.c:126: command[5] == ',')
+00556$:
+;	main.c:247: command[5] == ',')
 	mov	a,#0x05
 	add	a, r5
 	mov	r1,a
@@ -1096,12 +1366,12 @@ _process_command:
 	mov	b,r3
 	lcall	__gptrget
 	mov	r1,a
-	cjne	r1,#0x2c,00525$
-	sjmp	00526$
-00525$:
+	cjne	r1,#0x2c,00557$
+	sjmp	00558$
+00557$:
 	ljmp	00111$
-00526$:
-;	main.c:128: if (command[6] == 'O' &&
+00558$:
+;	main.c:249: if (command[6] == 'O' &&
 	mov	a,#0x06
 	add	a, r5
 	mov	r1,a
@@ -1115,12 +1385,12 @@ _process_command:
 	lcall	__gptrget
 	mov	r1,a
 	clr	a
-	cjne	r1,#0x4f,00527$
+	cjne	r1,#0x4f,00559$
 	inc	a
-00527$:
+00559$:
 	mov	r3,a
 	jz	00102$
-;	main.c:129: command[7] == 'N' &&
+;	main.c:250: command[7] == 'N' &&
 	mov	a,#0x07
 	add	a, r5
 	mov	r0,a
@@ -1134,7 +1404,7 @@ _process_command:
 	lcall	__gptrget
 	mov	r0,a
 	cjne	r0,#0x4e,00102$
-;	main.c:130: command[8] == '\0')
+;	main.c:251: command[8] == '\0')
 	mov	a,#0x08
 	add	a, r5
 	mov	r0,a
@@ -1147,23 +1417,21 @@ _process_command:
 	mov	b,r2
 	lcall	__gptrget
 	jnz	00102$
-;	main.c:132: RELAY_PIN = 0;
+;	main.c:253: RELAY_PIN = 0;
 ;	assignBit
 	clr	_P2_6
-;	main.c:133: relay_state = 1;
+;	main.c:254: relay_state = 1;
 	mov	_relay_state,#0x01
-;	main.c:135: uart_write_string("RELAY,ON\r\n");
-	mov	dptr,#___str_7
+;	main.c:256: uart_write_string("RELAY,ON\r\n");
+	mov	dptr,#___str_19
 	mov	b, #0x80
-	lcall	_uart_write_string
-;	main.c:136: oled_show_status();
-;	main.c:138: return;
-	ljmp	_oled_show_status
+;	main.c:257: return;
+	ljmp	_uart_write_string
 00102$:
-;	main.c:141: if (command[6] == 'O' &&
+;	main.c:260: if (command[6] == 'O' &&
 	mov	a,r3
 	jz	00111$
-;	main.c:142: command[7] == 'F' &&
+;	main.c:261: command[7] == 'F' &&
 	mov	a,#0x07
 	add	a, r5
 	mov	r1,a
@@ -1177,7 +1445,7 @@ _process_command:
 	lcall	__gptrget
 	mov	r1,a
 	cjne	r1,#0x46,00111$
-;	main.c:143: command[8] == 'F' &&
+;	main.c:262: command[8] == 'F' &&
 	mov	a,#0x08
 	add	a, r5
 	mov	r1,a
@@ -1191,7 +1459,7 @@ _process_command:
 	lcall	__gptrget
 	mov	r1,a
 	cjne	r1,#0x46,00111$
-;	main.c:144: command[9] == '\0')
+;	main.c:263: command[9] == '\0')
 	mov	a,#0x09
 	add	a, r5
 	mov	r1,a
@@ -1204,311 +1472,25 @@ _process_command:
 	mov	b,r3
 	lcall	__gptrget
 	jnz	00111$
-;	main.c:146: RELAY_PIN = 1;
+;	main.c:265: RELAY_PIN = 1;
 ;	assignBit
 	setb	_P2_6
-;	main.c:147: relay_state = 0;
+;	main.c:266: relay_state = 0;
 	mov	_relay_state,#0x00
-;	main.c:149: uart_write_string("RELAY,OFF\r\n");
-	mov	dptr,#___str_8
+;	main.c:268: uart_write_string("RELAY,OFF\r\n");
+	mov	dptr,#___str_20
 	mov	b, #0x80
-	lcall	_uart_write_string
-;	main.c:150: oled_show_status();
-;	main.c:152: return;
-	ljmp	_oled_show_status
+;	main.c:269: return;
+	ljmp	_uart_write_string
 00111$:
-;	main.c:156: if (command[0] == 'B' &&
-	cjne	r4,#0x42,00539$
-	sjmp	00540$
-00539$:
-	ljmp	00127$
-00540$:
-;	main.c:157: command[1] == 'U' &&
-	mov	a,#0x01
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x55,00541$
-	sjmp	00542$
-00541$:
-	ljmp	00127$
-00542$:
-;	main.c:158: command[2] == 'Z' &&
-	mov	a,#0x02
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x5a,00543$
-	sjmp	00544$
-00543$:
-	ljmp	00127$
-00544$:
-;	main.c:159: command[3] == 'Z' &&
-	mov	a,#0x03
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x5a,00545$
-	sjmp	00546$
-00545$:
-	ljmp	00127$
-00546$:
-;	main.c:160: command[4] == 'E' &&
-	mov	a,#0x04
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x45,00547$
-	sjmp	00548$
-00547$:
-	ljmp	00127$
-00548$:
-;	main.c:161: command[5] == 'R' &&
-	mov	a,#0x05
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x52,00549$
-	sjmp	00550$
-00549$:
-	ljmp	00127$
-00550$:
-;	main.c:162: command[6] == ',')
-	mov	a,#0x06
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x2c,00551$
-	sjmp	00552$
-00551$:
-	ljmp	00127$
-00552$:
-;	main.c:164: if (command[7] == 'O' &&
-	mov	a,#0x07
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	clr	a
-	cjne	r1,#0x4f,00553$
-	inc	a
-00553$:
-	mov	r3,a
-	jz	00118$
-;	main.c:165: command[8] == 'N' &&
-	mov	a,#0x08
-	add	a, r5
-	mov	r0,a
-	clr	a
-	addc	a, r6
-	mov	r1,a
-	mov	ar2,r7
-	mov	dpl,r0
-	mov	dph,r1
-	mov	b,r2
-	lcall	__gptrget
-	mov	r0,a
-	cjne	r0,#0x4e,00118$
-;	main.c:166: command[9] == '\0')
-	mov	a,#0x09
-	add	a, r5
-	mov	r0,a
-	clr	a
-	addc	a, r6
-	mov	r1,a
-	mov	ar2,r7
-	mov	dpl,r0
-	mov	dph,r1
-	mov	b,r2
-	lcall	__gptrget
-	jnz	00118$
-;	main.c:168: BUZZER_PIN = 0;
-;	assignBit
-	clr	_P2_7
-;	main.c:169: buzzer_state = 1;
-	mov	_buzzer_state,#0x01
-;	main.c:171: uart_write_string("BUZZER,ON\r\n");
-	mov	dptr,#___str_9
-	mov	b, #0x80
-	lcall	_uart_write_string
-;	main.c:172: oled_show_status();
-;	main.c:174: return;
-	ljmp	_oled_show_status
-00118$:
-;	main.c:177: if (command[7] == 'O' &&
-	mov	a,r3
-	jz	00127$
-;	main.c:178: command[8] == 'F' &&
-	mov	a,#0x08
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x46,00127$
-;	main.c:179: command[9] == 'F' &&
-	mov	a,#0x09
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x46,00127$
-;	main.c:180: command[10] == '\0')
-	mov	a,#0x0a
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	jnz	00127$
-;	main.c:182: BUZZER_PIN = 1;
-;	assignBit
-	setb	_P2_7
-;	main.c:183: buzzer_state = 0;
-	mov	_buzzer_state,#0x00
-;	main.c:185: uart_write_string("BUZZER,OFF\r\n");
-	mov	dptr,#___str_10
-	mov	b, #0x80
-	lcall	_uart_write_string
-;	main.c:186: oled_show_status();
-;	main.c:188: return;
-	ljmp	_oled_show_status
-00127$:
-;	main.c:192: if (command[0] == 'S' &&
-	cjne	r4,#0x53,00565$
-	sjmp	00566$
-00565$:
-	ljmp	00135$
-00566$:
-;	main.c:193: command[1] == 'T' &&
-	mov	a,#0x01
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x54,00567$
-	sjmp	00568$
-00567$:
-	ljmp	00135$
-00568$:
-;	main.c:194: command[2] == 'A' &&
-	mov	a,#0x02
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x41,00569$
-	sjmp	00570$
-00569$:
-	ljmp	00135$
-00570$:
-;	main.c:195: command[3] == 'T' &&
-	mov	a,#0x03
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x54,00571$
+;	main.c:273: if (command[0] == 'B' &&
+	cjne	r4,#0x42,00571$
 	sjmp	00572$
 00571$:
-	ljmp	00135$
+	ljmp	00127$
 00572$:
-;	main.c:196: command[4] == 'U' &&
-	mov	a,#0x04
+;	main.c:274: command[1] == 'U' &&
+	mov	a,#0x01
 	add	a, r5
 	mov	r1,a
 	clr	a
@@ -1523,9 +1505,301 @@ _process_command:
 	cjne	r1,#0x55,00573$
 	sjmp	00574$
 00573$:
-	ljmp	00135$
+	ljmp	00127$
 00574$:
-;	main.c:197: command[5] == 'S' &&
+;	main.c:275: command[2] == 'Z' &&
+	mov	a,#0x02
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	mov	r1,a
+	cjne	r1,#0x5a,00575$
+	sjmp	00576$
+00575$:
+	ljmp	00127$
+00576$:
+;	main.c:276: command[3] == 'Z' &&
+	mov	a,#0x03
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	mov	r1,a
+	cjne	r1,#0x5a,00577$
+	sjmp	00578$
+00577$:
+	ljmp	00127$
+00578$:
+;	main.c:277: command[4] == 'E' &&
+	mov	a,#0x04
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	mov	r1,a
+	cjne	r1,#0x45,00579$
+	sjmp	00580$
+00579$:
+	ljmp	00127$
+00580$:
+;	main.c:278: command[5] == 'R' &&
+	mov	a,#0x05
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	mov	r1,a
+	cjne	r1,#0x52,00581$
+	sjmp	00582$
+00581$:
+	ljmp	00127$
+00582$:
+;	main.c:279: command[6] == ',')
+	mov	a,#0x06
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	mov	r1,a
+	cjne	r1,#0x2c,00583$
+	sjmp	00584$
+00583$:
+	ljmp	00127$
+00584$:
+;	main.c:281: if (command[7] == 'O' &&
+	mov	a,#0x07
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	mov	r1,a
+	clr	a
+	cjne	r1,#0x4f,00585$
+	inc	a
+00585$:
+	mov	r3,a
+	jz	00118$
+;	main.c:282: command[8] == 'N' &&
+	mov	a,#0x08
+	add	a, r5
+	mov	r0,a
+	clr	a
+	addc	a, r6
+	mov	r1,a
+	mov	ar2,r7
+	mov	dpl,r0
+	mov	dph,r1
+	mov	b,r2
+	lcall	__gptrget
+	mov	r0,a
+	cjne	r0,#0x4e,00118$
+;	main.c:283: command[9] == '\0')
+	mov	a,#0x09
+	add	a, r5
+	mov	r0,a
+	clr	a
+	addc	a, r6
+	mov	r1,a
+	mov	ar2,r7
+	mov	dpl,r0
+	mov	dph,r1
+	mov	b,r2
+	lcall	__gptrget
+	jnz	00118$
+;	main.c:285: GREEN_LED_PIN = 1;
+;	assignBit
+	setb	_P2_0
+;	main.c:286: RED_LED_PIN = 0;
+;	assignBit
+	clr	_P2_1
+;	main.c:287: BUZZER_PIN = 0;
+;	assignBit
+	clr	_P2_7
+;	main.c:288: buzzer_state = 1;
+	mov	_buzzer_state,#0x01
+;	main.c:290: uart_write_string("BUZZER,ON\r\n");
+	mov	dptr,#___str_21
+	mov	b, #0x80
+;	main.c:291: return;
+	ljmp	_uart_write_string
+00118$:
+;	main.c:294: if (command[7] == 'O' &&
+	mov	a,r3
+	jz	00127$
+;	main.c:295: command[8] == 'F' &&
+	mov	a,#0x08
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	mov	r1,a
+	cjne	r1,#0x46,00127$
+;	main.c:296: command[9] == 'F' &&
+	mov	a,#0x09
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	mov	r1,a
+	cjne	r1,#0x46,00127$
+;	main.c:297: command[10] == '\0')
+	mov	a,#0x0a
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	jnz	00127$
+;	main.c:299: RED_LED_PIN = 1;
+;	assignBit
+	setb	_P2_1
+;	main.c:300: GREEN_LED_PIN = 0;
+;	assignBit
+	clr	_P2_0
+;	main.c:301: BUZZER_PIN = 1;
+;	assignBit
+	setb	_P2_7
+;	main.c:302: buzzer_state = 0;
+	mov	_buzzer_state,#0x00
+;	main.c:304: uart_write_string("BUZZER,OFF\r\n");
+	mov	dptr,#___str_22
+	mov	b, #0x80
+;	main.c:305: return;
+	ljmp	_uart_write_string
+00127$:
+;	main.c:309: if (command[0] == 'S' &&
+	cjne	r4,#0x53,00597$
+	sjmp	00598$
+00597$:
+	ljmp	00135$
+00598$:
+;	main.c:310: command[1] == 'T' &&
+	mov	a,#0x01
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	mov	r1,a
+	cjne	r1,#0x54,00599$
+	sjmp	00600$
+00599$:
+	ljmp	00135$
+00600$:
+;	main.c:311: command[2] == 'A' &&
+	mov	a,#0x02
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	mov	r1,a
+	cjne	r1,#0x41,00601$
+	sjmp	00602$
+00601$:
+	ljmp	00135$
+00602$:
+;	main.c:312: command[3] == 'T' &&
+	mov	a,#0x03
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	mov	r1,a
+	cjne	r1,#0x54,00603$
+	sjmp	00604$
+00603$:
+	ljmp	00135$
+00604$:
+;	main.c:313: command[4] == 'U' &&
+	mov	a,#0x04
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	mov	r1,a
+	cjne	r1,#0x55,00605$
+	sjmp	00606$
+00605$:
+	sjmp	00135$
+00606$:
+;	main.c:314: command[5] == 'S' &&
 	mov	a,#0x05
 	add	a, r5
 	mov	r1,a
@@ -1539,7 +1813,7 @@ _process_command:
 	lcall	__gptrget
 	mov	r1,a
 	cjne	r1,#0x53,00135$
-;	main.c:198: command[6] == '\0')
+;	main.c:315: command[6] == '\0')
 	mov	a,#0x06
 	add	a, r5
 	mov	r1,a
@@ -1552,140 +1826,137 @@ _process_command:
 	mov	b,r3
 	lcall	__gptrget
 	jnz	00135$
-;	main.c:200: uart_write_string("STATUS,RELAY=");
-	mov	dptr,#___str_11
+;	main.c:317: uart_write_string("STATUS,RELAY=");
+	mov	dptr,#___str_23
 	mov	b, #0x80
 	lcall	_uart_write_string
-;	main.c:201: uart_write_string(relay_state ? "ON" : "OFF");
+;	main.c:318: uart_write_string(relay_state ? "ON" : "OFF");
 	mov	a,_relay_state
-	jz	00161$
-	mov	r2,#___str_2
-	mov	r3,#(___str_2 >> 8)
-	sjmp	00162$
-00161$:
-	mov	r2,#___str_3
-	mov	r3,#(___str_3 >> 8)
-00162$:
+	jz	00165$
+	mov	r2,#___str_24
+	mov	r3,#(___str_24 >> 8)
+	sjmp	00166$
+00165$:
+	mov	r2,#___str_25
+	mov	r3,#(___str_25 >> 8)
+00166$:
 	mov	ar1,r3
 	mov	r3,#0x80
 	mov	dpl, r2
 	mov	dph, r1
 	mov	b, r3
 	lcall	_uart_write_string
-;	main.c:202: uart_write_string(",BUZZER=");
-	mov	dptr,#___str_12
+;	main.c:319: uart_write_string(",BUZZER=");
+	mov	dptr,#___str_26
 	mov	b, #0x80
 	lcall	_uart_write_string
-;	main.c:203: uart_write_string(buzzer_state ? "ON" : "OFF");
+;	main.c:320: uart_write_string(buzzer_state ? "ON" : "OFF");
 	mov	a,_buzzer_state
-	jz	00163$
-	mov	r2,#___str_2
-	mov	r3,#(___str_2 >> 8)
-	sjmp	00164$
-00163$:
-	mov	r2,#___str_3
-	mov	r3,#(___str_3 >> 8)
-00164$:
+	jz	00167$
+	mov	r2,#___str_24
+	mov	r3,#(___str_24 >> 8)
+	sjmp	00168$
+00167$:
+	mov	r2,#___str_25
+	mov	r3,#(___str_25 >> 8)
+00168$:
 	mov	ar1,r3
 	mov	r3,#0x80
 	mov	dpl, r2
 	mov	dph, r1
 	mov	b, r3
 	lcall	_uart_write_string
-;	main.c:204: uart_write_string("\r\n");
-	mov	dptr,#___str_13
+;	main.c:321: uart_write_string("\r\n");
+	mov	dptr,#___str_27
 	mov	b, #0x80
-	lcall	_uart_write_string
-;	main.c:206: oled_show_status();
-;	main.c:208: return;
-	ljmp	_oled_show_status
-00135$:
-;	main.c:211: if (command[0] == 'H' &&
-	cjne	r4,#0x48,00580$
-	sjmp	00581$
-00580$:
-	ljmp	00143$
-00581$:
-;	main.c:212: command[1] == 'E' &&
-	mov	a,#0x01
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x45,00143$
-;	main.c:213: command[2] == 'L' &&
-	mov	a,#0x02
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x4c,00143$
-;	main.c:214: command[3] == 'P' &&
-	mov	a,#0x03
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x50,00143$
-;	main.c:215: command[4] == '\0')
-	mov	a,#0x04
-	add	a, r5
-	mov	r1,a
-	clr	a
-	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
-	lcall	__gptrget
-	jnz	00143$
-;	main.c:217: uart_write_string("RELAY,ON\r\n");
-	mov	dptr,#___str_7
-	mov	b, #0x80
-	lcall	_uart_write_string
-;	main.c:218: uart_write_string("RELAY,OFF\r\n");
-	mov	dptr,#___str_8
-	mov	b, #0x80
-	lcall	_uart_write_string
-;	main.c:219: uart_write_string("BUZZER,ON\r\n");
-	mov	dptr,#___str_9
-	mov	b, #0x80
-	lcall	_uart_write_string
-;	main.c:220: uart_write_string("BUZZER,OFF\r\n");
-	mov	dptr,#___str_10
-	mov	b, #0x80
-	lcall	_uart_write_string
-;	main.c:221: uart_write_string("STATUS\r\n");
-	mov	dptr,#___str_14
-	mov	b, #0x80
-;	main.c:223: return;
+;	main.c:323: return;
 	ljmp	_uart_write_string
+00135$:
+;	main.c:326: if (command[0] == 'D' &&
+	clr	a
+	cjne	r4,#0x44,00612$
+	inc	a
+00612$:
+	mov	r3,a
+	jz	00143$
+;	main.c:327: command[1] == 'A' &&
+	mov	a,#0x01
+	add	a, r5
+	mov	r0,a
+	clr	a
+	addc	a, r6
+	mov	r1,a
+	mov	ar2,r7
+	mov	dpl,r0
+	mov	dph,r1
+	mov	b,r2
+	lcall	__gptrget
+	mov	r0,a
+	cjne	r0,#0x41,00143$
+;	main.c:328: command[2] == 'T' &&
+	mov	a,#0x02
+	add	a, r5
+	mov	r0,a
+	clr	a
+	addc	a, r6
+	mov	r1,a
+	mov	ar2,r7
+	mov	dpl,r0
+	mov	dph,r1
+	mov	b,r2
+	lcall	__gptrget
+	mov	r0,a
+	cjne	r0,#0x54,00143$
+;	main.c:329: command[3] == 'A' &&
+	mov	a,#0x03
+	add	a, r5
+	mov	r0,a
+	clr	a
+	addc	a, r6
+	mov	r1,a
+	mov	ar2,r7
+	mov	dpl,r0
+	mov	dph,r1
+	mov	b,r2
+	lcall	__gptrget
+	mov	r0,a
+	cjne	r0,#0x41,00143$
+;	main.c:330: command[4] == '1' &&
+	mov	a,#0x04
+	add	a, r5
+	mov	r0,a
+	clr	a
+	addc	a, r6
+	mov	r1,a
+	mov	ar2,r7
+	mov	dpl,r0
+	mov	dph,r1
+	mov	b,r2
+	lcall	__gptrget
+	mov	r0,a
+	cjne	r0,#0x31,00143$
+;	main.c:331: command[5] == ',')
+	mov	a,#0x05
+	add	a, r5
+	mov	r0,a
+	clr	a
+	addc	a, r6
+	mov	r1,a
+	mov	ar2,r7
+	mov	dpl,r0
+	mov	dph,r1
+	mov	b,r2
+	lcall	__gptrget
+	mov	r0,a
+	cjne	r0,#0x2c,00143$
+;	main.c:333: process_data1();
+;	main.c:334: return;
+	ljmp	_process_data1
 00143$:
-;	main.c:226: if (command[0] == 'D' &&
-	cjne	r4,#0x44,00149$
-;	main.c:227: command[1] == 'A' &&
+;	main.c:337: if (command[0] == 'D' &&
+	mov	a,r3
+	jz	00150$
+;	main.c:338: command[1] == 'A' &&
 	mov	a,#0x01
 	add	a, r5
 	mov	r1,a
@@ -1698,8 +1969,8 @@ _process_command:
 	mov	b,r3
 	lcall	__gptrget
 	mov	r1,a
-	cjne	r1,#0x41,00149$
-;	main.c:228: command[2] == 'T' &&
+	cjne	r1,#0x41,00150$
+;	main.c:339: command[2] == 'T' &&
 	mov	a,#0x02
 	add	a, r5
 	mov	r1,a
@@ -1712,8 +1983,8 @@ _process_command:
 	mov	b,r3
 	lcall	__gptrget
 	mov	r1,a
-	cjne	r1,#0x54,00149$
-;	main.c:229: command[3] == 'A' &&
+	cjne	r1,#0x54,00150$
+;	main.c:340: command[3] == 'A' &&
 	mov	a,#0x03
 	add	a, r5
 	mov	r1,a
@@ -1726,8 +1997,8 @@ _process_command:
 	mov	b,r3
 	lcall	__gptrget
 	mov	r1,a
-	cjne	r1,#0x41,00149$
-;	main.c:230: command[4] == ',')
+	cjne	r1,#0x41,00150$
+;	main.c:341: command[4] == '2' &&
 	mov	a,#0x04
 	add	a, r5
 	mov	r1,a
@@ -1740,21 +2011,32 @@ _process_command:
 	mov	b,r3
 	lcall	__gptrget
 	mov	r1,a
-	cjne	r1,#0x2c,00149$
-;	main.c:232: oled_show_data(command);
-	mov	dpl, r5
-	mov	dph, r6
-	mov	b, r7
-;	main.c:234: return;
-	ljmp	_oled_show_data
-00149$:
-;	main.c:237: if (command[0] == 'L' &&
-	cjne	r4,#0x4c,00599$
-	sjmp	00600$
-00599$:
+	cjne	r1,#0x32,00150$
+;	main.c:342: command[5] == ',')
+	mov	a,#0x05
+	add	a, r5
+	mov	r1,a
+	clr	a
+	addc	a, r6
+	mov	r2,a
+	mov	ar3,r7
+	mov	dpl,r1
+	mov	dph,r2
+	mov	b,r3
+	lcall	__gptrget
+	mov	r1,a
+	cjne	r1,#0x2c,00150$
+;	main.c:344: process_data2();
+;	main.c:345: return;
+	ljmp	_process_data2
+00150$:
+;	main.c:348: if (command[0] == 'E' &&
+	cjne	r4,#0x45,00636$
+	sjmp	00637$
+00636$:
 	ret
-00600$:
-;	main.c:238: command[1] >= '0' &&
+00637$:
+;	main.c:349: command[1] == 'R' &&
 	mov	a,#0x01
 	add	a, r5
 	mov	r2,a
@@ -1766,319 +2048,379 @@ _process_command:
 	mov	dph,r3
 	mov	b,r4
 	lcall	__gptrget
-	mov	r4,a
-	cjne	r4,#0x30,00601$
-00601$:
-	jc	00159$
-;	main.c:239: command[1] <= '3' &&
-	mov	a,r4
-	add	a,#0xff - 0x33
-	jc	00159$
-;	free result
-;	main.c:240: command[2] == ':')
+	mov	r2,a
+	cjne	r2,#0x52,00163$
+;	main.c:350: command[2] == 'R' &&
 	mov	a,#0x02
 	add	a, r5
-	mov	r1,a
+	mov	r2,a
 	clr	a
 	addc	a, r6
-	mov	r2,a
-	mov	ar3,r7
-	mov	dpl,r1
-	mov	dph,r2
-	mov	b,r3
+	mov	r3,a
+	mov	ar4,r7
+	mov	dpl,r2
+	mov	dph,r3
+	mov	b,r4
 	lcall	__gptrget
-	mov	r1,a
-	cjne	r1,#0x3a,00159$
-;	main.c:242: unsigned char page = (command[1] - '0') * 2;
-	mov	a,r4
-	add	a,#0xd0
-	add	a,acc
-;	main.c:244: oled_clear_line(page);
-	mov	r4,a
-	mov	dpl,a
-	push	ar7
-	push	ar6
-	push	ar5
-	push	ar4
-	lcall	_oled_clear_line
-	pop	ar4
-;	main.c:245: oled_set_position(page, 0);
-	mov	_oled_set_position_PARM_2,#0x00
-	mov	dpl, r4
-	lcall	_oled_set_position
-	pop	ar5
-	pop	ar6
-	pop	ar7
-;	main.c:246: oled_string(command + 3);
+	mov	r2,a
+	cjne	r2,#0x52,00163$
+;	main.c:351: command[3] == 'O' &&
 	mov	a,#0x03
+	add	a, r5
+	mov	r2,a
+	clr	a
+	addc	a, r6
+	mov	r3,a
+	mov	ar4,r7
+	mov	dpl,r2
+	mov	dph,r3
+	mov	b,r4
+	lcall	__gptrget
+	mov	r2,a
+	cjne	r2,#0x4f,00163$
+;	main.c:352: command[4] == 'R' &&
+	mov	a,#0x04
+	add	a, r5
+	mov	r2,a
+	clr	a
+	addc	a, r6
+	mov	r3,a
+	mov	ar4,r7
+	mov	dpl,r2
+	mov	dph,r3
+	mov	b,r4
+	lcall	__gptrget
+	mov	r2,a
+	cjne	r2,#0x52,00163$
+;	main.c:353: command[5] == ',')
+	mov	a,#0x05
 	add	a, r5
 	mov	r5,a
 	clr	a
 	addc	a, r6
 	mov	r6,a
-	mov	dpl, r5
-	mov	dph, r6
-	mov	b, r7
-;	main.c:248: return;
-;	main.c:250: }
-	ljmp	_oled_string
-00159$:
+	mov	dpl,r5
+	mov	dph,r6
+	mov	b,r7
+	lcall	__gptrget
+	mov	r5,a
+	cjne	r5,#0x2c,00163$
+;	main.c:355: process_error();
+;	main.c:356: return;
+;	main.c:358: }
+	ljmp	_process_error
+00163$:
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'uart_receive_process'
 ;------------------------------------------------------------
-;data          Allocated with name '_uart_receive_process_data_10000_69'
+;data          Allocated with name '_uart_receive_process_data_10000_89'
 ;------------------------------------------------------------
-;	main.c:252: static void uart_receive_process(void)
+;	main.c:360: static void uart_receive_process(void)
 ;	-----------------------------------------
 ;	 function uart_receive_process
 ;	-----------------------------------------
 _uart_receive_process:
-;	main.c:256: if (!uart_read_byte(&data))
-	mov	dptr,#_uart_receive_process_data_10000_69
+;	main.c:364: if (!uart_read_byte(&data))
+	mov	dptr,#_uart_receive_process_data_10000_89
 	mov	b, #0x40
 	lcall	_uart_read_byte
 	mov	a, dpl
 	jnz	00102$
-;	main.c:257: return;
+;	main.c:365: return;
 	ret
 00102$:
-;	main.c:259: if (data == '\r' || data == '\n')
+;	main.c:367: if (data == '\r' || data == '\n')
 	mov	a,#0x0d
-	cjne	a,_uart_receive_process_data_10000_69,00161$
+	cjne	a,_uart_receive_process_data_10000_89,00161$
 	sjmp	00105$
 00161$:
 	mov	a,#0x0a
-	cjne	a,_uart_receive_process_data_10000_69,00106$
+	cjne	a,_uart_receive_process_data_10000_89,00106$
 00105$:
-;	main.c:261: if (rx_length > 0)
+;	main.c:369: if (rx_length > 0)
 	mov	a,_rx_length
 	jz	00104$
-;	main.c:263: rx_buffer[rx_length] = '\0';
+;	main.c:371: rx_buffer[rx_length] = '\0';
 	mov	a,_rx_length
 	add	a, #_rx_buffer
 	mov	r0,a
 	mov	@r0,#0x00
-;	main.c:265: process_command((char *)rx_buffer);
+;	main.c:373: process_command((char *)rx_buffer);
 	mov	dptr,#_rx_buffer
 	mov	b, #0x40
 	lcall	_process_command
-;	main.c:267: rx_length = 0;
+;	main.c:375: rx_length = 0;
 	mov	_rx_length,#0x00
 00104$:
-;	main.c:270: return;
+;	main.c:378: return;
 	ret
 00106$:
-;	main.c:273: if (data == 8 || data == 127)
+;	main.c:381: if (data == 8 || data == 127)
 	mov	a,#0x08
-	cjne	a,_uart_receive_process_data_10000_69,00165$
+	cjne	a,_uart_receive_process_data_10000_89,00165$
 	sjmp	00110$
 00165$:
 	mov	a,#0x7f
-	cjne	a,_uart_receive_process_data_10000_69,00111$
+	cjne	a,_uart_receive_process_data_10000_89,00111$
 00110$:
-;	main.c:275: if (rx_length > 0)
+;	main.c:383: if (rx_length > 0)
 	mov	a,_rx_length
 	jz	00109$
-;	main.c:276: rx_length--;
+;	main.c:384: rx_length--;
 	dec	_rx_length
 00109$:
-;	main.c:278: return;
+;	main.c:386: return;
 	ret
 00111$:
-;	main.c:281: if (rx_length < RX_BUFFER_SIZE - 1)
-	mov	a,#0x100 - 0x3f
+;	main.c:389: if (rx_length < RX_BUFFER_SIZE - 1)
+	mov	a,#0x100 - 0x1f
 	add	a,_rx_length
 	jc	00114$
-;	main.c:283: rx_buffer[rx_length++] = data;
+;	main.c:391: rx_buffer[rx_length++] = data;
 	mov	r7,_rx_length
 	inc	_rx_length
 	mov	a,r7
 	add	a, #_rx_buffer
 	mov	r0,a
-	mov	@r0,_uart_receive_process_data_10000_69
+	mov	@r0,_uart_receive_process_data_10000_89
 	ret
 00114$:
-;	main.c:287: rx_length = 0;
+;	main.c:395: rx_length = 0;
 	mov	_rx_length,#0x00
-;	main.c:289: }
+;	main.c:397: }
 	ret
 ;------------------------------------------------------------
 ;Allocation info for local variables in function 'main'
 ;------------------------------------------------------------
 ;uart_status   Allocated to registers 
 ;------------------------------------------------------------
-;	main.c:291: void main(void)
+;	main.c:399: void main(void)
 ;	-----------------------------------------
 ;	 function main
 ;	-----------------------------------------
 _main:
-;	main.c:295: EA = 0;
+;	main.c:403: EA = 0;
 ;	assignBit
 	clr	_EA
-;	main.c:297: RELAY_PIN = 1;
+;	main.c:405: RELAY_PIN = 1;
 ;	assignBit
 	setb	_P2_6
-;	main.c:298: BUZZER_PIN = 1;
+;	main.c:406: BUZZER_PIN = 1;
 ;	assignBit
 	setb	_P2_7
-;	main.c:300: relay_state = 0;
+;	main.c:407: GREEN_LED_PIN = 0;
+;	assignBit
+	clr	_P2_0
+;	main.c:409: relay_state = 0;
 	mov	_relay_state,#0x00
-;	main.c:301: buzzer_state = 0;
+;	main.c:410: buzzer_state = 0;
 	mov	_buzzer_state,#0x00
-;	main.c:303: timer0_init();
+;	main.c:412: timer0_init();
 	lcall	_timer0_init
-;	main.c:305: EA = 1;
+;	main.c:414: EA = 1;
 ;	assignBit
 	setb	_EA
-;	main.c:307: oled_init();
+;	main.c:416: oled_init();
 	lcall	_oled_init
-;	main.c:308: oled_clear();
-	lcall	_oled_clear
-;	main.c:310: uart_status = uart_init(9600);
+;	main.c:417: oled_initial_screen();
+	lcall	_oled_initial_screen
+;	main.c:419: uart_status = uart_init(9600);
 	mov	dptr,#0x2580
 	clr	a
 	mov	b,a
 	lcall	_uart_init
 	mov	a, dpl
-;	main.c:312: if (!uart_status)
-;	main.c:314: oled_set_position(0, 0);
+;	main.c:421: if (!uart_status)
 	jnz	00105$
-	mov	_oled_set_position_PARM_2,a
-	mov	dpl,a
+;	main.c:423: oled_clear();
+	lcall	_oled_clear
+;	main.c:424: oled_set_position(0, 0);
+	mov	_oled_set_position_PARM_2,#0x00
+	mov	dpl, #0x00
 	lcall	_oled_set_position
-;	main.c:315: oled_string("UART INIT FAILED");
-	mov	dptr,#___str_15
+;	main.c:425: oled_string("UART INIT FAILED");
+	mov	dptr,#___str_28
 	mov	b, #0x80
 	lcall	_oled_string
-;	main.c:317: RELAY_PIN = 1;
+;	main.c:427: RELAY_PIN = 1;
 ;	assignBit
 	setb	_P2_6
-;	main.c:318: BUZZER_PIN = 1;
+;	main.c:428: BUZZER_PIN = 1;
 ;	assignBit
 	setb	_P2_7
-;	main.c:320: while (1);
+;	main.c:430: while (1);
 00102$:
 	sjmp	00102$
 00105$:
-;	main.c:323: oled_show_status();
-	lcall	_oled_show_status
-;	main.c:325: uart_write_string("APPLIANCE SAFETY V0.1\r\n");
-	mov	dptr,#___str_16
+;	main.c:433: uart_write_string("UART READY\r\n");
+	mov	dptr,#___str_29
 	mov	b, #0x80
 	lcall	_uart_write_string
-;	main.c:326: uart_write_string("UART READY\r\n");
-	mov	dptr,#___str_17
-	mov	b, #0x80
-	lcall	_uart_write_string
-;	main.c:328: while (1)
+;	main.c:435: while (1)
 00107$:
-;	main.c:330: uart_receive_process();
+;	main.c:437: uart_receive_process();
 	lcall	_uart_receive_process
-;	main.c:332: }
+;	main.c:439: }
 	sjmp	00107$
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
 	.area CONST   (CODE)
 ___str_0:
-	.ascii "APPLIANCE SAFETY"
+	.ascii "V:--"
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
 ___str_1:
-	.ascii "RELAY: "
+	.ascii "F:--"
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
 ___str_2:
-	.ascii "ON"
+	.ascii "I:--"
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
 ___str_3:
-	.ascii "OFF"
+	.ascii "E:--"
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
 ___str_4:
-	.ascii "BUZZER: "
+	.ascii "P:--"
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
 ___str_5:
-	.ascii "SYSTEM READY"
+	.ascii "L:--"
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
 ___str_6:
-	.ascii "LIVE MEASUREMENTS"
+	.ascii "PF:--"
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
 ___str_7:
+	.ascii "ERROR:"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_8:
+	.ascii "NO ERROR"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_9:
+	.ascii "V:"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_10:
+	.ascii "I:"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_11:
+	.ascii "P:"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_12:
+	.ascii "PF:"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_13:
+	.ascii "F:"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_14:
+	.ascii "Hz"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_15:
+	.ascii "E:"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_16:
+	.ascii "kWh"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_17:
+	.ascii "L:"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_18:
+	.ascii "UNKNOWN ERROR"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_19:
 	.ascii "RELAY,ON"
 	.db 0x0d
 	.db 0x0a
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
-___str_8:
+___str_20:
 	.ascii "RELAY,OFF"
 	.db 0x0d
 	.db 0x0a
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
-___str_9:
+___str_21:
 	.ascii "BUZZER,ON"
 	.db 0x0d
 	.db 0x0a
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
-___str_10:
+___str_22:
 	.ascii "BUZZER,OFF"
 	.db 0x0d
 	.db 0x0a
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
-___str_11:
+___str_23:
 	.ascii "STATUS,RELAY="
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
-___str_12:
+___str_24:
+	.ascii "ON"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_25:
+	.ascii "OFF"
+	.db 0x00
+	.area CSEG    (CODE)
+	.area CONST   (CODE)
+___str_26:
 	.ascii ",BUZZER="
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
-___str_13:
+___str_27:
 	.db 0x0d
 	.db 0x0a
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
-___str_14:
-	.ascii "STATUS"
-	.db 0x0d
-	.db 0x0a
-	.db 0x00
-	.area CSEG    (CODE)
-	.area CONST   (CODE)
-___str_15:
+___str_28:
 	.ascii "UART INIT FAILED"
 	.db 0x00
 	.area CSEG    (CODE)
 	.area CONST   (CODE)
-___str_16:
-	.ascii "APPLIANCE SAFETY V0.1"
-	.db 0x0d
-	.db 0x0a
-	.db 0x00
-	.area CSEG    (CODE)
-	.area CONST   (CODE)
-___str_17:
+___str_29:
 	.ascii "UART READY"
 	.db 0x0d
 	.db 0x0a
