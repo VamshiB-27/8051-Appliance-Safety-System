@@ -50,13 +50,13 @@ C:   0000000A  l_GSINIT2
 C:   00000010  s_REG_BANK_2                    
 C:   00000018  s_BIT_BANK                      
 C:   00000018  s_REG_BANK_3                    
-C:   0000001A  l_GSINIT                        
+C:   00000020  l_SSEG                          
 C:   00000020  s_BSEG_BYTES                    
 C:   00000020  s__CODE                         
 C:   00000022  l_GSINIT3                       
-C:   00000027  l_SSEG                          
+C:   0000002A  l_GSINIT                        
 C:   0000002A  l_GSINIT4                       
-C:   00000055  s_OSEG                          
+C:   00000056  l_HOME                          
 ASxxxx Linker V05.50.4-SDLD,  page 2.
 Hexadecimal  [32-Bits]
 
@@ -66,23 +66,23 @@ CABS                                00000000    00000000 =           0. bytes (A
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
-C:   00000056  l_HOME                          
 C:   00000056  s_GSINIT0                       
 C:   00000059  s_GSINIT1                       
 C:   00000059  s_GSINIT2                       
-C:   00000059  s_SSEG                          
+C:   0000005C  s_OSEG                          
+C:   00000060  s_SSEG                          
 C:   00000063  s_GSINIT3                       
 C:   00000080  l_DSEG                          
 C:   00000080  l_IRAM                          
 C:   00000085  s_GSINIT4                       
 C:   000000AF  s_GSINIT                        
 C:   000000AF  s_GSINIT5                       
-C:   000000C9  s_GSFINAL                       
-C:   000000CC  s_CSEG                          
-C:   00000182  l_CONST                         
-C:   0000111B  l_CSEG                          
-C:   000011E7  s_CONST                         
-C:   00001369  s_XINIT                         
+C:   000000D9  s_GSFINAL                       
+C:   000000DC  s_CSEG                          
+C:   000001AD  l_CONST                         
+C:   00001330  l_CSEG                          
+C:   0000140C  s_CONST                         
+C:   000015B9  s_XINIT                         
 
 ASxxxx Linker V05.50.4-SDLD,  page 3.
 Hexadecimal  [32-Bits]
@@ -354,32 +354,32 @@ DSEG                                00000000    00000080 =         128. bytes (R
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
      00000008  _delay_time_ms                     main
-     0000003C  _oled_set_position_PARM_2          my_oled
-     00000053  _uart_write_buffer_PARM_2          my_uart
+     00000043  _oled_set_position_PARM_2          my_oled
+     0000005A  _uart_write_buffer_PARM_2          my_uart
 ASxxxx Linker V05.50.4-SDLD,  page 10.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-OSEG                                00000055    00000004 =           4. bytes (REL,OVR)
+OSEG                                0000005C    00000004 =           4. bytes (REL,OVR)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
-     00000055  __divslong_PARM_2                  _divulong
-     00000055  __divulong_PARM_2                  _divulong
-     00000055  __gptrput_PARM_2                   _gptrput
-     00000055  __mullong_PARM_2                   _mullong
+     0000005C  __divslong_PARM_2                  _divulong
+     0000005C  __divulong_PARM_2                  _divulong
+     0000005C  __gptrput_PARM_2                   _gptrput
+     0000005C  __mullong_PARM_2                   _mullong
 
 ASxxxx Linker V05.50.4-SDLD,  page 11.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-SSEG                                00000059    00000027 =          39. bytes (REL,OVR)
+SSEG                                00000060    00000020 =          32. bytes (REL,OVR)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
-     00000059  __start__stack                     main
+     00000060  __start__stack                     main
 
 ASxxxx Linker V05.50.4-SDLD,  page 12.
 Hexadecimal  [32-Bits]
@@ -444,7 +444,7 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-GSINIT                              000000AF    0000001A =          26. bytes (REL,CON,CODE)
+GSINIT                              000000AF    0000002A =          42. bytes (REL,CON,CODE)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
@@ -453,7 +453,7 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-GSFINAL                             000000C9    00000003 =           3. bytes (REL,CON,CODE)
+GSFINAL                             000000D9    00000003 =           3. bytes (REL,CON,CODE)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
@@ -462,45 +462,45 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-CSEG                                000000CC    0000111B =        4379. bytes (REL,CON,CODE)
+CSEG                                000000DC    00001330 =        4912. bytes (REL,CON,CODE)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
-C:   000000CC  _delay_us                          main
-C:   000000E4  _delay_ms                          main
-C:   00000104  _timer0_isr                        main
-C:   0000097C  _main                              main
-C:   000009CB  _timer0_init                       mcu_config
-C:   000009E6  _i2c_start                         my_oled
-C:   000009F5  _i2c_stop                          my_oled
-C:   00000A01  _i2c_write                         my_oled
-C:   00000AB2  _oled_command                      my_oled
-C:   00000AC7  _oled_data                         my_oled
-C:   00000ADC  _oled_set_position                 my_oled
-C:   00000B19  _oled_clear                        my_oled
-C:   00000B6B  _oled_init                         my_oled
-C:   00000C1A  _oled_char                         my_oled
-C:   00000EE7  _oled_string                       my_oled
-C:   00000F61  _uart_init                         my_uart
-C:   0000101C  _uart_write_byte                   my_uart
-C:   00001025  _uart_write_buffer                 my_uart
-C:   0000106A  _uart_write_string                 my_uart
-C:   00001095  _uart_available                    my_uart
-C:   000010A1  _uart_read_byte                    my_uart
-C:   000010BF  _uart_read_byte_blocking           my_uart
-C:   000010D9  __divulong                         _divulong
-C:   0000113E  __gptrput                          _gptrput
-C:   00001159  __mullong                          _mullong
-C:   00001159  __mullong_dummy                    _mullong
-C:   000011C7  __gptrget                          _gptrget
-C:   000011E3  ___sdcc_external_startup           _startup
+C:   000000DC  _delay_us                          main
+C:   000000F4  _delay_ms                          main
+C:   00000114  _timer0_isr                        main
+C:   00000B83  _main                              main
+C:   00000BF0  _timer0_init                       mcu_config
+C:   00000C0B  _i2c_start                         my_oled
+C:   00000C1A  _i2c_stop                          my_oled
+C:   00000C26  _i2c_write                         my_oled
+C:   00000CD7  _oled_command                      my_oled
+C:   00000CEC  _oled_data                         my_oled
+C:   00000D01  _oled_set_position                 my_oled
+C:   00000D3E  _oled_clear                        my_oled
+C:   00000D90  _oled_init                         my_oled
+C:   00000E3F  _oled_char                         my_oled
+C:   0000110C  _oled_string                       my_oled
+C:   00001186  _uart_init                         my_uart
+C:   00001241  _uart_write_byte                   my_uart
+C:   0000124A  _uart_write_buffer                 my_uart
+C:   0000128F  _uart_write_string                 my_uart
+C:   000012BA  _uart_available                    my_uart
+C:   000012C6  _uart_read_byte                    my_uart
+C:   000012E4  _uart_read_byte_blocking           my_uart
+C:   000012FE  __divulong                         _divulong
+C:   00001363  __gptrput                          _gptrput
+C:   0000137E  __mullong                          _mullong
+C:   0000137E  __mullong_dummy                    _mullong
+C:   000013EC  __gptrget                          _gptrget
+C:   00001408  ___sdcc_external_startup           _startup
 
 ASxxxx Linker V05.50.4-SDLD,  page 20.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-CONST                               000011E7    00000182 =         386. bytes (REL,CON,CODE)
+CONST                               0000140C    000001AD =         429. bytes (REL,CON,CODE)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------

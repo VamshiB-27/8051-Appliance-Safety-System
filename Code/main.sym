@@ -415,39 +415,44 @@ Symbol Table
     _WDTRST                                                     =  0000A6 G
  19 ___str_0                                                       000000 R
  19 ___str_1                                                       000005 R
- 19 ___str_10                                                      000037 R
- 19 ___str_11                                                      00003A R
- 19 ___str_12                                                      00003D R
+ 19 ___str_10                                                      00003A R
+ 19 ___str_11                                                      00003D R
+ 19 ___str_12                                                      000040 R
 ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)          Page 8
 Hexadecimal [24-Bits]
 
 Symbol Table
 
- 19 ___str_13                                                      000041 R
- 19 ___str_14                                                      000044 R
- 19 ___str_15                                                      000047 R
- 19 ___str_16                                                      00004A R
- 19 ___str_17                                                      00004E R
- 19 ___str_18                                                      000051 R
- 19 ___str_19                                                      00005F R
+ 19 ___str_13                                                      000043 R
+ 19 ___str_14                                                      000047 R
+ 19 ___str_15                                                      00004A R
+ 19 ___str_16                                                      00004D R
+ 19 ___str_17                                                      000050 R
+ 19 ___str_18                                                      000054 R
+ 19 ___str_19                                                      000057 R
  19 ___str_2                                                       00000A R
- 19 ___str_20                                                      00006A R
- 19 ___str_21                                                      000076 R
- 19 ___str_22                                                      000082 R
- 19 ___str_23                                                      00008F R
- 19 ___str_24                                                      00009D R
- 19 ___str_25                                                      0000A0 R
- 19 ___str_26                                                      0000A4 R
- 19 ___str_27                                                      0000AD R
- 19 ___str_28                                                      0000B0 R
- 19 ___str_29                                                      0000C1 R
+ 19 ___str_20                                                      00005A R
+ 19 ___str_21                                                      000065 R
+ 19 ___str_22                                                      000071 R
+ 19 ___str_23                                                      00007D R
+ 19 ___str_24                                                      00008A R
+ 19 ___str_25                                                      000098 R
+ 19 ___str_26                                                      00009B R
+ 19 ___str_27                                                      00009F R
+ 19 ___str_28                                                      0000A8 R
+ 19 ___str_29                                                      0000AB R
  19 ___str_3                                                       00000F R
+ 19 ___str_30                                                      0000B7 R
+ 19 ___str_31                                                      0000C3 R
+ 19 ___str_32                                                      0000CF R
+ 19 ___str_33                                                      0000DB R
+ 19 ___str_34                                                      0000EC R
  19 ___str_4                                                       000014 R
  19 ___str_5                                                       000019 R
  19 ___str_6                                                       00001E R
  19 ___str_7                                                       000024 R
- 19 ___str_8                                                       00002B R
- 19 ___str_9                                                       000034 R
+ 19 ___str_8                                                       00002A R
+ 19 ___str_9                                                       000031 R
     __gptrget                                                      ****** GX
   F __interrupt_vect                                               000000 R
     __mcs51_genRAMCLEAR                                            ****** GX
@@ -457,43 +462,52 @@ Symbol Table
   F __sdcc_program_exit                                            000054 R
   F __sdcc_program_startup                                         000051 GR
   7 __start__stack                                                 000000 GR
+  5 _button_last_change_time                                       00002B R
+  5 _button_last_sample                                            000029 R
+  5 _button_stable_state                                           00002A R
+ 18 _buzzer_set                                                    00009E R
   5 _buzzer_state                                                  000026 R
  18 _delay_ms                                                      000018 GR
   5 _delay_time_ms                                                 000000 GR
  18 _delay_us                                                      000000 GR
- 18 _main                                                          0008B0 GR
+  5 _fault_active                                                  000027 R
+ 18 _get_millis                                                    00007A R
+ 18 _main                                                          000AA7 GR
     _oled_char                                                     ****** GX
     _oled_clear                                                    ****** GX
- 18 _oled_clear_error                                              000096 R
- 18 _oled_clear_region                                             00007A R
-  5 _oled_clear_region_PARM_2                                      000029 R
-  5 _oled_clear_region_PARM_3                                      00002A R
-    _oled_init                                                     ****** GX
- 18 _oled_initial_screen                                           000101 R
- 18 _oled_print_field                                              0000AE R
-    _oled_set_position                                             ****** GX
-    _oled_set_position_PARM_2                                      ****** GX
-    _oled_string                                                   ****** GX
-  5 _parse_index                                                   000027 R
- 18 _process_command                                               000372 R
- 18 _process_data1                                                 0001A6 R
- 18 _process_data2                                                 000254 R
+ 18 _oled_clear_error                                              000136 R
+ 18 _oled_clear_region                                             00011A R
+  5 _oled_clear_region_PARM_2                                      000030 R
 ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)          Page 9
 Hexadecimal [24-Bits]
 
 Symbol Table
 
- 18 _process_error                                                 0002EA R
+  5 _oled_clear_region_PARM_3                                      000031 R
+    _oled_init                                                     ****** GX
+ 18 _oled_initial_screen                                           0001AF R
+ 18 _oled_print_field                                              00014E R
+    _oled_set_position                                             ****** GX
+    _oled_set_position_PARM_2                                      ****** GX
+    _oled_string                                                   ****** GX
+  5 _parse_index                                                   000028 R
+ 18 _process_command                                               00049A R
+ 18 _process_data1                                                 000266 R
+ 18 _process_data2                                                 000325 R
+ 18 _process_data3                                                 0003C5 R
+ 18 _process_error                                                 0003FD R
+ 18 _relay_button_process                                          0000B6 R
+ 18 _relay_set                                                     00008E R
   5 _relay_state                                                   000025 R
   5 _rx_buffer                                                     000004 R
   5 _rx_length                                                     000024 R
     _timer0_init                                                   ****** GX
  18 _timer0_isr                                                    000038 GR
-  5 _timer0_isr_count_10000_28                                     000028 R
+  5 _timer0_isr_count_10000_28                                     00002F R
     _uart_init                                                     ****** GX
     _uart_read_byte                                                ****** GX
- 18 _uart_receive_process                                          000856 R
-  5 _uart_receive_process_data_10000_89                            00002B R
+ 18 _uart_receive_process                                          000A4D R
+  5 _uart_receive_process_data_10000_132                           000032 R
     _uart_write_string                                             ****** GX
     a                                                           =  0000E0 L
     a.0                                                         =  0000E0 L
@@ -524,6 +538,11 @@ Symbol Table
     ar7                                                         =  000007 
     b                                                           =  0000F0 L
     b.0                                                         =  0000F0 L
+ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 10
+Hexadecimal [24-Bits]
+
+Symbol Table
+
     b.1                                                         =  0000F1 L
     b.2                                                         =  0000F2 L
     b.3                                                         =  0000F3 L
@@ -538,11 +557,6 @@ Symbol Table
     dpl                                                         =  000082 L
     ea                                                          =  0000AF L
     es                                                          =  0000AC L
-ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 10
-Hexadecimal [24-Bits]
-
-Symbol Table
-
     et0                                                         =  0000A9 L
     et1                                                         =  0000AB L
     et2                                                         =  0000AD L
@@ -584,6 +598,11 @@ Symbol Table
     p0.6                                                        =  000086 L
     p0.7                                                        =  000087 L
     p1                                                          =  000090 L
+ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 11
+Hexadecimal [24-Bits]
+
+Symbol Table
+
     p1.0                                                        =  000090 L
     p1.1                                                        =  000091 L
     p1.2                                                        =  000092 L
@@ -598,11 +617,6 @@ Symbol Table
     p2.2                                                        =  0000A2 L
     p2.3                                                        =  0000A3 L
     p2.4                                                        =  0000A4 L
-ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 11
-Hexadecimal [24-Bits]
-
-Symbol Table
-
     p2.5                                                        =  0000A5 L
     p2.6                                                        =  0000A6 L
     p2.7                                                        =  0000A7 L
@@ -644,6 +658,11 @@ Symbol Table
     scon                                                        =  000098 L
     scon.0                                                      =  000098 L
     scon.1                                                      =  000099 L
+ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 12
+Hexadecimal [24-Bits]
+
+Symbol Table
+
     scon.2                                                      =  00009A L
     scon.3                                                      =  00009B L
     scon.4                                                      =  00009C L
@@ -658,11 +677,6 @@ Symbol Table
   F sdcc_atomic_exchange_gptr_impl                                 000037 GR
   F sdcc_atomic_exchange_idata_impl                                00003F R
   F sdcc_atomic_exchange_pdata_impl                                000012 R
-ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 12
-Hexadecimal [24-Bits]
-
-Symbol Table
-
   F sdcc_atomic_exchange_rollback_end                              000037 GR
   F sdcc_atomic_exchange_rollback_start                            000010 GR
   F sdcc_atomic_exchange_xdata_impl                                00001A R
@@ -704,10 +718,15 @@ Symbol Table
     tr0                                                         =  00008C L
     tr1                                                         =  00008E L
     tr2                                                         =  0000CA L
+ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 13
+Hexadecimal [24-Bits]
+
+Symbol Table
+
     txd                                                         =  0000B1 L
 
 
-ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 13
+ASxxxx Assembler V05.50.4+NoICE+SDCCmods-WIP-R14  (Intel 8051)         Page 14
 Hexadecimal [24-Bits]
 
 Area Table
@@ -717,7 +736,7 @@ Area Table
    2 RSEG0                                      size      0   flags    8
    3 RSEG1                                      size      0   flags    8
    4 REG_BANK_0                                 size      8   flags    4
-   5 DSEG                                       size     2C   flags    0
+   5 DSEG                                       size     33   flags    0
    6 OSEG                                       size      0   flags    4
    7 SSEG                                       size      1   flags    0
    8 ISEG                                       size      0   flags    0
@@ -734,10 +753,10 @@ Area Table
   13 GSINIT3                                    size      0   flags   20
   14 GSINIT4                                    size      0   flags   20
   15 GSINIT5                                    size      0   flags   20
-  16 GSINIT                                     size     14   flags   20
+  16 GSINIT                                     size     24   flags   20
   17 GSFINAL                                    size      3   flags   20
-  18 CSEG                                       size    8FF   flags   20
-  19 CONST                                      size     CE   flags   20
+  18 CSEG                                       size    B14   flags   20
+  19 CONST                                      size     F9   flags   20
   1A XINIT                                      size      0   flags   20
   1B CABS                                       size      0   flags   28
 

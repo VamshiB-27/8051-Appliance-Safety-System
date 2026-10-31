@@ -493,7 +493,7 @@
                                     493 ;	-----------------------------------------
                                     494 ;	 function timer0_init
                                     495 ;	-----------------------------------------
-      0009CB                        496 _timer0_init:
+      000BF0                        496 _timer0_init:
                            000007   497 	ar7 = 0x07
                            000006   498 	ar6 = 0x06
                            000005   499 	ar5 = 0x05
@@ -503,25 +503,25 @@
                            000001   503 	ar1 = 0x01
                            000000   504 	ar0 = 0x00
                                     505 ;	mcu_config.c:8: TMOD = (TMOD & 0xF0) | 0x02;
-      0009CB E5 89            [12]  506 	mov	a,_TMOD
-      0009CD 54 F0            [12]  507 	anl	a,#0xf0
-      0009CF 44 02            [12]  508 	orl	a,#0x02
-      0009D1 F5 89            [12]  509 	mov	_TMOD,a
+      000BF0 E5 89            [12]  506 	mov	a,_TMOD
+      000BF2 54 F0            [12]  507 	anl	a,#0xf0
+      000BF4 44 02            [12]  508 	orl	a,#0x02
+      000BF6 F5 89            [12]  509 	mov	_TMOD,a
                                     510 ;	mcu_config.c:9: TH0=0x38;     /* auto reload value for 100us */
-      0009D3 75 8C 38         [24]  511 	mov	_TH0,#0x38
+      000BF8 75 8C 38         [24]  511 	mov	_TH0,#0x38
                                     512 ;	mcu_config.c:10: TL0=0x38;     /* initize timer with start value */
-      0009D6 75 8A 38         [24]  513 	mov	_TL0,#0x38
+      000BFB 75 8A 38         [24]  513 	mov	_TL0,#0x38
                                     514 ;	mcu_config.c:11: TF0 = 0; 
                                     515 ;	assignBit
-      0009D9 C2 8D            [12]  516 	clr	_TF0
+      000BFE C2 8D            [12]  516 	clr	_TF0
                                     517 ;	mcu_config.c:12: ET0=1;        /* Enable timer interrupt */
                                     518 ;	assignBit
-      0009DB D2 A9            [12]  519 	setb	_ET0
+      000C00 D2 A9            [12]  519 	setb	_ET0
                                     520 ;	mcu_config.c:13: TR0=1;        /* Start Timer 0 */
                                     521 ;	assignBit
-      0009DD D2 8C            [12]  522 	setb	_TR0
+      000C02 D2 8C            [12]  522 	setb	_TR0
                                     523 ;	mcu_config.c:15: }
-      0009DF 22               [24]  524 	ret
+      000C04 22               [24]  524 	ret
                                     525 	.area CSEG    (CODE)
                                     526 	.area CONST   (CODE)
                                     527 	.area XINIT   (CODE)

@@ -451,1991 +451,2456 @@
       00002D                        451 	.ds 1
       00002E                        452 _buzzer_state:
       00002E                        453 	.ds 1
-      00002F                        454 _parse_index:
+      00002F                        454 _fault_active:
       00002F                        455 	.ds 1
-      000030                        456 _timer0_isr_count_10000_28:
+      000030                        456 _parse_index:
       000030                        457 	.ds 1
-      000031                        458 _oled_clear_region_PARM_2:
+      000031                        458 _button_last_sample:
       000031                        459 	.ds 1
-      000032                        460 _oled_clear_region_PARM_3:
+      000032                        460 _button_stable_state:
       000032                        461 	.ds 1
-      000033                        462 _uart_receive_process_data_10000_89:
-      000033                        463 	.ds 1
-                                    464 ;--------------------------------------------------------
-                                    465 ; overlayable items in internal ram
-                                    466 ;--------------------------------------------------------
-                                    467 	.area	OSEG    (OVR,DATA)
-                                    468 	.area	OSEG    (OVR,DATA)
-                                    469 ;--------------------------------------------------------
-                                    470 ; Stack segment in internal ram
-                                    471 ;--------------------------------------------------------
-                                    472 	.area SSEG
-      000059                        473 __start__stack:
-      000059                        474 	.ds	1
-                                    475 
-                                    476 ;--------------------------------------------------------
-                                    477 ; indirectly addressable internal ram data
-                                    478 ;--------------------------------------------------------
-                                    479 	.area ISEG    (DATA)
+      000033                        462 _button_last_change_time:
+      000033                        463 	.ds 4
+      000037                        464 _timer0_isr_count_10000_28:
+      000037                        465 	.ds 1
+      000038                        466 _oled_clear_region_PARM_2:
+      000038                        467 	.ds 1
+      000039                        468 _oled_clear_region_PARM_3:
+      000039                        469 	.ds 1
+      00003A                        470 _uart_receive_process_data_10000_132:
+      00003A                        471 	.ds 1
+                                    472 ;--------------------------------------------------------
+                                    473 ; overlayable items in internal ram
+                                    474 ;--------------------------------------------------------
+                                    475 	.area	OSEG    (OVR,DATA)
+                                    476 	.area	OSEG    (OVR,DATA)
+                                    477 	.area	OSEG    (OVR,DATA)
+                                    478 	.area	OSEG    (OVR,DATA)
+                                    479 	.area	OSEG    (OVR,DATA)
                                     480 ;--------------------------------------------------------
-                                    481 ; absolute internal ram data
+                                    481 ; Stack segment in internal ram
                                     482 ;--------------------------------------------------------
-                                    483 	.area IABS    (ABS,DATA)
-                                    484 	.area IABS    (ABS,DATA)
-                                    485 ;--------------------------------------------------------
-                                    486 ; bit data
+                                    483 	.area SSEG
+      000060                        484 __start__stack:
+      000060                        485 	.ds	1
+                                    486 
                                     487 ;--------------------------------------------------------
-                                    488 	.area BSEG    (BIT)
+                                    488 ; indirectly addressable internal ram data
                                     489 ;--------------------------------------------------------
-                                    490 ; paged external ram data
+                                    490 	.area ISEG    (DATA)
                                     491 ;--------------------------------------------------------
-                                    492 	.area PSEG    (PAG,XDATA)
+                                    492 ; absolute internal ram data
                                     493 ;--------------------------------------------------------
-                                    494 ; uninitialized external ram data
-                                    495 ;--------------------------------------------------------
-                                    496 	.area XSEG    (XDATA)
-                                    497 ;--------------------------------------------------------
-                                    498 ; absolute external ram data
-                                    499 ;--------------------------------------------------------
-                                    500 	.area XABS    (ABS,XDATA)
-                                    501 ;--------------------------------------------------------
-                                    502 ; initialized external ram data
-                                    503 ;--------------------------------------------------------
-                                    504 	.area XISEG   (XDATA)
-                                    505 	.area HOME    (CODE)
-                                    506 	.area GSINIT0 (CODE)
-                                    507 	.area GSINIT1 (CODE)
-                                    508 	.area GSINIT2 (CODE)
-                                    509 	.area GSINIT3 (CODE)
-                                    510 	.area GSINIT4 (CODE)
-                                    511 	.area GSINIT5 (CODE)
-                                    512 	.area GSINIT  (CODE)
-                                    513 	.area GSFINAL (CODE)
-                                    514 	.area CSEG    (CODE)
-                                    515 ;--------------------------------------------------------
-                                    516 ; interrupt vector
-                                    517 ;--------------------------------------------------------
-                                    518 	.area HOME    (CODE)
-      000000                        519 __interrupt_vect:
-      000000 02 00 56         [24]  520 	ljmp	__sdcc_gsinit_startup
-      000003 32               [24]  521 	reti
-      000004                        522 	.ds	7
-      00000B 02 01 04         [24]  523 	ljmp	_timer0_isr
-                                    524 ; restartable atomic support routines
-      00000E                        525 	.ds	2
-      000010                        526 sdcc_atomic_exchange_rollback_start::
-      000010 00               [12]  527 	nop
-      000011 00               [12]  528 	nop
-      000012                        529 sdcc_atomic_exchange_pdata_impl:
-      000012 E2               [24]  530 	movx	a, @r0
-      000013 FB               [12]  531 	mov	r3, a
-      000014 EA               [12]  532 	mov	a, r2
-      000015 F2               [24]  533 	movx	@r0, a
-      000016 80 2C            [24]  534 	sjmp	sdcc_atomic_exchange_exit
-      000018 00               [12]  535 	nop
-      000019 00               [12]  536 	nop
-      00001A                        537 sdcc_atomic_exchange_xdata_impl:
-      00001A E0               [24]  538 	movx	a, @dptr
-      00001B FB               [12]  539 	mov	r3, a
-      00001C EA               [12]  540 	mov	a, r2
-      00001D F0               [24]  541 	movx	@dptr, a
-      00001E 80 24            [24]  542 	sjmp	sdcc_atomic_exchange_exit
-      000020                        543 sdcc_atomic_compare_exchange_idata_impl:
-      000020 E6               [12]  544 	mov	a, @r0
-      000021 B5 02 02         [24]  545 	cjne	a, ar2, .+#5
-      000024 EB               [12]  546 	mov	a, r3
-      000025 F6               [12]  547 	mov	@r0, a
-      000026 22               [24]  548 	ret
-      000027 00               [12]  549 	nop
-      000028                        550 sdcc_atomic_compare_exchange_pdata_impl:
-      000028 E2               [24]  551 	movx	a, @r0
-      000029 B5 02 02         [24]  552 	cjne	a, ar2, .+#5
-      00002C EB               [12]  553 	mov	a, r3
-      00002D F2               [24]  554 	movx	@r0, a
-      00002E 22               [24]  555 	ret
-      00002F 00               [12]  556 	nop
-      000030                        557 sdcc_atomic_compare_exchange_xdata_impl:
-      000030 E0               [24]  558 	movx	a, @dptr
-      000031 B5 02 02         [24]  559 	cjne	a, ar2, .+#5
-      000034 EB               [12]  560 	mov	a, r3
-      000035 F0               [24]  561 	movx	@dptr, a
-      000036 22               [24]  562 	ret
-      000037                        563 sdcc_atomic_exchange_rollback_end::
-                                    564 
-      000037                        565 sdcc_atomic_exchange_gptr_impl::
-      000037 30 F6 E0         [24]  566 	jnb	b.6, sdcc_atomic_exchange_xdata_impl
-      00003A A8 82            [24]  567 	mov	r0, dpl
-      00003C 20 F5 D3         [24]  568 	jb	b.5, sdcc_atomic_exchange_pdata_impl
-      00003F                        569 sdcc_atomic_exchange_idata_impl:
-      00003F EA               [12]  570 	mov	a, r2
-      000040 C6               [12]  571 	xch	a, @r0
-      000041 F5 82            [12]  572 	mov	dpl, a
-      000043 22               [24]  573 	ret
-      000044                        574 sdcc_atomic_exchange_exit:
-      000044 8B 82            [24]  575 	mov	dpl, r3
-      000046 22               [24]  576 	ret
-      000047                        577 sdcc_atomic_compare_exchange_gptr_impl::
-      000047 30 F6 E6         [24]  578 	jnb	b.6, sdcc_atomic_compare_exchange_xdata_impl
-      00004A A8 82            [24]  579 	mov	r0, dpl
-      00004C 20 F5 D9         [24]  580 	jb	b.5, sdcc_atomic_compare_exchange_pdata_impl
-      00004F 80 CF            [24]  581 	sjmp	sdcc_atomic_compare_exchange_idata_impl
-                                    582 ;--------------------------------------------------------
-                                    583 ; global & static initialisations
-                                    584 ;--------------------------------------------------------
-                                    585 	.area HOME    (CODE)
-                                    586 	.area GSINIT  (CODE)
-                                    587 	.area GSFINAL (CODE)
-                                    588 	.area GSINIT  (CODE)
-                                    589 	.globl __sdcc_gsinit_startup
-                                    590 	.globl __sdcc_program_startup
-                                    591 	.globl __start__stack
-                                    592 	.globl __mcs51_genXINIT
-                                    593 	.globl __mcs51_genXRAMCLEAR
-                                    594 	.globl __mcs51_genRAMCLEAR
-                                    595 ;------------------------------------------------------------
-                                    596 ;Allocation info for local variables in function 'timer0_isr'
-                                    597 ;------------------------------------------------------------
-                                    598 ;count         Allocated with name '_timer0_isr_count_10000_28'
-                                    599 ;------------------------------------------------------------
-                                    600 ;	main.c:40: static unsigned char count = 0;
-      0000AF 75 30 00         [24]  601 	mov	_timer0_isr_count_10000_28,#0x00
-                                    602 ;	main.c:13: volatile unsigned long int delay_time_ms = 0;
-      0000B2 E4               [12]  603 	clr	a
-      0000B3 F5 08            [12]  604 	mov	_delay_time_ms,a
-      0000B5 F5 09            [12]  605 	mov	(_delay_time_ms + 1),a
-      0000B7 F5 0A            [12]  606 	mov	(_delay_time_ms + 2),a
-      0000B9 F5 0B            [12]  607 	mov	(_delay_time_ms + 3),a
-                                    608 ;	main.c:16: static unsigned char rx_length = 0;
-      0000BB F5 2C            [12]  609 	mov	_rx_length,a
-                                    610 ;	main.c:17: static unsigned char relay_state = 0;
-      0000BD F5 2D            [12]  611 	mov	_relay_state,a
-                                    612 ;	main.c:18: static unsigned char buzzer_state = 0;
-      0000BF F5 2E            [12]  613 	mov	_buzzer_state,a
-                                    614 ;	main.c:19: static unsigned char parse_index = 0;
-      0000C1 F5 2F            [12]  615 	mov	_parse_index,a
-                                    616 	.area GSFINAL (CODE)
-      0000C9 02 00 51         [24]  617 	ljmp	__sdcc_program_startup
-                                    618 ;--------------------------------------------------------
-                                    619 ; Home
-                                    620 ;--------------------------------------------------------
-                                    621 	.area HOME    (CODE)
-                                    622 	.area HOME    (CODE)
-      000051                        623 __sdcc_program_startup:
-      000051 12 09 7C         [24]  624 	lcall	_main
-      000054                        625 __sdcc_program_exit:
-      000054 80 FE            [24]  626 	sjmp	.
-                                    627 ;	return from main will return to caller
-                                    628 ;--------------------------------------------------------
-                                    629 ; code
-                                    630 ;--------------------------------------------------------
-                                    631 	.area CSEG    (CODE)
-                                    632 ;------------------------------------------------------------
-                                    633 ;Allocation info for local variables in function 'delay_us'
-                                    634 ;------------------------------------------------------------
-                                    635 ;value         Allocated to registers r6 r7 
-                                    636 ;i             Allocated to registers r5 
-                                    637 ;------------------------------------------------------------
-                                    638 ;	main.c:21: void delay_us(unsigned int value)
-                                    639 ;	-----------------------------------------
-                                    640 ;	 function delay_us
-                                    641 ;	-----------------------------------------
-      0000CC                        642 _delay_us:
-                           000007   643 	ar7 = 0x07
-                           000006   644 	ar6 = 0x06
-                           000005   645 	ar5 = 0x05
-                           000004   646 	ar4 = 0x04
-                           000003   647 	ar3 = 0x03
-                           000002   648 	ar2 = 0x02
-                           000001   649 	ar1 = 0x01
-                           000000   650 	ar0 = 0x00
-      0000CC AE 82            [24]  651 	mov	r6, dpl
-      0000CE AF 83            [24]  652 	mov	r7, dph
-                                    653 ;	main.c:25: while (value--)
-      0000D0                        654 00102$:
-      0000D0 8E 04            [24]  655 	mov	ar4,r6
-      0000D2 8F 05            [24]  656 	mov	ar5,r7
-      0000D4 1E               [12]  657 	dec	r6
-      0000D5 BE FF 01         [24]  658 	cjne	r6,#0xff,00138$
-      0000D8 1F               [12]  659 	dec	r7
-      0000D9                        660 00138$:
-      0000D9 EC               [12]  661 	mov	a,r4
-      0000DA 4D               [12]  662 	orl	a,r5
-      0000DB 60 06            [24]  663 	jz	00108$
-                                    664 ;	main.c:27: for (i = 0; i < 4; i++);
-      0000DD 7D 04            [12]  665 	mov	r5,#0x04
-      0000DF                        666 00107$:
-      0000DF DD FE            [24]  667 	djnz	r5,00107$
-      0000E1 80 ED            [24]  668 	sjmp	00102$
-      0000E3                        669 00108$:
-                                    670 ;	main.c:29: }
-      0000E3 22               [24]  671 	ret
-                                    672 ;------------------------------------------------------------
-                                    673 ;Allocation info for local variables in function 'delay_ms'
-                                    674 ;------------------------------------------------------------
-                                    675 ;value         Allocated to registers r4 r5 r6 r7 
-                                    676 ;------------------------------------------------------------
-                                    677 ;	main.c:31: void delay_ms(unsigned long int value)
-                                    678 ;	-----------------------------------------
-                                    679 ;	 function delay_ms
-                                    680 ;	-----------------------------------------
-      0000E4                        681 _delay_ms:
-      0000E4 AC 82            [24]  682 	mov	r4,dpl
-      0000E6 AD 83            [24]  683 	mov	r5,dph
-      0000E8 AE F0            [24]  684 	mov	r6,b
-      0000EA FF               [12]  685 	mov	r7,a
-                                    686 ;	main.c:33: delay_time_ms = 0;
-      0000EB E4               [12]  687 	clr	a
-      0000EC F5 08            [12]  688 	mov	_delay_time_ms,a
-      0000EE F5 09            [12]  689 	mov	(_delay_time_ms + 1),a
-      0000F0 F5 0A            [12]  690 	mov	(_delay_time_ms + 2),a
-      0000F2 F5 0B            [12]  691 	mov	(_delay_time_ms + 3),a
-                                    692 ;	main.c:35: while (delay_time_ms < value);
-      0000F4                        693 00101$:
-      0000F4 C3               [12]  694 	clr	c
-      0000F5 E5 08            [12]  695 	mov	a,_delay_time_ms
-      0000F7 9C               [12]  696 	subb	a,r4
-      0000F8 E5 09            [12]  697 	mov	a,(_delay_time_ms + 1)
-      0000FA 9D               [12]  698 	subb	a,r5
-      0000FB E5 0A            [12]  699 	mov	a,(_delay_time_ms + 2)
-      0000FD 9E               [12]  700 	subb	a,r6
-      0000FE E5 0B            [12]  701 	mov	a,(_delay_time_ms + 3)
-      000100 9F               [12]  702 	subb	a,r7
-      000101 40 F1            [24]  703 	jc	00101$
-                                    704 ;	main.c:36: }
-      000103 22               [24]  705 	ret
-                                    706 ;------------------------------------------------------------
-                                    707 ;Allocation info for local variables in function 'timer0_isr'
-                                    708 ;------------------------------------------------------------
-                                    709 ;count         Allocated with name '_timer0_isr_count_10000_28'
-                                    710 ;------------------------------------------------------------
-                                    711 ;	main.c:38: void timer0_isr(void) __interrupt(1)
-                                    712 ;	-----------------------------------------
-                                    713 ;	 function timer0_isr
-                                    714 ;	-----------------------------------------
-      000104                        715 _timer0_isr:
-      000104 C0 E0            [24]  716 	push	acc
-      000106 C0 07            [24]  717 	push	ar7
-      000108 C0 06            [24]  718 	push	ar6
-      00010A C0 05            [24]  719 	push	ar5
-      00010C C0 04            [24]  720 	push	ar4
-      00010E C0 D0            [24]  721 	push	psw
-      000110 75 D0 00         [24]  722 	mov	psw,#0x00
-                                    723 ;	main.c:42: TF0 = 0;
-                                    724 ;	assignBit
-      000113 C2 8D            [12]  725 	clr	_TF0
-                                    726 ;	main.c:43: count++;
-      000115 05 30            [12]  727 	inc	_timer0_isr_count_10000_28
-                                    728 ;	main.c:45: if (count >= 10)
-      000117 74 F6            [12]  729 	mov	a,#0x100 - 0x0a
-      000119 25 30            [12]  730 	add	a,_timer0_isr_count_10000_28
-      00011B 50 1C            [24]  731 	jnc	00103$
-                                    732 ;	main.c:47: count = 0;
-      00011D 75 30 00         [24]  733 	mov	_timer0_isr_count_10000_28,#0x00
-                                    734 ;	main.c:48: delay_time_ms++;
-      000120 AC 08            [24]  735 	mov	r4,_delay_time_ms
-      000122 AD 09            [24]  736 	mov	r5,(_delay_time_ms + 1)
-      000124 AE 0A            [24]  737 	mov	r6,(_delay_time_ms + 2)
-      000126 AF 0B            [24]  738 	mov	r7,(_delay_time_ms + 3)
-      000128 74 01            [12]  739 	mov	a,#0x01
-      00012A 2C               [12]  740 	add	a, r4
-      00012B F5 08            [12]  741 	mov	_delay_time_ms,a
-      00012D E4               [12]  742 	clr	a
-      00012E 3D               [12]  743 	addc	a, r5
-      00012F F5 09            [12]  744 	mov	(_delay_time_ms + 1),a
-      000131 E4               [12]  745 	clr	a
-      000132 3E               [12]  746 	addc	a, r6
-      000133 F5 0A            [12]  747 	mov	(_delay_time_ms + 2),a
-      000135 E4               [12]  748 	clr	a
-      000136 3F               [12]  749 	addc	a, r7
-      000137 F5 0B            [12]  750 	mov	(_delay_time_ms + 3),a
-      000139                        751 00103$:
-                                    752 ;	main.c:50: }
-      000139 D0 D0            [24]  753 	pop	psw
-      00013B D0 04            [24]  754 	pop	ar4
-      00013D D0 05            [24]  755 	pop	ar5
-      00013F D0 06            [24]  756 	pop	ar6
-      000141 D0 07            [24]  757 	pop	ar7
-      000143 D0 E0            [24]  758 	pop	acc
-      000145 32               [24]  759 	reti
-                                    760 ;	eliminated unneeded push/pop dpl
-                                    761 ;	eliminated unneeded push/pop dph
-                                    762 ;	eliminated unneeded push/pop b
-                                    763 ;------------------------------------------------------------
-                                    764 ;Allocation info for local variables in function 'oled_clear_region'
-                                    765 ;------------------------------------------------------------
-                                    766 ;column        Allocated with name '_oled_clear_region_PARM_2'
-                                    767 ;characters    Allocated with name '_oled_clear_region_PARM_3'
-                                    768 ;page          Allocated to registers r7 
-                                    769 ;i             Allocated to registers r7 
-                                    770 ;------------------------------------------------------------
-                                    771 ;	main.c:52: static void oled_clear_region(unsigned char page,
-                                    772 ;	-----------------------------------------
-                                    773 ;	 function oled_clear_region
-                                    774 ;	-----------------------------------------
-      000146                        775 _oled_clear_region:
-                                    776 ;	main.c:58: oled_set_position(page, column);
-      000146 85 31 3C         [24]  777 	mov	_oled_set_position_PARM_2,_oled_clear_region_PARM_2
-      000149 12 0A DC         [24]  778 	lcall	_oled_set_position
-                                    779 ;	main.c:60: for (i = 0; i < characters; i++)
-      00014C 7F 00            [12]  780 	mov	r7,#0x00
-      00014E                        781 00103$:
-      00014E C3               [12]  782 	clr	c
-      00014F EF               [12]  783 	mov	a,r7
-      000150 95 32            [12]  784 	subb	a,_oled_clear_region_PARM_3
-      000152 50 0D            [24]  785 	jnc	00105$
-                                    786 ;	main.c:61: oled_char(' ');
-      000154 75 82 20         [24]  787 	mov	dpl, #0x20
-      000157 C0 07            [24]  788 	push	ar7
-      000159 12 0C 1A         [24]  789 	lcall	_oled_char
-      00015C D0 07            [24]  790 	pop	ar7
-                                    791 ;	main.c:60: for (i = 0; i < characters; i++)
-      00015E 0F               [12]  792 	inc	r7
-      00015F 80 ED            [24]  793 	sjmp	00103$
-      000161                        794 00105$:
-                                    795 ;	main.c:62: }
-      000161 22               [24]  796 	ret
-                                    797 ;------------------------------------------------------------
-                                    798 ;Allocation info for local variables in function 'oled_clear_error'
-                                    799 ;------------------------------------------------------------
-                                    800 ;	main.c:64: static void oled_clear_error(void)
-                                    801 ;	-----------------------------------------
-                                    802 ;	 function oled_clear_error
-                                    803 ;	-----------------------------------------
-      000162                        804 _oled_clear_error:
-                                    805 ;	main.c:66: oled_clear_region(5, 0, 21);
-      000162 75 31 00         [24]  806 	mov	_oled_clear_region_PARM_2,#0x00
-      000165 75 32 15         [24]  807 	mov	_oled_clear_region_PARM_3,#0x15
-      000168 75 82 05         [24]  808 	mov	dpl, #0x05
-      00016B 12 01 46         [24]  809 	lcall	_oled_clear_region
-                                    810 ;	main.c:67: oled_clear_region(7, 0, 21);
-      00016E 75 31 00         [24]  811 	mov	_oled_clear_region_PARM_2,#0x00
-      000171 75 32 15         [24]  812 	mov	_oled_clear_region_PARM_3,#0x15
-      000174 75 82 07         [24]  813 	mov	dpl, #0x07
-                                    814 ;	main.c:68: }
-      000177 02 01 46         [24]  815 	ljmp	_oled_clear_region
-                                    816 ;------------------------------------------------------------
-                                    817 ;Allocation info for local variables in function 'oled_print_field'
-                                    818 ;------------------------------------------------------------
-                                    819 ;comma_expected Allocated to registers r7 
-                                    820 ;count         Allocated to registers r6 
-                                    821 ;------------------------------------------------------------
-                                    822 ;	main.c:70: static unsigned char oled_print_field(unsigned char comma_expected)
-                                    823 ;	-----------------------------------------
-                                    824 ;	 function oled_print_field
-                                    825 ;	-----------------------------------------
-      00017A                        826 _oled_print_field:
-      00017A AF 82            [24]  827 	mov	r7, dpl
-                                    828 ;	main.c:72: unsigned char count = 0;
-      00017C 7E 00            [12]  829 	mov	r6,#0x00
-                                    830 ;	main.c:74: if (rx_buffer[parse_index] == '\0')
-      00017E E5 2F            [12]  831 	mov	a,_parse_index
-      000180 24 0C            [12]  832 	add	a, #_rx_buffer
-      000182 F9               [12]  833 	mov	r1,a
-      000183 E7               [12]  834 	mov	a,@r1
-                                    835 ;	main.c:75: return 0;
-      000184 70 03            [24]  836 	jnz	00106$
-      000186 F5 82            [12]  837 	mov	dpl,a
-                                    838 ;	main.c:77: while (rx_buffer[parse_index] != '\0' &&
-      000188 22               [24]  839 	ret
-      000189                        840 00106$:
-      000189 E5 2F            [12]  841 	mov	a,_parse_index
-      00018B 24 0C            [12]  842 	add	a, #_rx_buffer
-      00018D F9               [12]  843 	mov	r1,a
-      00018E E7               [12]  844 	mov	a,@r1
-      00018F FD               [12]  845 	mov	r5,a
-      000190 60 1C            [24]  846 	jz	00108$
-                                    847 ;	main.c:78: rx_buffer[parse_index] != ',')
-      000192 BD 2C 02         [24]  848 	cjne	r5,#0x2c,00175$
-      000195 80 17            [24]  849 	sjmp	00108$
-      000197                        850 00175$:
-                                    851 ;	main.c:80: if (count < 20)
-      000197 BE 14 00         [24]  852 	cjne	r6,#0x14,00176$
-      00019A                        853 00176$:
-      00019A 50 0D            [24]  854 	jnc	00104$
-                                    855 ;	main.c:81: oled_char(rx_buffer[parse_index]);
-      00019C 8D 82            [24]  856 	mov	dpl, r5
-      00019E C0 07            [24]  857 	push	ar7
-      0001A0 C0 06            [24]  858 	push	ar6
-      0001A2 12 0C 1A         [24]  859 	lcall	_oled_char
-      0001A5 D0 06            [24]  860 	pop	ar6
-      0001A7 D0 07            [24]  861 	pop	ar7
-      0001A9                        862 00104$:
-                                    863 ;	main.c:83: count++;
-      0001A9 0E               [12]  864 	inc	r6
-                                    865 ;	main.c:84: parse_index++;
-      0001AA 05 2F            [12]  866 	inc	_parse_index
-      0001AC 80 DB            [24]  867 	sjmp	00106$
-      0001AE                        868 00108$:
-                                    869 ;	main.c:87: if (count == 0)
-      0001AE EE               [12]  870 	mov	a,r6
-                                    871 ;	main.c:88: return 0;
-      0001AF 70 03            [24]  872 	jnz	00110$
-      0001B1 F5 82            [12]  873 	mov	dpl,a
-      0001B3 22               [24]  874 	ret
-      0001B4                        875 00110$:
-                                    876 ;	main.c:90: if (comma_expected)
-      0001B4 EF               [12]  877 	mov	a,r7
-      0001B5 60 12            [24]  878 	jz	00114$
-                                    879 ;	main.c:92: if (rx_buffer[parse_index] != ',')
-      0001B7 E5 2F            [12]  880 	mov	a,_parse_index
-      0001B9 24 0C            [12]  881 	add	a, #_rx_buffer
-      0001BB F9               [12]  882 	mov	r1,a
-      0001BC 87 07            [24]  883 	mov	ar7,@r1
-      0001BE BF 2C 02         [24]  884 	cjne	r7,#0x2c,00180$
-      0001C1 80 04            [24]  885 	sjmp	00112$
-      0001C3                        886 00180$:
-                                    887 ;	main.c:93: return 0;
-      0001C3 75 82 00         [24]  888 	mov	dpl, #0x00
-      0001C6 22               [24]  889 	ret
-      0001C7                        890 00112$:
-                                    891 ;	main.c:95: parse_index++;
-      0001C7 05 2F            [12]  892 	inc	_parse_index
-      0001C9                        893 00114$:
-                                    894 ;	main.c:98: return 1;
-      0001C9 75 82 01         [24]  895 	mov	dpl, #0x01
-                                    896 ;	main.c:99: }
-      0001CC 22               [24]  897 	ret
-                                    898 ;------------------------------------------------------------
-                                    899 ;Allocation info for local variables in function 'oled_initial_screen'
-                                    900 ;------------------------------------------------------------
-                                    901 ;	main.c:101: static void oled_initial_screen(void)
-                                    902 ;	-----------------------------------------
-                                    903 ;	 function oled_initial_screen
-                                    904 ;	-----------------------------------------
-      0001CD                        905 _oled_initial_screen:
-                                    906 ;	main.c:103: oled_clear();
-      0001CD 12 0B 19         [24]  907 	lcall	_oled_clear
-                                    908 ;	main.c:105: oled_set_position(0, 0);
-      0001D0 75 3C 00         [24]  909 	mov	_oled_set_position_PARM_2,#0x00
-      0001D3 75 82 00         [24]  910 	mov	dpl, #0x00
-      0001D6 12 0A DC         [24]  911 	lcall	_oled_set_position
-                                    912 ;	main.c:106: oled_string("V:--");
-      0001D9 90 11 E7         [24]  913 	mov	dptr,#___str_0
-      0001DC 75 F0 80         [24]  914 	mov	b, #0x80
-      0001DF 12 0E E7         [24]  915 	lcall	_oled_string
-                                    916 ;	main.c:108: oled_set_position(0, 66);
-      0001E2 75 3C 42         [24]  917 	mov	_oled_set_position_PARM_2,#0x42
-      0001E5 75 82 00         [24]  918 	mov	dpl, #0x00
-      0001E8 12 0A DC         [24]  919 	lcall	_oled_set_position
-                                    920 ;	main.c:109: oled_string("F:--");
-      0001EB 90 11 EC         [24]  921 	mov	dptr,#___str_1
-      0001EE 75 F0 80         [24]  922 	mov	b, #0x80
-      0001F1 12 0E E7         [24]  923 	lcall	_oled_string
-                                    924 ;	main.c:111: oled_set_position(1, 0);
-      0001F4 75 3C 00         [24]  925 	mov	_oled_set_position_PARM_2,#0x00
-      0001F7 75 82 01         [24]  926 	mov	dpl, #0x01
-      0001FA 12 0A DC         [24]  927 	lcall	_oled_set_position
-                                    928 ;	main.c:112: oled_string("I:--");
-      0001FD 90 11 F1         [24]  929 	mov	dptr,#___str_2
-      000200 75 F0 80         [24]  930 	mov	b, #0x80
-      000203 12 0E E7         [24]  931 	lcall	_oled_string
-                                    932 ;	main.c:114: oled_set_position(1, 66);
-      000206 75 3C 42         [24]  933 	mov	_oled_set_position_PARM_2,#0x42
-      000209 75 82 01         [24]  934 	mov	dpl, #0x01
-      00020C 12 0A DC         [24]  935 	lcall	_oled_set_position
-                                    936 ;	main.c:115: oled_string("E:--");
-      00020F 90 11 F6         [24]  937 	mov	dptr,#___str_3
-      000212 75 F0 80         [24]  938 	mov	b, #0x80
-      000215 12 0E E7         [24]  939 	lcall	_oled_string
-                                    940 ;	main.c:117: oled_set_position(2, 0);
-      000218 75 3C 00         [24]  941 	mov	_oled_set_position_PARM_2,#0x00
-      00021B 75 82 02         [24]  942 	mov	dpl, #0x02
-      00021E 12 0A DC         [24]  943 	lcall	_oled_set_position
-                                    944 ;	main.c:118: oled_string("P:--");
-      000221 90 11 FB         [24]  945 	mov	dptr,#___str_4
-      000224 75 F0 80         [24]  946 	mov	b, #0x80
-      000227 12 0E E7         [24]  947 	lcall	_oled_string
-                                    948 ;	main.c:120: oled_set_position(2, 66);
-      00022A 75 3C 42         [24]  949 	mov	_oled_set_position_PARM_2,#0x42
-      00022D 75 82 02         [24]  950 	mov	dpl, #0x02
-      000230 12 0A DC         [24]  951 	lcall	_oled_set_position
-                                    952 ;	main.c:121: oled_string("L:--");
-      000233 90 12 00         [24]  953 	mov	dptr,#___str_5
-      000236 75 F0 80         [24]  954 	mov	b, #0x80
-      000239 12 0E E7         [24]  955 	lcall	_oled_string
-                                    956 ;	main.c:123: oled_set_position(3, 0);
-      00023C 75 3C 00         [24]  957 	mov	_oled_set_position_PARM_2,#0x00
-      00023F 75 82 03         [24]  958 	mov	dpl, #0x03
-      000242 12 0A DC         [24]  959 	lcall	_oled_set_position
-                                    960 ;	main.c:124: oled_string("PF:--");
-      000245 90 12 05         [24]  961 	mov	dptr,#___str_6
-      000248 75 F0 80         [24]  962 	mov	b, #0x80
-      00024B 12 0E E7         [24]  963 	lcall	_oled_string
-                                    964 ;	main.c:126: oled_set_position(5, 0);
-      00024E 75 3C 00         [24]  965 	mov	_oled_set_position_PARM_2,#0x00
-      000251 75 82 05         [24]  966 	mov	dpl, #0x05
-      000254 12 0A DC         [24]  967 	lcall	_oled_set_position
-                                    968 ;	main.c:127: oled_string("ERROR:");
-      000257 90 12 0B         [24]  969 	mov	dptr,#___str_7
-      00025A 75 F0 80         [24]  970 	mov	b, #0x80
-      00025D 12 0E E7         [24]  971 	lcall	_oled_string
-                                    972 ;	main.c:129: oled_set_position(7, 0);
-      000260 75 3C 00         [24]  973 	mov	_oled_set_position_PARM_2,#0x00
-      000263 75 82 07         [24]  974 	mov	dpl, #0x07
-      000266 12 0A DC         [24]  975 	lcall	_oled_set_position
-                                    976 ;	main.c:130: oled_string("NO ERROR");
-      000269 90 12 12         [24]  977 	mov	dptr,#___str_8
-      00026C 75 F0 80         [24]  978 	mov	b, #0x80
-                                    979 ;	main.c:131: }
-      00026F 02 0E E7         [24]  980 	ljmp	_oled_string
-                                    981 ;------------------------------------------------------------
-                                    982 ;Allocation info for local variables in function 'process_data1'
-                                    983 ;------------------------------------------------------------
-                                    984 ;	main.c:133: static void process_data1(void)
-                                    985 ;	-----------------------------------------
-                                    986 ;	 function process_data1
-                                    987 ;	-----------------------------------------
-      000272                        988 _process_data1:
-                                    989 ;	main.c:135: parse_index = 6;
-      000272 75 2F 06         [24]  990 	mov	_parse_index,#0x06
-                                    991 ;	main.c:137: oled_clear_region(0, 0, 10);
-      000275 75 31 00         [24]  992 	mov	_oled_clear_region_PARM_2,#0x00
-      000278 75 32 0A         [24]  993 	mov	_oled_clear_region_PARM_3,#0x0a
-      00027B 75 82 00         [24]  994 	mov	dpl, #0x00
-      00027E 12 01 46         [24]  995 	lcall	_oled_clear_region
-                                    996 ;	main.c:138: oled_set_position(0, 0);
-      000281 75 3C 00         [24]  997 	mov	_oled_set_position_PARM_2,#0x00
-      000284 75 82 00         [24]  998 	mov	dpl, #0x00
-      000287 12 0A DC         [24]  999 	lcall	_oled_set_position
-                                   1000 ;	main.c:139: oled_string("V:");
-      00028A 90 12 1B         [24] 1001 	mov	dptr,#___str_9
-      00028D 75 F0 80         [24] 1002 	mov	b, #0x80
-      000290 12 0E E7         [24] 1003 	lcall	_oled_string
-                                   1004 ;	main.c:141: if (!oled_print_field(1))
-      000293 75 82 01         [24] 1005 	mov	dpl, #0x01
-      000296 12 01 7A         [24] 1006 	lcall	_oled_print_field
-      000299 E5 82            [12] 1007 	mov	a, dpl
-      00029B 70 01            [24] 1008 	jnz	00102$
-                                   1009 ;	main.c:142: return;
-      00029D 22               [24] 1010 	ret
-      00029E                       1011 00102$:
-                                   1012 ;	main.c:144: oled_clear_region(1, 0, 10);
-      00029E 75 31 00         [24] 1013 	mov	_oled_clear_region_PARM_2,#0x00
-      0002A1 75 32 0A         [24] 1014 	mov	_oled_clear_region_PARM_3,#0x0a
-      0002A4 75 82 01         [24] 1015 	mov	dpl, #0x01
-      0002A7 12 01 46         [24] 1016 	lcall	_oled_clear_region
-                                   1017 ;	main.c:145: oled_set_position(1, 0);
-      0002AA 75 3C 00         [24] 1018 	mov	_oled_set_position_PARM_2,#0x00
-      0002AD 75 82 01         [24] 1019 	mov	dpl, #0x01
-      0002B0 12 0A DC         [24] 1020 	lcall	_oled_set_position
-                                   1021 ;	main.c:146: oled_string("I:");
-      0002B3 90 12 1E         [24] 1022 	mov	dptr,#___str_10
-      0002B6 75 F0 80         [24] 1023 	mov	b, #0x80
-      0002B9 12 0E E7         [24] 1024 	lcall	_oled_string
-                                   1025 ;	main.c:148: if (!oled_print_field(1))
-      0002BC 75 82 01         [24] 1026 	mov	dpl, #0x01
-      0002BF 12 01 7A         [24] 1027 	lcall	_oled_print_field
-      0002C2 E5 82            [12] 1028 	mov	a, dpl
-      0002C4 70 01            [24] 1029 	jnz	00104$
-                                   1030 ;	main.c:149: return;
-      0002C6 22               [24] 1031 	ret
-      0002C7                       1032 00104$:
-                                   1033 ;	main.c:151: oled_char('A');
-      0002C7 75 82 41         [24] 1034 	mov	dpl, #0x41
-      0002CA 12 0C 1A         [24] 1035 	lcall	_oled_char
-                                   1036 ;	main.c:153: oled_clear_region(2, 0, 10);
-      0002CD 75 31 00         [24] 1037 	mov	_oled_clear_region_PARM_2,#0x00
-      0002D0 75 32 0A         [24] 1038 	mov	_oled_clear_region_PARM_3,#0x0a
-      0002D3 75 82 02         [24] 1039 	mov	dpl, #0x02
-      0002D6 12 01 46         [24] 1040 	lcall	_oled_clear_region
-                                   1041 ;	main.c:154: oled_set_position(2, 0);
-      0002D9 75 3C 00         [24] 1042 	mov	_oled_set_position_PARM_2,#0x00
-      0002DC 75 82 02         [24] 1043 	mov	dpl, #0x02
-      0002DF 12 0A DC         [24] 1044 	lcall	_oled_set_position
-                                   1045 ;	main.c:155: oled_string("P:");
-      0002E2 90 12 21         [24] 1046 	mov	dptr,#___str_11
-      0002E5 75 F0 80         [24] 1047 	mov	b, #0x80
-      0002E8 12 0E E7         [24] 1048 	lcall	_oled_string
-                                   1049 ;	main.c:157: if (!oled_print_field(1))
-      0002EB 75 82 01         [24] 1050 	mov	dpl, #0x01
-      0002EE 12 01 7A         [24] 1051 	lcall	_oled_print_field
-      0002F1 E5 82            [12] 1052 	mov	a, dpl
-      0002F3 70 01            [24] 1053 	jnz	00106$
-                                   1054 ;	main.c:158: return;
-      0002F5 22               [24] 1055 	ret
-      0002F6                       1056 00106$:
-                                   1057 ;	main.c:160: oled_char('W');
-      0002F6 75 82 57         [24] 1058 	mov	dpl, #0x57
-      0002F9 12 0C 1A         [24] 1059 	lcall	_oled_char
-                                   1060 ;	main.c:162: oled_clear_region(3, 0, 10);
-      0002FC 75 31 00         [24] 1061 	mov	_oled_clear_region_PARM_2,#0x00
-      0002FF 75 32 0A         [24] 1062 	mov	_oled_clear_region_PARM_3,#0x0a
-      000302 75 82 03         [24] 1063 	mov	dpl, #0x03
-      000305 12 01 46         [24] 1064 	lcall	_oled_clear_region
-                                   1065 ;	main.c:163: oled_set_position(3, 0);
-      000308 75 3C 00         [24] 1066 	mov	_oled_set_position_PARM_2,#0x00
-      00030B 75 82 03         [24] 1067 	mov	dpl, #0x03
-      00030E 12 0A DC         [24] 1068 	lcall	_oled_set_position
-                                   1069 ;	main.c:164: oled_string("PF:");
-      000311 90 12 24         [24] 1070 	mov	dptr,#___str_12
-      000314 75 F0 80         [24] 1071 	mov	b, #0x80
-      000317 12 0E E7         [24] 1072 	lcall	_oled_string
-                                   1073 ;	main.c:166: oled_print_field(0);
-      00031A 75 82 00         [24] 1074 	mov	dpl, #0x00
-                                   1075 ;	main.c:167: }
-      00031D 02 01 7A         [24] 1076 	ljmp	_oled_print_field
-                                   1077 ;------------------------------------------------------------
-                                   1078 ;Allocation info for local variables in function 'process_data2'
-                                   1079 ;------------------------------------------------------------
-                                   1080 ;	main.c:169: static void process_data2(void)
-                                   1081 ;	-----------------------------------------
-                                   1082 ;	 function process_data2
-                                   1083 ;	-----------------------------------------
-      000320                       1084 _process_data2:
-                                   1085 ;	main.c:171: parse_index = 6;
-      000320 75 2F 06         [24] 1086 	mov	_parse_index,#0x06
-                                   1087 ;	main.c:173: oled_clear_region(0, 66, 10);
-      000323 75 31 42         [24] 1088 	mov	_oled_clear_region_PARM_2,#0x42
-      000326 75 32 0A         [24] 1089 	mov	_oled_clear_region_PARM_3,#0x0a
-      000329 75 82 00         [24] 1090 	mov	dpl, #0x00
-      00032C 12 01 46         [24] 1091 	lcall	_oled_clear_region
-                                   1092 ;	main.c:174: oled_set_position(0, 66);
-      00032F 75 3C 42         [24] 1093 	mov	_oled_set_position_PARM_2,#0x42
-      000332 75 82 00         [24] 1094 	mov	dpl, #0x00
-      000335 12 0A DC         [24] 1095 	lcall	_oled_set_position
-                                   1096 ;	main.c:175: oled_string("F:");
-      000338 90 12 28         [24] 1097 	mov	dptr,#___str_13
-      00033B 75 F0 80         [24] 1098 	mov	b, #0x80
-      00033E 12 0E E7         [24] 1099 	lcall	_oled_string
-                                   1100 ;	main.c:177: if (!oled_print_field(1))
-      000341 75 82 01         [24] 1101 	mov	dpl, #0x01
-      000344 12 01 7A         [24] 1102 	lcall	_oled_print_field
-      000347 E5 82            [12] 1103 	mov	a, dpl
-      000349 70 01            [24] 1104 	jnz	00102$
-                                   1105 ;	main.c:178: return;
-      00034B 22               [24] 1106 	ret
-      00034C                       1107 00102$:
-                                   1108 ;	main.c:180: oled_string("Hz");
-      00034C 90 12 2B         [24] 1109 	mov	dptr,#___str_14
-      00034F 75 F0 80         [24] 1110 	mov	b, #0x80
-      000352 12 0E E7         [24] 1111 	lcall	_oled_string
-                                   1112 ;	main.c:182: oled_clear_region(1, 66, 10);
-      000355 75 31 42         [24] 1113 	mov	_oled_clear_region_PARM_2,#0x42
-      000358 75 32 0A         [24] 1114 	mov	_oled_clear_region_PARM_3,#0x0a
-      00035B 75 82 01         [24] 1115 	mov	dpl, #0x01
-      00035E 12 01 46         [24] 1116 	lcall	_oled_clear_region
-                                   1117 ;	main.c:183: oled_set_position(1, 66);
-      000361 75 3C 42         [24] 1118 	mov	_oled_set_position_PARM_2,#0x42
-      000364 75 82 01         [24] 1119 	mov	dpl, #0x01
-      000367 12 0A DC         [24] 1120 	lcall	_oled_set_position
-                                   1121 ;	main.c:184: oled_string("E:");
-      00036A 90 12 2E         [24] 1122 	mov	dptr,#___str_15
-      00036D 75 F0 80         [24] 1123 	mov	b, #0x80
-      000370 12 0E E7         [24] 1124 	lcall	_oled_string
-                                   1125 ;	main.c:186: if (!oled_print_field(1))
-      000373 75 82 01         [24] 1126 	mov	dpl, #0x01
-      000376 12 01 7A         [24] 1127 	lcall	_oled_print_field
-      000379 E5 82            [12] 1128 	mov	a, dpl
-      00037B 70 01            [24] 1129 	jnz	00104$
-                                   1130 ;	main.c:187: return;
-      00037D 22               [24] 1131 	ret
-      00037E                       1132 00104$:
-                                   1133 ;	main.c:189: oled_string("kWh");
-      00037E 90 12 31         [24] 1134 	mov	dptr,#___str_16
-      000381 75 F0 80         [24] 1135 	mov	b, #0x80
-      000384 12 0E E7         [24] 1136 	lcall	_oled_string
-                                   1137 ;	main.c:191: oled_clear_region(2, 66, 10);
-      000387 75 31 42         [24] 1138 	mov	_oled_clear_region_PARM_2,#0x42
-      00038A 75 32 0A         [24] 1139 	mov	_oled_clear_region_PARM_3,#0x0a
-      00038D 75 82 02         [24] 1140 	mov	dpl, #0x02
-      000390 12 01 46         [24] 1141 	lcall	_oled_clear_region
-                                   1142 ;	main.c:192: oled_set_position(2, 66);
-      000393 75 3C 42         [24] 1143 	mov	_oled_set_position_PARM_2,#0x42
-      000396 75 82 02         [24] 1144 	mov	dpl, #0x02
-      000399 12 0A DC         [24] 1145 	lcall	_oled_set_position
-                                   1146 ;	main.c:193: oled_string("L:");
-      00039C 90 12 35         [24] 1147 	mov	dptr,#___str_17
-      00039F 75 F0 80         [24] 1148 	mov	b, #0x80
-      0003A2 12 0E E7         [24] 1149 	lcall	_oled_string
-                                   1150 ;	main.c:195: if (!oled_print_field(0))
-      0003A5 75 82 00         [24] 1151 	mov	dpl, #0x00
-      0003A8 12 01 7A         [24] 1152 	lcall	_oled_print_field
-      0003AB E5 82            [12] 1153 	mov	a, dpl
-      0003AD 70 01            [24] 1154 	jnz	00106$
-                                   1155 ;	main.c:196: return;
-      0003AF 22               [24] 1156 	ret
-      0003B0                       1157 00106$:
-                                   1158 ;	main.c:198: oled_char('A');
-      0003B0 75 82 41         [24] 1159 	mov	dpl, #0x41
-                                   1160 ;	main.c:199: }
-      0003B3 02 0C 1A         [24] 1161 	ljmp	_oled_char
-                                   1162 ;------------------------------------------------------------
-                                   1163 ;Allocation info for local variables in function 'process_error'
-                                   1164 ;------------------------------------------------------------
-                                   1165 ;i             Allocated to registers r7 
-                                   1166 ;------------------------------------------------------------
-                                   1167 ;	main.c:201: static void process_error(void)
-                                   1168 ;	-----------------------------------------
-                                   1169 ;	 function process_error
-                                   1170 ;	-----------------------------------------
-      0003B6                       1171 _process_error:
-                                   1172 ;	main.c:205: parse_index = 6;
-      0003B6 75 2F 06         [24] 1173 	mov	_parse_index,#0x06
-                                   1174 ;	main.c:207: oled_clear_error();
-      0003B9 12 01 62         [24] 1175 	lcall	_oled_clear_error
-                                   1176 ;	main.c:209: oled_set_position(5, 0);
-      0003BC 75 3C 00         [24] 1177 	mov	_oled_set_position_PARM_2,#0x00
-      0003BF 75 82 05         [24] 1178 	mov	dpl, #0x05
-      0003C2 12 0A DC         [24] 1179 	lcall	_oled_set_position
-                                   1180 ;	main.c:210: oled_string("ERROR:");
-      0003C5 90 12 0B         [24] 1181 	mov	dptr,#___str_7
-      0003C8 75 F0 80         [24] 1182 	mov	b, #0x80
-      0003CB 12 0E E7         [24] 1183 	lcall	_oled_string
-                                   1184 ;	main.c:212: oled_set_position(7, 0);
-      0003CE 75 3C 00         [24] 1185 	mov	_oled_set_position_PARM_2,#0x00
-      0003D1 75 82 07         [24] 1186 	mov	dpl, #0x07
-      0003D4 12 0A DC         [24] 1187 	lcall	_oled_set_position
-                                   1188 ;	main.c:214: if (rx_buffer[parse_index] == 'N' &&
-      0003D7 E5 2F            [12] 1189 	mov	a,_parse_index
-      0003D9 24 0C            [12] 1190 	add	a, #_rx_buffer
-      0003DB F9               [12] 1191 	mov	r1,a
-      0003DC 87 07            [24] 1192 	mov	ar7,@r1
-      0003DE BF 4E 34         [24] 1193 	cjne	r7,#0x4e,00102$
-                                   1194 ;	main.c:215: rx_buffer[parse_index + 1] == 'O' &&
-      0003E1 E5 2F            [12] 1195 	mov	a,_parse_index
-      0003E3 FE               [12] 1196 	mov	r6,a
-      0003E4 04               [12] 1197 	inc	a
-      0003E5 24 0C            [12] 1198 	add	a, #_rx_buffer
-      0003E7 F9               [12] 1199 	mov	r1,a
-      0003E8 87 05            [24] 1200 	mov	ar5,@r1
-      0003EA BD 4F 28         [24] 1201 	cjne	r5,#0x4f,00102$
-                                   1202 ;	main.c:216: rx_buffer[parse_index + 2] == 'N' &&
-      0003ED 74 02            [12] 1203 	mov	a,#0x02
-      0003EF 2E               [12] 1204 	add	a, r6
-      0003F0 24 0C            [12] 1205 	add	a, #_rx_buffer
-      0003F2 F9               [12] 1206 	mov	r1,a
-      0003F3 87 05            [24] 1207 	mov	ar5,@r1
-      0003F5 BD 4E 1D         [24] 1208 	cjne	r5,#0x4e,00102$
-                                   1209 ;	main.c:217: rx_buffer[parse_index + 3] == 'E' &&
-      0003F8 74 03            [12] 1210 	mov	a,#0x03
-      0003FA 2E               [12] 1211 	add	a, r6
-      0003FB 24 0C            [12] 1212 	add	a, #_rx_buffer
-      0003FD F9               [12] 1213 	mov	r1,a
-      0003FE 87 05            [24] 1214 	mov	ar5,@r1
-      000400 BD 45 12         [24] 1215 	cjne	r5,#0x45,00102$
-                                   1216 ;	main.c:218: rx_buffer[parse_index + 4] == '\0')
-      000403 74 04            [12] 1217 	mov	a,#0x04
-      000405 2E               [12] 1218 	add	a, r6
-      000406 24 0C            [12] 1219 	add	a, #_rx_buffer
-      000408 F9               [12] 1220 	mov	r1,a
-      000409 E7               [12] 1221 	mov	a,@r1
-      00040A 70 09            [24] 1222 	jnz	00102$
-                                   1223 ;	main.c:220: oled_string("NO ERROR");
-      00040C 90 12 12         [24] 1224 	mov	dptr,#___str_8
-      00040F 75 F0 80         [24] 1225 	mov	b, #0x80
-                                   1226 ;	main.c:221: return;
-      000412 02 0E E7         [24] 1227 	ljmp	_oled_string
-      000415                       1228 00102$:
-                                   1229 ;	main.c:224: if (rx_buffer[parse_index] == '\0')
-      000415 EF               [12] 1230 	mov	a,r7
-      000416 70 09            [24] 1231 	jnz	00108$
-                                   1232 ;	main.c:226: oled_string("UNKNOWN ERROR");
-      000418 90 12 38         [24] 1233 	mov	dptr,#___str_18
-      00041B 75 F0 80         [24] 1234 	mov	b, #0x80
-                                   1235 ;	main.c:227: return;
-      00041E 02 0E E7         [24] 1236 	ljmp	_oled_string
-      000421                       1237 00108$:
-                                   1238 ;	main.c:230: for (i = 0; i < 21; i++)
-      000421 7F 00            [12] 1239 	mov	r7,#0x00
-      000423                       1240 00112$:
-                                   1241 ;	main.c:232: if (rx_buffer[parse_index] == '\0')
-      000423 E5 2F            [12] 1242 	mov	a,_parse_index
-      000425 24 0C            [12] 1243 	add	a, #_rx_buffer
-      000427 F9               [12] 1244 	mov	r1,a
-      000428 E7               [12] 1245 	mov	a,@r1
-      000429 FE               [12] 1246 	mov	r6,a
-      00042A 60 11            [24] 1247 	jz	00114$
-                                   1248 ;	main.c:235: oled_char(rx_buffer[parse_index]);
-      00042C 8E 82            [24] 1249 	mov	dpl, r6
-      00042E C0 07            [24] 1250 	push	ar7
-      000430 12 0C 1A         [24] 1251 	lcall	_oled_char
-      000433 D0 07            [24] 1252 	pop	ar7
-                                   1253 ;	main.c:236: parse_index++;
-      000435 05 2F            [12] 1254 	inc	_parse_index
-                                   1255 ;	main.c:230: for (i = 0; i < 21; i++)
-      000437 0F               [12] 1256 	inc	r7
-      000438 BF 15 00         [24] 1257 	cjne	r7,#0x15,00183$
-      00043B                       1258 00183$:
-      00043B 40 E6            [24] 1259 	jc	00112$
-      00043D                       1260 00114$:
-                                   1261 ;	main.c:238: }
-      00043D 22               [24] 1262 	ret
-                                   1263 ;------------------------------------------------------------
-                                   1264 ;Allocation info for local variables in function 'process_command'
-                                   1265 ;------------------------------------------------------------
-                                   1266 ;command       Allocated to registers r5 r6 r7 
-                                   1267 ;------------------------------------------------------------
-                                   1268 ;	main.c:240: static void process_command(char *command)
-                                   1269 ;	-----------------------------------------
-                                   1270 ;	 function process_command
-                                   1271 ;	-----------------------------------------
-      00043E                       1272 _process_command:
-                                   1273 ;	main.c:242: if (command[0] == 'R' &&
-      00043E AD 82            [24] 1274 	mov	r5,dpl
-      000440 AE 83            [24] 1275 	mov	r6,dph
-      000442 AF F0            [24] 1276 	mov	r7,b
-      000444 12 11 C7         [24] 1277 	lcall	__gptrget
-      000447 FC               [12] 1278 	mov	r4,a
-      000448 BC 52 02         [24] 1279 	cjne	r4,#0x52,00547$
-      00044B 80 03            [24] 1280 	sjmp	00548$
-      00044D                       1281 00547$:
-      00044D 02 05 7B         [24] 1282 	ljmp	00111$
-      000450                       1283 00548$:
-                                   1284 ;	main.c:243: command[1] == 'E' &&
-      000450 74 01            [12] 1285 	mov	a,#0x01
-      000452 2D               [12] 1286 	add	a, r5
-      000453 F9               [12] 1287 	mov	r1,a
-      000454 E4               [12] 1288 	clr	a
-      000455 3E               [12] 1289 	addc	a, r6
-      000456 FA               [12] 1290 	mov	r2,a
-      000457 8F 03            [24] 1291 	mov	ar3,r7
-      000459 89 82            [24] 1292 	mov	dpl,r1
-      00045B 8A 83            [24] 1293 	mov	dph,r2
-      00045D 8B F0            [24] 1294 	mov	b,r3
-      00045F 12 11 C7         [24] 1295 	lcall	__gptrget
-      000462 F9               [12] 1296 	mov	r1,a
-      000463 B9 45 02         [24] 1297 	cjne	r1,#0x45,00549$
-      000466 80 03            [24] 1298 	sjmp	00550$
-      000468                       1299 00549$:
-      000468 02 05 7B         [24] 1300 	ljmp	00111$
-      00046B                       1301 00550$:
-                                   1302 ;	main.c:244: command[2] == 'L' &&
-      00046B 74 02            [12] 1303 	mov	a,#0x02
-      00046D 2D               [12] 1304 	add	a, r5
-      00046E F9               [12] 1305 	mov	r1,a
-      00046F E4               [12] 1306 	clr	a
-      000470 3E               [12] 1307 	addc	a, r6
-      000471 FA               [12] 1308 	mov	r2,a
-      000472 8F 03            [24] 1309 	mov	ar3,r7
-      000474 89 82            [24] 1310 	mov	dpl,r1
-      000476 8A 83            [24] 1311 	mov	dph,r2
-      000478 8B F0            [24] 1312 	mov	b,r3
-      00047A 12 11 C7         [24] 1313 	lcall	__gptrget
-      00047D F9               [12] 1314 	mov	r1,a
-      00047E B9 4C 02         [24] 1315 	cjne	r1,#0x4c,00551$
-      000481 80 03            [24] 1316 	sjmp	00552$
-      000483                       1317 00551$:
-      000483 02 05 7B         [24] 1318 	ljmp	00111$
-      000486                       1319 00552$:
-                                   1320 ;	main.c:245: command[3] == 'A' &&
-      000486 74 03            [12] 1321 	mov	a,#0x03
-      000488 2D               [12] 1322 	add	a, r5
-      000489 F9               [12] 1323 	mov	r1,a
-      00048A E4               [12] 1324 	clr	a
-      00048B 3E               [12] 1325 	addc	a, r6
-      00048C FA               [12] 1326 	mov	r2,a
-      00048D 8F 03            [24] 1327 	mov	ar3,r7
-      00048F 89 82            [24] 1328 	mov	dpl,r1
-      000491 8A 83            [24] 1329 	mov	dph,r2
-      000493 8B F0            [24] 1330 	mov	b,r3
-      000495 12 11 C7         [24] 1331 	lcall	__gptrget
-      000498 F9               [12] 1332 	mov	r1,a
-      000499 B9 41 02         [24] 1333 	cjne	r1,#0x41,00553$
-      00049C 80 03            [24] 1334 	sjmp	00554$
-      00049E                       1335 00553$:
-      00049E 02 05 7B         [24] 1336 	ljmp	00111$
-      0004A1                       1337 00554$:
-                                   1338 ;	main.c:246: command[4] == 'Y' &&
-      0004A1 74 04            [12] 1339 	mov	a,#0x04
-      0004A3 2D               [12] 1340 	add	a, r5
-      0004A4 F9               [12] 1341 	mov	r1,a
-      0004A5 E4               [12] 1342 	clr	a
-      0004A6 3E               [12] 1343 	addc	a, r6
-      0004A7 FA               [12] 1344 	mov	r2,a
-      0004A8 8F 03            [24] 1345 	mov	ar3,r7
-      0004AA 89 82            [24] 1346 	mov	dpl,r1
-      0004AC 8A 83            [24] 1347 	mov	dph,r2
-      0004AE 8B F0            [24] 1348 	mov	b,r3
-      0004B0 12 11 C7         [24] 1349 	lcall	__gptrget
-      0004B3 F9               [12] 1350 	mov	r1,a
-      0004B4 B9 59 02         [24] 1351 	cjne	r1,#0x59,00555$
-      0004B7 80 03            [24] 1352 	sjmp	00556$
-      0004B9                       1353 00555$:
-      0004B9 02 05 7B         [24] 1354 	ljmp	00111$
-      0004BC                       1355 00556$:
-                                   1356 ;	main.c:247: command[5] == ',')
-      0004BC 74 05            [12] 1357 	mov	a,#0x05
-      0004BE 2D               [12] 1358 	add	a, r5
-      0004BF F9               [12] 1359 	mov	r1,a
-      0004C0 E4               [12] 1360 	clr	a
-      0004C1 3E               [12] 1361 	addc	a, r6
-      0004C2 FA               [12] 1362 	mov	r2,a
-      0004C3 8F 03            [24] 1363 	mov	ar3,r7
-      0004C5 89 82            [24] 1364 	mov	dpl,r1
-      0004C7 8A 83            [24] 1365 	mov	dph,r2
-      0004C9 8B F0            [24] 1366 	mov	b,r3
-      0004CB 12 11 C7         [24] 1367 	lcall	__gptrget
-      0004CE F9               [12] 1368 	mov	r1,a
-      0004CF B9 2C 02         [24] 1369 	cjne	r1,#0x2c,00557$
-      0004D2 80 03            [24] 1370 	sjmp	00558$
-      0004D4                       1371 00557$:
-      0004D4 02 05 7B         [24] 1372 	ljmp	00111$
-      0004D7                       1373 00558$:
-                                   1374 ;	main.c:249: if (command[6] == 'O' &&
-      0004D7 74 06            [12] 1375 	mov	a,#0x06
-      0004D9 2D               [12] 1376 	add	a, r5
-      0004DA F9               [12] 1377 	mov	r1,a
-      0004DB E4               [12] 1378 	clr	a
-      0004DC 3E               [12] 1379 	addc	a, r6
-      0004DD FA               [12] 1380 	mov	r2,a
-      0004DE 8F 03            [24] 1381 	mov	ar3,r7
-      0004E0 89 82            [24] 1382 	mov	dpl,r1
-      0004E2 8A 83            [24] 1383 	mov	dph,r2
-      0004E4 8B F0            [24] 1384 	mov	b,r3
-      0004E6 12 11 C7         [24] 1385 	lcall	__gptrget
-      0004E9 F9               [12] 1386 	mov	r1,a
-      0004EA E4               [12] 1387 	clr	a
-      0004EB B9 4F 01         [24] 1388 	cjne	r1,#0x4f,00559$
-      0004EE 04               [12] 1389 	inc	a
-      0004EF                       1390 00559$:
-      0004EF FB               [12] 1391 	mov	r3,a
-      0004F0 60 38            [24] 1392 	jz	00102$
-                                   1393 ;	main.c:250: command[7] == 'N' &&
-      0004F2 74 07            [12] 1394 	mov	a,#0x07
-      0004F4 2D               [12] 1395 	add	a, r5
-      0004F5 F8               [12] 1396 	mov	r0,a
-      0004F6 E4               [12] 1397 	clr	a
-      0004F7 3E               [12] 1398 	addc	a, r6
-      0004F8 F9               [12] 1399 	mov	r1,a
-      0004F9 8F 02            [24] 1400 	mov	ar2,r7
-      0004FB 88 82            [24] 1401 	mov	dpl,r0
-      0004FD 89 83            [24] 1402 	mov	dph,r1
-      0004FF 8A F0            [24] 1403 	mov	b,r2
-      000501 12 11 C7         [24] 1404 	lcall	__gptrget
-      000504 F8               [12] 1405 	mov	r0,a
-      000505 B8 4E 22         [24] 1406 	cjne	r0,#0x4e,00102$
-                                   1407 ;	main.c:251: command[8] == '\0')
-      000508 74 08            [12] 1408 	mov	a,#0x08
-      00050A 2D               [12] 1409 	add	a, r5
-      00050B F8               [12] 1410 	mov	r0,a
-      00050C E4               [12] 1411 	clr	a
-      00050D 3E               [12] 1412 	addc	a, r6
-      00050E F9               [12] 1413 	mov	r1,a
-      00050F 8F 02            [24] 1414 	mov	ar2,r7
-      000511 88 82            [24] 1415 	mov	dpl,r0
-      000513 89 83            [24] 1416 	mov	dph,r1
-      000515 8A F0            [24] 1417 	mov	b,r2
-      000517 12 11 C7         [24] 1418 	lcall	__gptrget
-      00051A 70 0E            [24] 1419 	jnz	00102$
-                                   1420 ;	main.c:253: RELAY_PIN = 0;
-                                   1421 ;	assignBit
-      00051C C2 A6            [12] 1422 	clr	_P2_6
-                                   1423 ;	main.c:254: relay_state = 1;
-      00051E 75 2D 01         [24] 1424 	mov	_relay_state,#0x01
-                                   1425 ;	main.c:256: uart_write_string("RELAY,ON\r\n");
-      000521 90 12 46         [24] 1426 	mov	dptr,#___str_19
-      000524 75 F0 80         [24] 1427 	mov	b, #0x80
-                                   1428 ;	main.c:257: return;
-      000527 02 10 6A         [24] 1429 	ljmp	_uart_write_string
-      00052A                       1430 00102$:
-                                   1431 ;	main.c:260: if (command[6] == 'O' &&
-      00052A EB               [12] 1432 	mov	a,r3
-      00052B 60 4E            [24] 1433 	jz	00111$
-                                   1434 ;	main.c:261: command[7] == 'F' &&
-      00052D 74 07            [12] 1435 	mov	a,#0x07
-      00052F 2D               [12] 1436 	add	a, r5
-      000530 F9               [12] 1437 	mov	r1,a
-      000531 E4               [12] 1438 	clr	a
-      000532 3E               [12] 1439 	addc	a, r6
-      000533 FA               [12] 1440 	mov	r2,a
-      000534 8F 03            [24] 1441 	mov	ar3,r7
-      000536 89 82            [24] 1442 	mov	dpl,r1
-      000538 8A 83            [24] 1443 	mov	dph,r2
-      00053A 8B F0            [24] 1444 	mov	b,r3
-      00053C 12 11 C7         [24] 1445 	lcall	__gptrget
-      00053F F9               [12] 1446 	mov	r1,a
-      000540 B9 46 38         [24] 1447 	cjne	r1,#0x46,00111$
-                                   1448 ;	main.c:262: command[8] == 'F' &&
-      000543 74 08            [12] 1449 	mov	a,#0x08
-      000545 2D               [12] 1450 	add	a, r5
-      000546 F9               [12] 1451 	mov	r1,a
-      000547 E4               [12] 1452 	clr	a
-      000548 3E               [12] 1453 	addc	a, r6
-      000549 FA               [12] 1454 	mov	r2,a
-      00054A 8F 03            [24] 1455 	mov	ar3,r7
-      00054C 89 82            [24] 1456 	mov	dpl,r1
-      00054E 8A 83            [24] 1457 	mov	dph,r2
-      000550 8B F0            [24] 1458 	mov	b,r3
-      000552 12 11 C7         [24] 1459 	lcall	__gptrget
-      000555 F9               [12] 1460 	mov	r1,a
-      000556 B9 46 22         [24] 1461 	cjne	r1,#0x46,00111$
-                                   1462 ;	main.c:263: command[9] == '\0')
-      000559 74 09            [12] 1463 	mov	a,#0x09
-      00055B 2D               [12] 1464 	add	a, r5
-      00055C F9               [12] 1465 	mov	r1,a
-      00055D E4               [12] 1466 	clr	a
-      00055E 3E               [12] 1467 	addc	a, r6
-      00055F FA               [12] 1468 	mov	r2,a
-      000560 8F 03            [24] 1469 	mov	ar3,r7
-      000562 89 82            [24] 1470 	mov	dpl,r1
-      000564 8A 83            [24] 1471 	mov	dph,r2
-      000566 8B F0            [24] 1472 	mov	b,r3
-      000568 12 11 C7         [24] 1473 	lcall	__gptrget
-      00056B 70 0E            [24] 1474 	jnz	00111$
-                                   1475 ;	main.c:265: RELAY_PIN = 1;
-                                   1476 ;	assignBit
-      00056D D2 A6            [12] 1477 	setb	_P2_6
-                                   1478 ;	main.c:266: relay_state = 0;
-      00056F 75 2D 00         [24] 1479 	mov	_relay_state,#0x00
-                                   1480 ;	main.c:268: uart_write_string("RELAY,OFF\r\n");
-      000572 90 12 51         [24] 1481 	mov	dptr,#___str_20
-      000575 75 F0 80         [24] 1482 	mov	b, #0x80
-                                   1483 ;	main.c:269: return;
-      000578 02 10 6A         [24] 1484 	ljmp	_uart_write_string
-      00057B                       1485 00111$:
-                                   1486 ;	main.c:273: if (command[0] == 'B' &&
-      00057B BC 42 02         [24] 1487 	cjne	r4,#0x42,00571$
-      00057E 80 03            [24] 1488 	sjmp	00572$
-      000580                       1489 00571$:
-      000580 02 06 D1         [24] 1490 	ljmp	00127$
-      000583                       1491 00572$:
-                                   1492 ;	main.c:274: command[1] == 'U' &&
-      000583 74 01            [12] 1493 	mov	a,#0x01
-      000585 2D               [12] 1494 	add	a, r5
-      000586 F9               [12] 1495 	mov	r1,a
-      000587 E4               [12] 1496 	clr	a
-      000588 3E               [12] 1497 	addc	a, r6
-      000589 FA               [12] 1498 	mov	r2,a
-      00058A 8F 03            [24] 1499 	mov	ar3,r7
-      00058C 89 82            [24] 1500 	mov	dpl,r1
-      00058E 8A 83            [24] 1501 	mov	dph,r2
-      000590 8B F0            [24] 1502 	mov	b,r3
-      000592 12 11 C7         [24] 1503 	lcall	__gptrget
-      000595 F9               [12] 1504 	mov	r1,a
-      000596 B9 55 02         [24] 1505 	cjne	r1,#0x55,00573$
-      000599 80 03            [24] 1506 	sjmp	00574$
-      00059B                       1507 00573$:
-      00059B 02 06 D1         [24] 1508 	ljmp	00127$
-      00059E                       1509 00574$:
-                                   1510 ;	main.c:275: command[2] == 'Z' &&
-      00059E 74 02            [12] 1511 	mov	a,#0x02
-      0005A0 2D               [12] 1512 	add	a, r5
-      0005A1 F9               [12] 1513 	mov	r1,a
-      0005A2 E4               [12] 1514 	clr	a
-      0005A3 3E               [12] 1515 	addc	a, r6
-      0005A4 FA               [12] 1516 	mov	r2,a
-      0005A5 8F 03            [24] 1517 	mov	ar3,r7
-      0005A7 89 82            [24] 1518 	mov	dpl,r1
-      0005A9 8A 83            [24] 1519 	mov	dph,r2
-      0005AB 8B F0            [24] 1520 	mov	b,r3
-      0005AD 12 11 C7         [24] 1521 	lcall	__gptrget
-      0005B0 F9               [12] 1522 	mov	r1,a
-      0005B1 B9 5A 02         [24] 1523 	cjne	r1,#0x5a,00575$
-      0005B4 80 03            [24] 1524 	sjmp	00576$
-      0005B6                       1525 00575$:
-      0005B6 02 06 D1         [24] 1526 	ljmp	00127$
-      0005B9                       1527 00576$:
-                                   1528 ;	main.c:276: command[3] == 'Z' &&
-      0005B9 74 03            [12] 1529 	mov	a,#0x03
-      0005BB 2D               [12] 1530 	add	a, r5
-      0005BC F9               [12] 1531 	mov	r1,a
-      0005BD E4               [12] 1532 	clr	a
-      0005BE 3E               [12] 1533 	addc	a, r6
-      0005BF FA               [12] 1534 	mov	r2,a
-      0005C0 8F 03            [24] 1535 	mov	ar3,r7
-      0005C2 89 82            [24] 1536 	mov	dpl,r1
-      0005C4 8A 83            [24] 1537 	mov	dph,r2
-      0005C6 8B F0            [24] 1538 	mov	b,r3
-      0005C8 12 11 C7         [24] 1539 	lcall	__gptrget
-      0005CB F9               [12] 1540 	mov	r1,a
-      0005CC B9 5A 02         [24] 1541 	cjne	r1,#0x5a,00577$
-      0005CF 80 03            [24] 1542 	sjmp	00578$
-      0005D1                       1543 00577$:
-      0005D1 02 06 D1         [24] 1544 	ljmp	00127$
-      0005D4                       1545 00578$:
-                                   1546 ;	main.c:277: command[4] == 'E' &&
-      0005D4 74 04            [12] 1547 	mov	a,#0x04
-      0005D6 2D               [12] 1548 	add	a, r5
-      0005D7 F9               [12] 1549 	mov	r1,a
-      0005D8 E4               [12] 1550 	clr	a
-      0005D9 3E               [12] 1551 	addc	a, r6
-      0005DA FA               [12] 1552 	mov	r2,a
-      0005DB 8F 03            [24] 1553 	mov	ar3,r7
-      0005DD 89 82            [24] 1554 	mov	dpl,r1
-      0005DF 8A 83            [24] 1555 	mov	dph,r2
-      0005E1 8B F0            [24] 1556 	mov	b,r3
-      0005E3 12 11 C7         [24] 1557 	lcall	__gptrget
-      0005E6 F9               [12] 1558 	mov	r1,a
-      0005E7 B9 45 02         [24] 1559 	cjne	r1,#0x45,00579$
-      0005EA 80 03            [24] 1560 	sjmp	00580$
-      0005EC                       1561 00579$:
-      0005EC 02 06 D1         [24] 1562 	ljmp	00127$
-      0005EF                       1563 00580$:
-                                   1564 ;	main.c:278: command[5] == 'R' &&
-      0005EF 74 05            [12] 1565 	mov	a,#0x05
-      0005F1 2D               [12] 1566 	add	a, r5
-      0005F2 F9               [12] 1567 	mov	r1,a
-      0005F3 E4               [12] 1568 	clr	a
-      0005F4 3E               [12] 1569 	addc	a, r6
-      0005F5 FA               [12] 1570 	mov	r2,a
-      0005F6 8F 03            [24] 1571 	mov	ar3,r7
-      0005F8 89 82            [24] 1572 	mov	dpl,r1
-      0005FA 8A 83            [24] 1573 	mov	dph,r2
-      0005FC 8B F0            [24] 1574 	mov	b,r3
-      0005FE 12 11 C7         [24] 1575 	lcall	__gptrget
-      000601 F9               [12] 1576 	mov	r1,a
-      000602 B9 52 02         [24] 1577 	cjne	r1,#0x52,00581$
-      000605 80 03            [24] 1578 	sjmp	00582$
-      000607                       1579 00581$:
-      000607 02 06 D1         [24] 1580 	ljmp	00127$
-      00060A                       1581 00582$:
-                                   1582 ;	main.c:279: command[6] == ',')
-      00060A 74 06            [12] 1583 	mov	a,#0x06
-      00060C 2D               [12] 1584 	add	a, r5
-      00060D F9               [12] 1585 	mov	r1,a
-      00060E E4               [12] 1586 	clr	a
-      00060F 3E               [12] 1587 	addc	a, r6
-      000610 FA               [12] 1588 	mov	r2,a
-      000611 8F 03            [24] 1589 	mov	ar3,r7
-      000613 89 82            [24] 1590 	mov	dpl,r1
-      000615 8A 83            [24] 1591 	mov	dph,r2
-      000617 8B F0            [24] 1592 	mov	b,r3
-      000619 12 11 C7         [24] 1593 	lcall	__gptrget
-      00061C F9               [12] 1594 	mov	r1,a
-      00061D B9 2C 02         [24] 1595 	cjne	r1,#0x2c,00583$
-      000620 80 03            [24] 1596 	sjmp	00584$
-      000622                       1597 00583$:
-      000622 02 06 D1         [24] 1598 	ljmp	00127$
-      000625                       1599 00584$:
-                                   1600 ;	main.c:281: if (command[7] == 'O' &&
-      000625 74 07            [12] 1601 	mov	a,#0x07
-      000627 2D               [12] 1602 	add	a, r5
-      000628 F9               [12] 1603 	mov	r1,a
-      000629 E4               [12] 1604 	clr	a
-      00062A 3E               [12] 1605 	addc	a, r6
-      00062B FA               [12] 1606 	mov	r2,a
-      00062C 8F 03            [24] 1607 	mov	ar3,r7
-      00062E 89 82            [24] 1608 	mov	dpl,r1
-      000630 8A 83            [24] 1609 	mov	dph,r2
-      000632 8B F0            [24] 1610 	mov	b,r3
-      000634 12 11 C7         [24] 1611 	lcall	__gptrget
-      000637 F9               [12] 1612 	mov	r1,a
-      000638 E4               [12] 1613 	clr	a
-      000639 B9 4F 01         [24] 1614 	cjne	r1,#0x4f,00585$
-      00063C 04               [12] 1615 	inc	a
-      00063D                       1616 00585$:
-      00063D FB               [12] 1617 	mov	r3,a
-      00063E 60 3C            [24] 1618 	jz	00118$
-                                   1619 ;	main.c:282: command[8] == 'N' &&
-      000640 74 08            [12] 1620 	mov	a,#0x08
-      000642 2D               [12] 1621 	add	a, r5
-      000643 F8               [12] 1622 	mov	r0,a
-      000644 E4               [12] 1623 	clr	a
-      000645 3E               [12] 1624 	addc	a, r6
-      000646 F9               [12] 1625 	mov	r1,a
-      000647 8F 02            [24] 1626 	mov	ar2,r7
-      000649 88 82            [24] 1627 	mov	dpl,r0
-      00064B 89 83            [24] 1628 	mov	dph,r1
-      00064D 8A F0            [24] 1629 	mov	b,r2
-      00064F 12 11 C7         [24] 1630 	lcall	__gptrget
-      000652 F8               [12] 1631 	mov	r0,a
-      000653 B8 4E 26         [24] 1632 	cjne	r0,#0x4e,00118$
-                                   1633 ;	main.c:283: command[9] == '\0')
-      000656 74 09            [12] 1634 	mov	a,#0x09
-      000658 2D               [12] 1635 	add	a, r5
-      000659 F8               [12] 1636 	mov	r0,a
-      00065A E4               [12] 1637 	clr	a
-      00065B 3E               [12] 1638 	addc	a, r6
-      00065C F9               [12] 1639 	mov	r1,a
-      00065D 8F 02            [24] 1640 	mov	ar2,r7
-      00065F 88 82            [24] 1641 	mov	dpl,r0
-      000661 89 83            [24] 1642 	mov	dph,r1
-      000663 8A F0            [24] 1643 	mov	b,r2
-      000665 12 11 C7         [24] 1644 	lcall	__gptrget
-      000668 70 12            [24] 1645 	jnz	00118$
-                                   1646 ;	main.c:285: GREEN_LED_PIN = 1;
-                                   1647 ;	assignBit
-      00066A D2 A0            [12] 1648 	setb	_P2_0
-                                   1649 ;	main.c:286: RED_LED_PIN = 0;
-                                   1650 ;	assignBit
-      00066C C2 A1            [12] 1651 	clr	_P2_1
-                                   1652 ;	main.c:287: BUZZER_PIN = 0;
-                                   1653 ;	assignBit
-      00066E C2 A7            [12] 1654 	clr	_P2_7
-                                   1655 ;	main.c:288: buzzer_state = 1;
-      000670 75 2E 01         [24] 1656 	mov	_buzzer_state,#0x01
-                                   1657 ;	main.c:290: uart_write_string("BUZZER,ON\r\n");
-      000673 90 12 5D         [24] 1658 	mov	dptr,#___str_21
-      000676 75 F0 80         [24] 1659 	mov	b, #0x80
-                                   1660 ;	main.c:291: return;
-      000679 02 10 6A         [24] 1661 	ljmp	_uart_write_string
-      00067C                       1662 00118$:
-                                   1663 ;	main.c:294: if (command[7] == 'O' &&
-      00067C EB               [12] 1664 	mov	a,r3
-      00067D 60 52            [24] 1665 	jz	00127$
-                                   1666 ;	main.c:295: command[8] == 'F' &&
-      00067F 74 08            [12] 1667 	mov	a,#0x08
-      000681 2D               [12] 1668 	add	a, r5
-      000682 F9               [12] 1669 	mov	r1,a
-      000683 E4               [12] 1670 	clr	a
-      000684 3E               [12] 1671 	addc	a, r6
-      000685 FA               [12] 1672 	mov	r2,a
-      000686 8F 03            [24] 1673 	mov	ar3,r7
-      000688 89 82            [24] 1674 	mov	dpl,r1
-      00068A 8A 83            [24] 1675 	mov	dph,r2
-      00068C 8B F0            [24] 1676 	mov	b,r3
-      00068E 12 11 C7         [24] 1677 	lcall	__gptrget
-      000691 F9               [12] 1678 	mov	r1,a
-      000692 B9 46 3C         [24] 1679 	cjne	r1,#0x46,00127$
-                                   1680 ;	main.c:296: command[9] == 'F' &&
-      000695 74 09            [12] 1681 	mov	a,#0x09
-      000697 2D               [12] 1682 	add	a, r5
-      000698 F9               [12] 1683 	mov	r1,a
-      000699 E4               [12] 1684 	clr	a
-      00069A 3E               [12] 1685 	addc	a, r6
-      00069B FA               [12] 1686 	mov	r2,a
-      00069C 8F 03            [24] 1687 	mov	ar3,r7
-      00069E 89 82            [24] 1688 	mov	dpl,r1
-      0006A0 8A 83            [24] 1689 	mov	dph,r2
-      0006A2 8B F0            [24] 1690 	mov	b,r3
-      0006A4 12 11 C7         [24] 1691 	lcall	__gptrget
-      0006A7 F9               [12] 1692 	mov	r1,a
-      0006A8 B9 46 26         [24] 1693 	cjne	r1,#0x46,00127$
-                                   1694 ;	main.c:297: command[10] == '\0')
-      0006AB 74 0A            [12] 1695 	mov	a,#0x0a
-      0006AD 2D               [12] 1696 	add	a, r5
-      0006AE F9               [12] 1697 	mov	r1,a
-      0006AF E4               [12] 1698 	clr	a
-      0006B0 3E               [12] 1699 	addc	a, r6
-      0006B1 FA               [12] 1700 	mov	r2,a
-      0006B2 8F 03            [24] 1701 	mov	ar3,r7
-      0006B4 89 82            [24] 1702 	mov	dpl,r1
-      0006B6 8A 83            [24] 1703 	mov	dph,r2
-      0006B8 8B F0            [24] 1704 	mov	b,r3
-      0006BA 12 11 C7         [24] 1705 	lcall	__gptrget
-      0006BD 70 12            [24] 1706 	jnz	00127$
-                                   1707 ;	main.c:299: RED_LED_PIN = 1;
-                                   1708 ;	assignBit
-      0006BF D2 A1            [12] 1709 	setb	_P2_1
-                                   1710 ;	main.c:300: GREEN_LED_PIN = 0;
-                                   1711 ;	assignBit
-      0006C1 C2 A0            [12] 1712 	clr	_P2_0
-                                   1713 ;	main.c:301: BUZZER_PIN = 1;
-                                   1714 ;	assignBit
-      0006C3 D2 A7            [12] 1715 	setb	_P2_7
-                                   1716 ;	main.c:302: buzzer_state = 0;
-      0006C5 75 2E 00         [24] 1717 	mov	_buzzer_state,#0x00
-                                   1718 ;	main.c:304: uart_write_string("BUZZER,OFF\r\n");
-      0006C8 90 12 69         [24] 1719 	mov	dptr,#___str_22
-      0006CB 75 F0 80         [24] 1720 	mov	b, #0x80
-                                   1721 ;	main.c:305: return;
-      0006CE 02 10 6A         [24] 1722 	ljmp	_uart_write_string
-      0006D1                       1723 00127$:
-                                   1724 ;	main.c:309: if (command[0] == 'S' &&
-      0006D1 BC 53 02         [24] 1725 	cjne	r4,#0x53,00597$
-      0006D4 80 03            [24] 1726 	sjmp	00598$
-      0006D6                       1727 00597$:
-      0006D6 02 07 BF         [24] 1728 	ljmp	00135$
-      0006D9                       1729 00598$:
-                                   1730 ;	main.c:310: command[1] == 'T' &&
-      0006D9 74 01            [12] 1731 	mov	a,#0x01
-      0006DB 2D               [12] 1732 	add	a, r5
-      0006DC F9               [12] 1733 	mov	r1,a
-      0006DD E4               [12] 1734 	clr	a
-      0006DE 3E               [12] 1735 	addc	a, r6
-      0006DF FA               [12] 1736 	mov	r2,a
-      0006E0 8F 03            [24] 1737 	mov	ar3,r7
-      0006E2 89 82            [24] 1738 	mov	dpl,r1
-      0006E4 8A 83            [24] 1739 	mov	dph,r2
-      0006E6 8B F0            [24] 1740 	mov	b,r3
-      0006E8 12 11 C7         [24] 1741 	lcall	__gptrget
-      0006EB F9               [12] 1742 	mov	r1,a
-      0006EC B9 54 02         [24] 1743 	cjne	r1,#0x54,00599$
-      0006EF 80 03            [24] 1744 	sjmp	00600$
-      0006F1                       1745 00599$:
-      0006F1 02 07 BF         [24] 1746 	ljmp	00135$
-      0006F4                       1747 00600$:
-                                   1748 ;	main.c:311: command[2] == 'A' &&
-      0006F4 74 02            [12] 1749 	mov	a,#0x02
-      0006F6 2D               [12] 1750 	add	a, r5
-      0006F7 F9               [12] 1751 	mov	r1,a
-      0006F8 E4               [12] 1752 	clr	a
-      0006F9 3E               [12] 1753 	addc	a, r6
-      0006FA FA               [12] 1754 	mov	r2,a
-      0006FB 8F 03            [24] 1755 	mov	ar3,r7
-      0006FD 89 82            [24] 1756 	mov	dpl,r1
-      0006FF 8A 83            [24] 1757 	mov	dph,r2
-      000701 8B F0            [24] 1758 	mov	b,r3
-      000703 12 11 C7         [24] 1759 	lcall	__gptrget
-      000706 F9               [12] 1760 	mov	r1,a
-      000707 B9 41 02         [24] 1761 	cjne	r1,#0x41,00601$
-      00070A 80 03            [24] 1762 	sjmp	00602$
-      00070C                       1763 00601$:
-      00070C 02 07 BF         [24] 1764 	ljmp	00135$
-      00070F                       1765 00602$:
-                                   1766 ;	main.c:312: command[3] == 'T' &&
-      00070F 74 03            [12] 1767 	mov	a,#0x03
-      000711 2D               [12] 1768 	add	a, r5
-      000712 F9               [12] 1769 	mov	r1,a
-      000713 E4               [12] 1770 	clr	a
-      000714 3E               [12] 1771 	addc	a, r6
-      000715 FA               [12] 1772 	mov	r2,a
-      000716 8F 03            [24] 1773 	mov	ar3,r7
-      000718 89 82            [24] 1774 	mov	dpl,r1
-      00071A 8A 83            [24] 1775 	mov	dph,r2
-      00071C 8B F0            [24] 1776 	mov	b,r3
-      00071E 12 11 C7         [24] 1777 	lcall	__gptrget
-      000721 F9               [12] 1778 	mov	r1,a
-      000722 B9 54 02         [24] 1779 	cjne	r1,#0x54,00603$
-      000725 80 03            [24] 1780 	sjmp	00604$
-      000727                       1781 00603$:
-      000727 02 07 BF         [24] 1782 	ljmp	00135$
-      00072A                       1783 00604$:
-                                   1784 ;	main.c:313: command[4] == 'U' &&
-      00072A 74 04            [12] 1785 	mov	a,#0x04
-      00072C 2D               [12] 1786 	add	a, r5
-      00072D F9               [12] 1787 	mov	r1,a
-      00072E E4               [12] 1788 	clr	a
-      00072F 3E               [12] 1789 	addc	a, r6
-      000730 FA               [12] 1790 	mov	r2,a
-      000731 8F 03            [24] 1791 	mov	ar3,r7
-      000733 89 82            [24] 1792 	mov	dpl,r1
-      000735 8A 83            [24] 1793 	mov	dph,r2
-      000737 8B F0            [24] 1794 	mov	b,r3
-      000739 12 11 C7         [24] 1795 	lcall	__gptrget
-      00073C F9               [12] 1796 	mov	r1,a
-      00073D B9 55 02         [24] 1797 	cjne	r1,#0x55,00605$
-      000740 80 02            [24] 1798 	sjmp	00606$
-      000742                       1799 00605$:
-      000742 80 7B            [24] 1800 	sjmp	00135$
-      000744                       1801 00606$:
-                                   1802 ;	main.c:314: command[5] == 'S' &&
-      000744 74 05            [12] 1803 	mov	a,#0x05
-      000746 2D               [12] 1804 	add	a, r5
-      000747 F9               [12] 1805 	mov	r1,a
-      000748 E4               [12] 1806 	clr	a
-      000749 3E               [12] 1807 	addc	a, r6
-      00074A FA               [12] 1808 	mov	r2,a
-      00074B 8F 03            [24] 1809 	mov	ar3,r7
-      00074D 89 82            [24] 1810 	mov	dpl,r1
-      00074F 8A 83            [24] 1811 	mov	dph,r2
-      000751 8B F0            [24] 1812 	mov	b,r3
-      000753 12 11 C7         [24] 1813 	lcall	__gptrget
-      000756 F9               [12] 1814 	mov	r1,a
-      000757 B9 53 65         [24] 1815 	cjne	r1,#0x53,00135$
-                                   1816 ;	main.c:315: command[6] == '\0')
-      00075A 74 06            [12] 1817 	mov	a,#0x06
-      00075C 2D               [12] 1818 	add	a, r5
-      00075D F9               [12] 1819 	mov	r1,a
-      00075E E4               [12] 1820 	clr	a
-      00075F 3E               [12] 1821 	addc	a, r6
-      000760 FA               [12] 1822 	mov	r2,a
-      000761 8F 03            [24] 1823 	mov	ar3,r7
-      000763 89 82            [24] 1824 	mov	dpl,r1
-      000765 8A 83            [24] 1825 	mov	dph,r2
-      000767 8B F0            [24] 1826 	mov	b,r3
-      000769 12 11 C7         [24] 1827 	lcall	__gptrget
-      00076C 70 51            [24] 1828 	jnz	00135$
-                                   1829 ;	main.c:317: uart_write_string("STATUS,RELAY=");
-      00076E 90 12 76         [24] 1830 	mov	dptr,#___str_23
-      000771 75 F0 80         [24] 1831 	mov	b, #0x80
-      000774 12 10 6A         [24] 1832 	lcall	_uart_write_string
-                                   1833 ;	main.c:318: uart_write_string(relay_state ? "ON" : "OFF");
-      000777 E5 2D            [12] 1834 	mov	a,_relay_state
-      000779 60 06            [24] 1835 	jz	00165$
-      00077B 7A 84            [12] 1836 	mov	r2,#___str_24
-      00077D 7B 12            [12] 1837 	mov	r3,#(___str_24 >> 8)
-      00077F 80 04            [24] 1838 	sjmp	00166$
-      000781                       1839 00165$:
-      000781 7A 87            [12] 1840 	mov	r2,#___str_25
-      000783 7B 12            [12] 1841 	mov	r3,#(___str_25 >> 8)
-      000785                       1842 00166$:
-      000785 8B 01            [24] 1843 	mov	ar1,r3
-      000787 7B 80            [12] 1844 	mov	r3,#0x80
-      000789 8A 82            [24] 1845 	mov	dpl, r2
-      00078B 89 83            [24] 1846 	mov	dph, r1
-      00078D 8B F0            [24] 1847 	mov	b, r3
-      00078F 12 10 6A         [24] 1848 	lcall	_uart_write_string
-                                   1849 ;	main.c:319: uart_write_string(",BUZZER=");
-      000792 90 12 8B         [24] 1850 	mov	dptr,#___str_26
-      000795 75 F0 80         [24] 1851 	mov	b, #0x80
-      000798 12 10 6A         [24] 1852 	lcall	_uart_write_string
-                                   1853 ;	main.c:320: uart_write_string(buzzer_state ? "ON" : "OFF");
-      00079B E5 2E            [12] 1854 	mov	a,_buzzer_state
-      00079D 60 06            [24] 1855 	jz	00167$
-      00079F 7A 84            [12] 1856 	mov	r2,#___str_24
-      0007A1 7B 12            [12] 1857 	mov	r3,#(___str_24 >> 8)
-      0007A3 80 04            [24] 1858 	sjmp	00168$
-      0007A5                       1859 00167$:
-      0007A5 7A 87            [12] 1860 	mov	r2,#___str_25
-      0007A7 7B 12            [12] 1861 	mov	r3,#(___str_25 >> 8)
-      0007A9                       1862 00168$:
-      0007A9 8B 01            [24] 1863 	mov	ar1,r3
-      0007AB 7B 80            [12] 1864 	mov	r3,#0x80
-      0007AD 8A 82            [24] 1865 	mov	dpl, r2
-      0007AF 89 83            [24] 1866 	mov	dph, r1
-      0007B1 8B F0            [24] 1867 	mov	b, r3
-      0007B3 12 10 6A         [24] 1868 	lcall	_uart_write_string
-                                   1869 ;	main.c:321: uart_write_string("\r\n");
-      0007B6 90 12 94         [24] 1870 	mov	dptr,#___str_27
-      0007B9 75 F0 80         [24] 1871 	mov	b, #0x80
-                                   1872 ;	main.c:323: return;
-      0007BC 02 10 6A         [24] 1873 	ljmp	_uart_write_string
-      0007BF                       1874 00135$:
-                                   1875 ;	main.c:326: if (command[0] == 'D' &&
-      0007BF E4               [12] 1876 	clr	a
-      0007C0 BC 44 01         [24] 1877 	cjne	r4,#0x44,00612$
-      0007C3 04               [12] 1878 	inc	a
-      0007C4                       1879 00612$:
-      0007C4 FB               [12] 1880 	mov	r3,a
-      0007C5 60 71            [24] 1881 	jz	00143$
-                                   1882 ;	main.c:327: command[1] == 'A' &&
-      0007C7 74 01            [12] 1883 	mov	a,#0x01
-      0007C9 2D               [12] 1884 	add	a, r5
-      0007CA F8               [12] 1885 	mov	r0,a
-      0007CB E4               [12] 1886 	clr	a
-      0007CC 3E               [12] 1887 	addc	a, r6
-      0007CD F9               [12] 1888 	mov	r1,a
-      0007CE 8F 02            [24] 1889 	mov	ar2,r7
-      0007D0 88 82            [24] 1890 	mov	dpl,r0
-      0007D2 89 83            [24] 1891 	mov	dph,r1
-      0007D4 8A F0            [24] 1892 	mov	b,r2
-      0007D6 12 11 C7         [24] 1893 	lcall	__gptrget
-      0007D9 F8               [12] 1894 	mov	r0,a
-      0007DA B8 41 5B         [24] 1895 	cjne	r0,#0x41,00143$
-                                   1896 ;	main.c:328: command[2] == 'T' &&
-      0007DD 74 02            [12] 1897 	mov	a,#0x02
-      0007DF 2D               [12] 1898 	add	a, r5
-      0007E0 F8               [12] 1899 	mov	r0,a
-      0007E1 E4               [12] 1900 	clr	a
-      0007E2 3E               [12] 1901 	addc	a, r6
-      0007E3 F9               [12] 1902 	mov	r1,a
-      0007E4 8F 02            [24] 1903 	mov	ar2,r7
-      0007E6 88 82            [24] 1904 	mov	dpl,r0
-      0007E8 89 83            [24] 1905 	mov	dph,r1
-      0007EA 8A F0            [24] 1906 	mov	b,r2
-      0007EC 12 11 C7         [24] 1907 	lcall	__gptrget
-      0007EF F8               [12] 1908 	mov	r0,a
-      0007F0 B8 54 45         [24] 1909 	cjne	r0,#0x54,00143$
-                                   1910 ;	main.c:329: command[3] == 'A' &&
-      0007F3 74 03            [12] 1911 	mov	a,#0x03
-      0007F5 2D               [12] 1912 	add	a, r5
-      0007F6 F8               [12] 1913 	mov	r0,a
-      0007F7 E4               [12] 1914 	clr	a
-      0007F8 3E               [12] 1915 	addc	a, r6
-      0007F9 F9               [12] 1916 	mov	r1,a
-      0007FA 8F 02            [24] 1917 	mov	ar2,r7
-      0007FC 88 82            [24] 1918 	mov	dpl,r0
-      0007FE 89 83            [24] 1919 	mov	dph,r1
-      000800 8A F0            [24] 1920 	mov	b,r2
-      000802 12 11 C7         [24] 1921 	lcall	__gptrget
-      000805 F8               [12] 1922 	mov	r0,a
-      000806 B8 41 2F         [24] 1923 	cjne	r0,#0x41,00143$
-                                   1924 ;	main.c:330: command[4] == '1' &&
-      000809 74 04            [12] 1925 	mov	a,#0x04
-      00080B 2D               [12] 1926 	add	a, r5
-      00080C F8               [12] 1927 	mov	r0,a
-      00080D E4               [12] 1928 	clr	a
-      00080E 3E               [12] 1929 	addc	a, r6
-      00080F F9               [12] 1930 	mov	r1,a
-      000810 8F 02            [24] 1931 	mov	ar2,r7
-      000812 88 82            [24] 1932 	mov	dpl,r0
-      000814 89 83            [24] 1933 	mov	dph,r1
-      000816 8A F0            [24] 1934 	mov	b,r2
-      000818 12 11 C7         [24] 1935 	lcall	__gptrget
-      00081B F8               [12] 1936 	mov	r0,a
-      00081C B8 31 19         [24] 1937 	cjne	r0,#0x31,00143$
-                                   1938 ;	main.c:331: command[5] == ',')
-      00081F 74 05            [12] 1939 	mov	a,#0x05
-      000821 2D               [12] 1940 	add	a, r5
-      000822 F8               [12] 1941 	mov	r0,a
-      000823 E4               [12] 1942 	clr	a
-      000824 3E               [12] 1943 	addc	a, r6
-      000825 F9               [12] 1944 	mov	r1,a
-      000826 8F 02            [24] 1945 	mov	ar2,r7
-      000828 88 82            [24] 1946 	mov	dpl,r0
-      00082A 89 83            [24] 1947 	mov	dph,r1
-      00082C 8A F0            [24] 1948 	mov	b,r2
-      00082E 12 11 C7         [24] 1949 	lcall	__gptrget
-      000831 F8               [12] 1950 	mov	r0,a
-      000832 B8 2C 03         [24] 1951 	cjne	r0,#0x2c,00143$
-                                   1952 ;	main.c:333: process_data1();
-                                   1953 ;	main.c:334: return;
-      000835 02 02 72         [24] 1954 	ljmp	_process_data1
-      000838                       1955 00143$:
-                                   1956 ;	main.c:337: if (command[0] == 'D' &&
-      000838 EB               [12] 1957 	mov	a,r3
-      000839 60 71            [24] 1958 	jz	00150$
-                                   1959 ;	main.c:338: command[1] == 'A' &&
-      00083B 74 01            [12] 1960 	mov	a,#0x01
-      00083D 2D               [12] 1961 	add	a, r5
-      00083E F9               [12] 1962 	mov	r1,a
-      00083F E4               [12] 1963 	clr	a
-      000840 3E               [12] 1964 	addc	a, r6
-      000841 FA               [12] 1965 	mov	r2,a
-      000842 8F 03            [24] 1966 	mov	ar3,r7
-      000844 89 82            [24] 1967 	mov	dpl,r1
-      000846 8A 83            [24] 1968 	mov	dph,r2
-      000848 8B F0            [24] 1969 	mov	b,r3
-      00084A 12 11 C7         [24] 1970 	lcall	__gptrget
-      00084D F9               [12] 1971 	mov	r1,a
-      00084E B9 41 5B         [24] 1972 	cjne	r1,#0x41,00150$
-                                   1973 ;	main.c:339: command[2] == 'T' &&
-      000851 74 02            [12] 1974 	mov	a,#0x02
-      000853 2D               [12] 1975 	add	a, r5
-      000854 F9               [12] 1976 	mov	r1,a
-      000855 E4               [12] 1977 	clr	a
-      000856 3E               [12] 1978 	addc	a, r6
-      000857 FA               [12] 1979 	mov	r2,a
-      000858 8F 03            [24] 1980 	mov	ar3,r7
-      00085A 89 82            [24] 1981 	mov	dpl,r1
-      00085C 8A 83            [24] 1982 	mov	dph,r2
-      00085E 8B F0            [24] 1983 	mov	b,r3
-      000860 12 11 C7         [24] 1984 	lcall	__gptrget
-      000863 F9               [12] 1985 	mov	r1,a
-      000864 B9 54 45         [24] 1986 	cjne	r1,#0x54,00150$
-                                   1987 ;	main.c:340: command[3] == 'A' &&
-      000867 74 03            [12] 1988 	mov	a,#0x03
-      000869 2D               [12] 1989 	add	a, r5
-      00086A F9               [12] 1990 	mov	r1,a
-      00086B E4               [12] 1991 	clr	a
-      00086C 3E               [12] 1992 	addc	a, r6
-      00086D FA               [12] 1993 	mov	r2,a
-      00086E 8F 03            [24] 1994 	mov	ar3,r7
-      000870 89 82            [24] 1995 	mov	dpl,r1
-      000872 8A 83            [24] 1996 	mov	dph,r2
-      000874 8B F0            [24] 1997 	mov	b,r3
-      000876 12 11 C7         [24] 1998 	lcall	__gptrget
-      000879 F9               [12] 1999 	mov	r1,a
-      00087A B9 41 2F         [24] 2000 	cjne	r1,#0x41,00150$
-                                   2001 ;	main.c:341: command[4] == '2' &&
-      00087D 74 04            [12] 2002 	mov	a,#0x04
-      00087F 2D               [12] 2003 	add	a, r5
-      000880 F9               [12] 2004 	mov	r1,a
-      000881 E4               [12] 2005 	clr	a
-      000882 3E               [12] 2006 	addc	a, r6
-      000883 FA               [12] 2007 	mov	r2,a
-      000884 8F 03            [24] 2008 	mov	ar3,r7
-      000886 89 82            [24] 2009 	mov	dpl,r1
-      000888 8A 83            [24] 2010 	mov	dph,r2
-      00088A 8B F0            [24] 2011 	mov	b,r3
-      00088C 12 11 C7         [24] 2012 	lcall	__gptrget
-      00088F F9               [12] 2013 	mov	r1,a
-      000890 B9 32 19         [24] 2014 	cjne	r1,#0x32,00150$
-                                   2015 ;	main.c:342: command[5] == ',')
-      000893 74 05            [12] 2016 	mov	a,#0x05
-      000895 2D               [12] 2017 	add	a, r5
-      000896 F9               [12] 2018 	mov	r1,a
-      000897 E4               [12] 2019 	clr	a
-      000898 3E               [12] 2020 	addc	a, r6
-      000899 FA               [12] 2021 	mov	r2,a
-      00089A 8F 03            [24] 2022 	mov	ar3,r7
-      00089C 89 82            [24] 2023 	mov	dpl,r1
-      00089E 8A 83            [24] 2024 	mov	dph,r2
-      0008A0 8B F0            [24] 2025 	mov	b,r3
-      0008A2 12 11 C7         [24] 2026 	lcall	__gptrget
-      0008A5 F9               [12] 2027 	mov	r1,a
-      0008A6 B9 2C 03         [24] 2028 	cjne	r1,#0x2c,00150$
-                                   2029 ;	main.c:344: process_data2();
-                                   2030 ;	main.c:345: return;
-      0008A9 02 03 20         [24] 2031 	ljmp	_process_data2
-      0008AC                       2032 00150$:
-                                   2033 ;	main.c:348: if (command[0] == 'E' &&
-      0008AC BC 45 02         [24] 2034 	cjne	r4,#0x45,00636$
-      0008AF 80 01            [24] 2035 	sjmp	00637$
-      0008B1                       2036 00636$:
-      0008B1 22               [24] 2037 	ret
-      0008B2                       2038 00637$:
-                                   2039 ;	main.c:349: command[1] == 'R' &&
-      0008B2 74 01            [12] 2040 	mov	a,#0x01
-      0008B4 2D               [12] 2041 	add	a, r5
-      0008B5 FA               [12] 2042 	mov	r2,a
-      0008B6 E4               [12] 2043 	clr	a
-      0008B7 3E               [12] 2044 	addc	a, r6
-      0008B8 FB               [12] 2045 	mov	r3,a
-      0008B9 8F 04            [24] 2046 	mov	ar4,r7
-      0008BB 8A 82            [24] 2047 	mov	dpl,r2
-      0008BD 8B 83            [24] 2048 	mov	dph,r3
-      0008BF 8C F0            [24] 2049 	mov	b,r4
-      0008C1 12 11 C7         [24] 2050 	lcall	__gptrget
-      0008C4 FA               [12] 2051 	mov	r2,a
-      0008C5 BA 52 59         [24] 2052 	cjne	r2,#0x52,00163$
-                                   2053 ;	main.c:350: command[2] == 'R' &&
-      0008C8 74 02            [12] 2054 	mov	a,#0x02
-      0008CA 2D               [12] 2055 	add	a, r5
-      0008CB FA               [12] 2056 	mov	r2,a
-      0008CC E4               [12] 2057 	clr	a
-      0008CD 3E               [12] 2058 	addc	a, r6
-      0008CE FB               [12] 2059 	mov	r3,a
-      0008CF 8F 04            [24] 2060 	mov	ar4,r7
-      0008D1 8A 82            [24] 2061 	mov	dpl,r2
-      0008D3 8B 83            [24] 2062 	mov	dph,r3
-      0008D5 8C F0            [24] 2063 	mov	b,r4
-      0008D7 12 11 C7         [24] 2064 	lcall	__gptrget
-      0008DA FA               [12] 2065 	mov	r2,a
-      0008DB BA 52 43         [24] 2066 	cjne	r2,#0x52,00163$
-                                   2067 ;	main.c:351: command[3] == 'O' &&
-      0008DE 74 03            [12] 2068 	mov	a,#0x03
-      0008E0 2D               [12] 2069 	add	a, r5
-      0008E1 FA               [12] 2070 	mov	r2,a
-      0008E2 E4               [12] 2071 	clr	a
-      0008E3 3E               [12] 2072 	addc	a, r6
-      0008E4 FB               [12] 2073 	mov	r3,a
-      0008E5 8F 04            [24] 2074 	mov	ar4,r7
-      0008E7 8A 82            [24] 2075 	mov	dpl,r2
-      0008E9 8B 83            [24] 2076 	mov	dph,r3
-      0008EB 8C F0            [24] 2077 	mov	b,r4
-      0008ED 12 11 C7         [24] 2078 	lcall	__gptrget
-      0008F0 FA               [12] 2079 	mov	r2,a
-      0008F1 BA 4F 2D         [24] 2080 	cjne	r2,#0x4f,00163$
-                                   2081 ;	main.c:352: command[4] == 'R' &&
-      0008F4 74 04            [12] 2082 	mov	a,#0x04
-      0008F6 2D               [12] 2083 	add	a, r5
-      0008F7 FA               [12] 2084 	mov	r2,a
-      0008F8 E4               [12] 2085 	clr	a
-      0008F9 3E               [12] 2086 	addc	a, r6
-      0008FA FB               [12] 2087 	mov	r3,a
-      0008FB 8F 04            [24] 2088 	mov	ar4,r7
-      0008FD 8A 82            [24] 2089 	mov	dpl,r2
-      0008FF 8B 83            [24] 2090 	mov	dph,r3
-      000901 8C F0            [24] 2091 	mov	b,r4
-      000903 12 11 C7         [24] 2092 	lcall	__gptrget
-      000906 FA               [12] 2093 	mov	r2,a
-      000907 BA 52 17         [24] 2094 	cjne	r2,#0x52,00163$
-                                   2095 ;	main.c:353: command[5] == ',')
-      00090A 74 05            [12] 2096 	mov	a,#0x05
-      00090C 2D               [12] 2097 	add	a, r5
-      00090D FD               [12] 2098 	mov	r5,a
-      00090E E4               [12] 2099 	clr	a
-      00090F 3E               [12] 2100 	addc	a, r6
-      000910 FE               [12] 2101 	mov	r6,a
-      000911 8D 82            [24] 2102 	mov	dpl,r5
-      000913 8E 83            [24] 2103 	mov	dph,r6
-      000915 8F F0            [24] 2104 	mov	b,r7
-      000917 12 11 C7         [24] 2105 	lcall	__gptrget
-      00091A FD               [12] 2106 	mov	r5,a
-      00091B BD 2C 03         [24] 2107 	cjne	r5,#0x2c,00163$
-                                   2108 ;	main.c:355: process_error();
-                                   2109 ;	main.c:356: return;
-                                   2110 ;	main.c:358: }
-      00091E 02 03 B6         [24] 2111 	ljmp	_process_error
-      000921                       2112 00163$:
-      000921 22               [24] 2113 	ret
-                                   2114 ;------------------------------------------------------------
-                                   2115 ;Allocation info for local variables in function 'uart_receive_process'
-                                   2116 ;------------------------------------------------------------
-                                   2117 ;data          Allocated with name '_uart_receive_process_data_10000_89'
-                                   2118 ;------------------------------------------------------------
-                                   2119 ;	main.c:360: static void uart_receive_process(void)
-                                   2120 ;	-----------------------------------------
-                                   2121 ;	 function uart_receive_process
-                                   2122 ;	-----------------------------------------
-      000922                       2123 _uart_receive_process:
-                                   2124 ;	main.c:364: if (!uart_read_byte(&data))
-      000922 90 00 33         [24] 2125 	mov	dptr,#_uart_receive_process_data_10000_89
-      000925 75 F0 40         [24] 2126 	mov	b, #0x40
-      000928 12 10 A1         [24] 2127 	lcall	_uart_read_byte
-      00092B E5 82            [12] 2128 	mov	a, dpl
-      00092D 70 01            [24] 2129 	jnz	00102$
-                                   2130 ;	main.c:365: return;
-      00092F 22               [24] 2131 	ret
-      000930                       2132 00102$:
-                                   2133 ;	main.c:367: if (data == '\r' || data == '\n')
-      000930 74 0D            [12] 2134 	mov	a,#0x0d
-      000932 B5 33 02         [24] 2135 	cjne	a,_uart_receive_process_data_10000_89,00161$
-      000935 80 05            [24] 2136 	sjmp	00105$
-      000937                       2137 00161$:
-      000937 74 0A            [12] 2138 	mov	a,#0x0a
-      000939 B5 33 18         [24] 2139 	cjne	a,_uart_receive_process_data_10000_89,00106$
-      00093C                       2140 00105$:
-                                   2141 ;	main.c:369: if (rx_length > 0)
-      00093C E5 2C            [12] 2142 	mov	a,_rx_length
-      00093E 60 13            [24] 2143 	jz	00104$
-                                   2144 ;	main.c:371: rx_buffer[rx_length] = '\0';
-      000940 E5 2C            [12] 2145 	mov	a,_rx_length
-      000942 24 0C            [12] 2146 	add	a, #_rx_buffer
-      000944 F8               [12] 2147 	mov	r0,a
-      000945 76 00            [12] 2148 	mov	@r0,#0x00
-                                   2149 ;	main.c:373: process_command((char *)rx_buffer);
-      000947 90 00 0C         [24] 2150 	mov	dptr,#_rx_buffer
-      00094A 75 F0 40         [24] 2151 	mov	b, #0x40
-      00094D 12 04 3E         [24] 2152 	lcall	_process_command
-                                   2153 ;	main.c:375: rx_length = 0;
-      000950 75 2C 00         [24] 2154 	mov	_rx_length,#0x00
-      000953                       2155 00104$:
-                                   2156 ;	main.c:378: return;
-      000953 22               [24] 2157 	ret
-      000954                       2158 00106$:
-                                   2159 ;	main.c:381: if (data == 8 || data == 127)
-      000954 74 08            [12] 2160 	mov	a,#0x08
-      000956 B5 33 02         [24] 2161 	cjne	a,_uart_receive_process_data_10000_89,00165$
-      000959 80 05            [24] 2162 	sjmp	00110$
-      00095B                       2163 00165$:
-      00095B 74 7F            [12] 2164 	mov	a,#0x7f
-      00095D B5 33 07         [24] 2165 	cjne	a,_uart_receive_process_data_10000_89,00111$
-      000960                       2166 00110$:
-                                   2167 ;	main.c:383: if (rx_length > 0)
-      000960 E5 2C            [12] 2168 	mov	a,_rx_length
-      000962 60 02            [24] 2169 	jz	00109$
-                                   2170 ;	main.c:384: rx_length--;
-      000964 15 2C            [12] 2171 	dec	_rx_length
-      000966                       2172 00109$:
-                                   2173 ;	main.c:386: return;
-      000966 22               [24] 2174 	ret
-      000967                       2175 00111$:
-                                   2176 ;	main.c:389: if (rx_length < RX_BUFFER_SIZE - 1)
-      000967 74 E1            [12] 2177 	mov	a,#0x100 - 0x1f
-      000969 25 2C            [12] 2178 	add	a,_rx_length
-      00096B 40 0B            [24] 2179 	jc	00114$
-                                   2180 ;	main.c:391: rx_buffer[rx_length++] = data;
-      00096D AF 2C            [24] 2181 	mov	r7,_rx_length
-      00096F 05 2C            [12] 2182 	inc	_rx_length
-      000971 EF               [12] 2183 	mov	a,r7
-      000972 24 0C            [12] 2184 	add	a, #_rx_buffer
-      000974 F8               [12] 2185 	mov	r0,a
-      000975 A6 33            [24] 2186 	mov	@r0,_uart_receive_process_data_10000_89
-      000977 22               [24] 2187 	ret
-      000978                       2188 00114$:
-                                   2189 ;	main.c:395: rx_length = 0;
-      000978 75 2C 00         [24] 2190 	mov	_rx_length,#0x00
-                                   2191 ;	main.c:397: }
-      00097B 22               [24] 2192 	ret
-                                   2193 ;------------------------------------------------------------
-                                   2194 ;Allocation info for local variables in function 'main'
-                                   2195 ;------------------------------------------------------------
-                                   2196 ;uart_status   Allocated to registers 
-                                   2197 ;------------------------------------------------------------
-                                   2198 ;	main.c:399: void main(void)
-                                   2199 ;	-----------------------------------------
-                                   2200 ;	 function main
-                                   2201 ;	-----------------------------------------
-      00097C                       2202 _main:
-                                   2203 ;	main.c:403: EA = 0;
-                                   2204 ;	assignBit
-      00097C C2 AF            [12] 2205 	clr	_EA
-                                   2206 ;	main.c:405: RELAY_PIN = 1;
-                                   2207 ;	assignBit
-      00097E D2 A6            [12] 2208 	setb	_P2_6
-                                   2209 ;	main.c:406: BUZZER_PIN = 1;
-                                   2210 ;	assignBit
-      000980 D2 A7            [12] 2211 	setb	_P2_7
-                                   2212 ;	main.c:407: GREEN_LED_PIN = 0;
-                                   2213 ;	assignBit
-      000982 C2 A0            [12] 2214 	clr	_P2_0
-                                   2215 ;	main.c:409: relay_state = 0;
-      000984 75 2D 00         [24] 2216 	mov	_relay_state,#0x00
-                                   2217 ;	main.c:410: buzzer_state = 0;
-      000987 75 2E 00         [24] 2218 	mov	_buzzer_state,#0x00
-                                   2219 ;	main.c:412: timer0_init();
-      00098A 12 09 CB         [24] 2220 	lcall	_timer0_init
-                                   2221 ;	main.c:414: EA = 1;
-                                   2222 ;	assignBit
-      00098D D2 AF            [12] 2223 	setb	_EA
-                                   2224 ;	main.c:416: oled_init();
-      00098F 12 0B 6B         [24] 2225 	lcall	_oled_init
-                                   2226 ;	main.c:417: oled_initial_screen();
-      000992 12 01 CD         [24] 2227 	lcall	_oled_initial_screen
-                                   2228 ;	main.c:419: uart_status = uart_init(9600);
-      000995 90 25 80         [24] 2229 	mov	dptr,#0x2580
-      000998 E4               [12] 2230 	clr	a
-      000999 F5 F0            [12] 2231 	mov	b,a
-      00099B 12 0F 61         [24] 2232 	lcall	_uart_init
-      00099E E5 82            [12] 2233 	mov	a, dpl
-                                   2234 ;	main.c:421: if (!uart_status)
-      0009A0 70 1B            [24] 2235 	jnz	00105$
-                                   2236 ;	main.c:423: oled_clear();
-      0009A2 12 0B 19         [24] 2237 	lcall	_oled_clear
-                                   2238 ;	main.c:424: oled_set_position(0, 0);
-      0009A5 75 3C 00         [24] 2239 	mov	_oled_set_position_PARM_2,#0x00
-      0009A8 75 82 00         [24] 2240 	mov	dpl, #0x00
-      0009AB 12 0A DC         [24] 2241 	lcall	_oled_set_position
-                                   2242 ;	main.c:425: oled_string("UART INIT FAILED");
-      0009AE 90 12 97         [24] 2243 	mov	dptr,#___str_28
-      0009B1 75 F0 80         [24] 2244 	mov	b, #0x80
-      0009B4 12 0E E7         [24] 2245 	lcall	_oled_string
-                                   2246 ;	main.c:427: RELAY_PIN = 1;
-                                   2247 ;	assignBit
-      0009B7 D2 A6            [12] 2248 	setb	_P2_6
-                                   2249 ;	main.c:428: BUZZER_PIN = 1;
-                                   2250 ;	assignBit
-      0009B9 D2 A7            [12] 2251 	setb	_P2_7
-                                   2252 ;	main.c:430: while (1);
-      0009BB                       2253 00102$:
-      0009BB 80 FE            [24] 2254 	sjmp	00102$
-      0009BD                       2255 00105$:
-                                   2256 ;	main.c:433: uart_write_string("UART READY\r\n");
-      0009BD 90 12 A8         [24] 2257 	mov	dptr,#___str_29
-      0009C0 75 F0 80         [24] 2258 	mov	b, #0x80
-      0009C3 12 10 6A         [24] 2259 	lcall	_uart_write_string
-                                   2260 ;	main.c:435: while (1)
-      0009C6                       2261 00107$:
-                                   2262 ;	main.c:437: uart_receive_process();
-      0009C6 12 09 22         [24] 2263 	lcall	_uart_receive_process
-                                   2264 ;	main.c:439: }
-      0009C9 80 FB            [24] 2265 	sjmp	00107$
-                                   2266 	.area CSEG    (CODE)
-                                   2267 	.area CONST   (CODE)
-                                   2268 	.area CONST   (CODE)
-      0011E7                       2269 ___str_0:
-      0011E7 56 3A 2D 2D           2270 	.ascii "V:--"
-      0011EB 00                    2271 	.db 0x00
-                                   2272 	.area CSEG    (CODE)
-                                   2273 	.area CONST   (CODE)
-      0011EC                       2274 ___str_1:
-      0011EC 46 3A 2D 2D           2275 	.ascii "F:--"
-      0011F0 00                    2276 	.db 0x00
-                                   2277 	.area CSEG    (CODE)
-                                   2278 	.area CONST   (CODE)
-      0011F1                       2279 ___str_2:
-      0011F1 49 3A 2D 2D           2280 	.ascii "I:--"
-      0011F5 00                    2281 	.db 0x00
-                                   2282 	.area CSEG    (CODE)
-                                   2283 	.area CONST   (CODE)
-      0011F6                       2284 ___str_3:
-      0011F6 45 3A 2D 2D           2285 	.ascii "E:--"
-      0011FA 00                    2286 	.db 0x00
-                                   2287 	.area CSEG    (CODE)
-                                   2288 	.area CONST   (CODE)
-      0011FB                       2289 ___str_4:
-      0011FB 50 3A 2D 2D           2290 	.ascii "P:--"
-      0011FF 00                    2291 	.db 0x00
-                                   2292 	.area CSEG    (CODE)
-                                   2293 	.area CONST   (CODE)
-      001200                       2294 ___str_5:
-      001200 4C 3A 2D 2D           2295 	.ascii "L:--"
-      001204 00                    2296 	.db 0x00
-                                   2297 	.area CSEG    (CODE)
-                                   2298 	.area CONST   (CODE)
-      001205                       2299 ___str_6:
-      001205 50 46 3A 2D 2D        2300 	.ascii "PF:--"
-      00120A 00                    2301 	.db 0x00
-                                   2302 	.area CSEG    (CODE)
-                                   2303 	.area CONST   (CODE)
-      00120B                       2304 ___str_7:
-      00120B 45 52 52 4F 52 3A     2305 	.ascii "ERROR:"
-      001211 00                    2306 	.db 0x00
-                                   2307 	.area CSEG    (CODE)
-                                   2308 	.area CONST   (CODE)
-      001212                       2309 ___str_8:
-      001212 4E 4F 20 45 52 52 4F  2310 	.ascii "NO ERROR"
+                                    494 	.area IABS    (ABS,DATA)
+                                    495 	.area IABS    (ABS,DATA)
+                                    496 ;--------------------------------------------------------
+                                    497 ; bit data
+                                    498 ;--------------------------------------------------------
+                                    499 	.area BSEG    (BIT)
+                                    500 ;--------------------------------------------------------
+                                    501 ; paged external ram data
+                                    502 ;--------------------------------------------------------
+                                    503 	.area PSEG    (PAG,XDATA)
+                                    504 ;--------------------------------------------------------
+                                    505 ; uninitialized external ram data
+                                    506 ;--------------------------------------------------------
+                                    507 	.area XSEG    (XDATA)
+                                    508 ;--------------------------------------------------------
+                                    509 ; absolute external ram data
+                                    510 ;--------------------------------------------------------
+                                    511 	.area XABS    (ABS,XDATA)
+                                    512 ;--------------------------------------------------------
+                                    513 ; initialized external ram data
+                                    514 ;--------------------------------------------------------
+                                    515 	.area XISEG   (XDATA)
+                                    516 	.area HOME    (CODE)
+                                    517 	.area GSINIT0 (CODE)
+                                    518 	.area GSINIT1 (CODE)
+                                    519 	.area GSINIT2 (CODE)
+                                    520 	.area GSINIT3 (CODE)
+                                    521 	.area GSINIT4 (CODE)
+                                    522 	.area GSINIT5 (CODE)
+                                    523 	.area GSINIT  (CODE)
+                                    524 	.area GSFINAL (CODE)
+                                    525 	.area CSEG    (CODE)
+                                    526 ;--------------------------------------------------------
+                                    527 ; interrupt vector
+                                    528 ;--------------------------------------------------------
+                                    529 	.area HOME    (CODE)
+      000000                        530 __interrupt_vect:
+      000000 02 00 56         [24]  531 	ljmp	__sdcc_gsinit_startup
+      000003 32               [24]  532 	reti
+      000004                        533 	.ds	7
+      00000B 02 01 14         [24]  534 	ljmp	_timer0_isr
+                                    535 ; restartable atomic support routines
+      00000E                        536 	.ds	2
+      000010                        537 sdcc_atomic_exchange_rollback_start::
+      000010 00               [12]  538 	nop
+      000011 00               [12]  539 	nop
+      000012                        540 sdcc_atomic_exchange_pdata_impl:
+      000012 E2               [24]  541 	movx	a, @r0
+      000013 FB               [12]  542 	mov	r3, a
+      000014 EA               [12]  543 	mov	a, r2
+      000015 F2               [24]  544 	movx	@r0, a
+      000016 80 2C            [24]  545 	sjmp	sdcc_atomic_exchange_exit
+      000018 00               [12]  546 	nop
+      000019 00               [12]  547 	nop
+      00001A                        548 sdcc_atomic_exchange_xdata_impl:
+      00001A E0               [24]  549 	movx	a, @dptr
+      00001B FB               [12]  550 	mov	r3, a
+      00001C EA               [12]  551 	mov	a, r2
+      00001D F0               [24]  552 	movx	@dptr, a
+      00001E 80 24            [24]  553 	sjmp	sdcc_atomic_exchange_exit
+      000020                        554 sdcc_atomic_compare_exchange_idata_impl:
+      000020 E6               [12]  555 	mov	a, @r0
+      000021 B5 02 02         [24]  556 	cjne	a, ar2, .+#5
+      000024 EB               [12]  557 	mov	a, r3
+      000025 F6               [12]  558 	mov	@r0, a
+      000026 22               [24]  559 	ret
+      000027 00               [12]  560 	nop
+      000028                        561 sdcc_atomic_compare_exchange_pdata_impl:
+      000028 E2               [24]  562 	movx	a, @r0
+      000029 B5 02 02         [24]  563 	cjne	a, ar2, .+#5
+      00002C EB               [12]  564 	mov	a, r3
+      00002D F2               [24]  565 	movx	@r0, a
+      00002E 22               [24]  566 	ret
+      00002F 00               [12]  567 	nop
+      000030                        568 sdcc_atomic_compare_exchange_xdata_impl:
+      000030 E0               [24]  569 	movx	a, @dptr
+      000031 B5 02 02         [24]  570 	cjne	a, ar2, .+#5
+      000034 EB               [12]  571 	mov	a, r3
+      000035 F0               [24]  572 	movx	@dptr, a
+      000036 22               [24]  573 	ret
+      000037                        574 sdcc_atomic_exchange_rollback_end::
+                                    575 
+      000037                        576 sdcc_atomic_exchange_gptr_impl::
+      000037 30 F6 E0         [24]  577 	jnb	b.6, sdcc_atomic_exchange_xdata_impl
+      00003A A8 82            [24]  578 	mov	r0, dpl
+      00003C 20 F5 D3         [24]  579 	jb	b.5, sdcc_atomic_exchange_pdata_impl
+      00003F                        580 sdcc_atomic_exchange_idata_impl:
+      00003F EA               [12]  581 	mov	a, r2
+      000040 C6               [12]  582 	xch	a, @r0
+      000041 F5 82            [12]  583 	mov	dpl, a
+      000043 22               [24]  584 	ret
+      000044                        585 sdcc_atomic_exchange_exit:
+      000044 8B 82            [24]  586 	mov	dpl, r3
+      000046 22               [24]  587 	ret
+      000047                        588 sdcc_atomic_compare_exchange_gptr_impl::
+      000047 30 F6 E6         [24]  589 	jnb	b.6, sdcc_atomic_compare_exchange_xdata_impl
+      00004A A8 82            [24]  590 	mov	r0, dpl
+      00004C 20 F5 D9         [24]  591 	jb	b.5, sdcc_atomic_compare_exchange_pdata_impl
+      00004F 80 CF            [24]  592 	sjmp	sdcc_atomic_compare_exchange_idata_impl
+                                    593 ;--------------------------------------------------------
+                                    594 ; global & static initialisations
+                                    595 ;--------------------------------------------------------
+                                    596 	.area HOME    (CODE)
+                                    597 	.area GSINIT  (CODE)
+                                    598 	.area GSFINAL (CODE)
+                                    599 	.area GSINIT  (CODE)
+                                    600 	.globl __sdcc_gsinit_startup
+                                    601 	.globl __sdcc_program_startup
+                                    602 	.globl __start__stack
+                                    603 	.globl __mcs51_genXINIT
+                                    604 	.globl __mcs51_genXRAMCLEAR
+                                    605 	.globl __mcs51_genRAMCLEAR
+                                    606 ;------------------------------------------------------------
+                                    607 ;Allocation info for local variables in function 'timer0_isr'
+                                    608 ;------------------------------------------------------------
+                                    609 ;count         Allocated with name '_timer0_isr_count_10000_28'
+                                    610 ;------------------------------------------------------------
+                                    611 ;	main.c:48: static unsigned char count = 0;
+      0000AF 75 37 00         [24]  612 	mov	_timer0_isr_count_10000_28,#0x00
+                                    613 ;	main.c:16: volatile unsigned long int delay_time_ms = 0;
+      0000B2 E4               [12]  614 	clr	a
+      0000B3 F5 08            [12]  615 	mov	_delay_time_ms,a
+      0000B5 F5 09            [12]  616 	mov	(_delay_time_ms + 1),a
+      0000B7 F5 0A            [12]  617 	mov	(_delay_time_ms + 2),a
+      0000B9 F5 0B            [12]  618 	mov	(_delay_time_ms + 3),a
+                                    619 ;	main.c:19: static unsigned char rx_length = 0;
+      0000BB F5 2C            [12]  620 	mov	_rx_length,a
+                                    621 ;	main.c:20: static unsigned char relay_state = 0;
+      0000BD F5 2D            [12]  622 	mov	_relay_state,a
+                                    623 ;	main.c:21: static unsigned char buzzer_state = 0;
+      0000BF F5 2E            [12]  624 	mov	_buzzer_state,a
+                                    625 ;	main.c:22: static unsigned char fault_active = 0;
+      0000C1 F5 2F            [12]  626 	mov	_fault_active,a
+                                    627 ;	main.c:23: static unsigned char parse_index = 0;
+      0000C3 F5 30            [12]  628 	mov	_parse_index,a
+                                    629 ;	main.c:25: static unsigned char button_last_sample = 1;
+      0000C5 75 31 01         [24]  630 	mov	_button_last_sample,#0x01
+                                    631 ;	main.c:26: static unsigned char button_stable_state = 1;
+      0000C8 75 32 01         [24]  632 	mov	_button_stable_state,#0x01
+                                    633 ;	main.c:27: static unsigned long int button_last_change_time = 0;
+      0000CB F5 33            [12]  634 	mov	_button_last_change_time,a
+      0000CD F5 34            [12]  635 	mov	(_button_last_change_time + 1),a
+      0000CF F5 35            [12]  636 	mov	(_button_last_change_time + 2),a
+      0000D1 F5 36            [12]  637 	mov	(_button_last_change_time + 3),a
+                                    638 	.area GSFINAL (CODE)
+      0000D9 02 00 51         [24]  639 	ljmp	__sdcc_program_startup
+                                    640 ;--------------------------------------------------------
+                                    641 ; Home
+                                    642 ;--------------------------------------------------------
+                                    643 	.area HOME    (CODE)
+                                    644 	.area HOME    (CODE)
+      000051                        645 __sdcc_program_startup:
+      000051 12 0B 83         [24]  646 	lcall	_main
+      000054                        647 __sdcc_program_exit:
+      000054 80 FE            [24]  648 	sjmp	.
+                                    649 ;	return from main will return to caller
+                                    650 ;--------------------------------------------------------
+                                    651 ; code
+                                    652 ;--------------------------------------------------------
+                                    653 	.area CSEG    (CODE)
+                                    654 ;------------------------------------------------------------
+                                    655 ;Allocation info for local variables in function 'delay_us'
+                                    656 ;------------------------------------------------------------
+                                    657 ;value         Allocated to registers r6 r7 
+                                    658 ;i             Allocated to registers r5 
+                                    659 ;------------------------------------------------------------
+                                    660 ;	main.c:29: void delay_us(unsigned int value)
+                                    661 ;	-----------------------------------------
+                                    662 ;	 function delay_us
+                                    663 ;	-----------------------------------------
+      0000DC                        664 _delay_us:
+                           000007   665 	ar7 = 0x07
+                           000006   666 	ar6 = 0x06
+                           000005   667 	ar5 = 0x05
+                           000004   668 	ar4 = 0x04
+                           000003   669 	ar3 = 0x03
+                           000002   670 	ar2 = 0x02
+                           000001   671 	ar1 = 0x01
+                           000000   672 	ar0 = 0x00
+      0000DC AE 82            [24]  673 	mov	r6, dpl
+      0000DE AF 83            [24]  674 	mov	r7, dph
+                                    675 ;	main.c:33: while (value--)
+      0000E0                        676 00102$:
+      0000E0 8E 04            [24]  677 	mov	ar4,r6
+      0000E2 8F 05            [24]  678 	mov	ar5,r7
+      0000E4 1E               [12]  679 	dec	r6
+      0000E5 BE FF 01         [24]  680 	cjne	r6,#0xff,00138$
+      0000E8 1F               [12]  681 	dec	r7
+      0000E9                        682 00138$:
+      0000E9 EC               [12]  683 	mov	a,r4
+      0000EA 4D               [12]  684 	orl	a,r5
+      0000EB 60 06            [24]  685 	jz	00108$
+                                    686 ;	main.c:35: for (i = 0; i < 4; i++);
+      0000ED 7D 04            [12]  687 	mov	r5,#0x04
+      0000EF                        688 00107$:
+      0000EF DD FE            [24]  689 	djnz	r5,00107$
+      0000F1 80 ED            [24]  690 	sjmp	00102$
+      0000F3                        691 00108$:
+                                    692 ;	main.c:37: }
+      0000F3 22               [24]  693 	ret
+                                    694 ;------------------------------------------------------------
+                                    695 ;Allocation info for local variables in function 'delay_ms'
+                                    696 ;------------------------------------------------------------
+                                    697 ;value         Allocated to registers r4 r5 r6 r7 
+                                    698 ;------------------------------------------------------------
+                                    699 ;	main.c:39: void delay_ms(unsigned long int value)
+                                    700 ;	-----------------------------------------
+                                    701 ;	 function delay_ms
+                                    702 ;	-----------------------------------------
+      0000F4                        703 _delay_ms:
+      0000F4 AC 82            [24]  704 	mov	r4,dpl
+      0000F6 AD 83            [24]  705 	mov	r5,dph
+      0000F8 AE F0            [24]  706 	mov	r6,b
+      0000FA FF               [12]  707 	mov	r7,a
+                                    708 ;	main.c:41: delay_time_ms = 0;
+      0000FB E4               [12]  709 	clr	a
+      0000FC F5 08            [12]  710 	mov	_delay_time_ms,a
+      0000FE F5 09            [12]  711 	mov	(_delay_time_ms + 1),a
+      000100 F5 0A            [12]  712 	mov	(_delay_time_ms + 2),a
+      000102 F5 0B            [12]  713 	mov	(_delay_time_ms + 3),a
+                                    714 ;	main.c:43: while (delay_time_ms < value);
+      000104                        715 00101$:
+      000104 C3               [12]  716 	clr	c
+      000105 E5 08            [12]  717 	mov	a,_delay_time_ms
+      000107 9C               [12]  718 	subb	a,r4
+      000108 E5 09            [12]  719 	mov	a,(_delay_time_ms + 1)
+      00010A 9D               [12]  720 	subb	a,r5
+      00010B E5 0A            [12]  721 	mov	a,(_delay_time_ms + 2)
+      00010D 9E               [12]  722 	subb	a,r6
+      00010E E5 0B            [12]  723 	mov	a,(_delay_time_ms + 3)
+      000110 9F               [12]  724 	subb	a,r7
+      000111 40 F1            [24]  725 	jc	00101$
+                                    726 ;	main.c:44: }
+      000113 22               [24]  727 	ret
+                                    728 ;------------------------------------------------------------
+                                    729 ;Allocation info for local variables in function 'timer0_isr'
+                                    730 ;------------------------------------------------------------
+                                    731 ;count         Allocated with name '_timer0_isr_count_10000_28'
+                                    732 ;------------------------------------------------------------
+                                    733 ;	main.c:46: void timer0_isr(void) __interrupt(1)
+                                    734 ;	-----------------------------------------
+                                    735 ;	 function timer0_isr
+                                    736 ;	-----------------------------------------
+      000114                        737 _timer0_isr:
+      000114 C0 E0            [24]  738 	push	acc
+      000116 C0 07            [24]  739 	push	ar7
+      000118 C0 06            [24]  740 	push	ar6
+      00011A C0 05            [24]  741 	push	ar5
+      00011C C0 04            [24]  742 	push	ar4
+      00011E C0 D0            [24]  743 	push	psw
+      000120 75 D0 00         [24]  744 	mov	psw,#0x00
+                                    745 ;	main.c:50: TF0 = 0;
+                                    746 ;	assignBit
+      000123 C2 8D            [12]  747 	clr	_TF0
+                                    748 ;	main.c:51: count++;
+      000125 05 37            [12]  749 	inc	_timer0_isr_count_10000_28
+                                    750 ;	main.c:53: if (count >= 10)
+      000127 74 F6            [12]  751 	mov	a,#0x100 - 0x0a
+      000129 25 37            [12]  752 	add	a,_timer0_isr_count_10000_28
+      00012B 50 1C            [24]  753 	jnc	00103$
+                                    754 ;	main.c:55: count = 0;
+      00012D 75 37 00         [24]  755 	mov	_timer0_isr_count_10000_28,#0x00
+                                    756 ;	main.c:56: delay_time_ms++;
+      000130 AC 08            [24]  757 	mov	r4,_delay_time_ms
+      000132 AD 09            [24]  758 	mov	r5,(_delay_time_ms + 1)
+      000134 AE 0A            [24]  759 	mov	r6,(_delay_time_ms + 2)
+      000136 AF 0B            [24]  760 	mov	r7,(_delay_time_ms + 3)
+      000138 74 01            [12]  761 	mov	a,#0x01
+      00013A 2C               [12]  762 	add	a, r4
+      00013B F5 08            [12]  763 	mov	_delay_time_ms,a
+      00013D E4               [12]  764 	clr	a
+      00013E 3D               [12]  765 	addc	a, r5
+      00013F F5 09            [12]  766 	mov	(_delay_time_ms + 1),a
+      000141 E4               [12]  767 	clr	a
+      000142 3E               [12]  768 	addc	a, r6
+      000143 F5 0A            [12]  769 	mov	(_delay_time_ms + 2),a
+      000145 E4               [12]  770 	clr	a
+      000146 3F               [12]  771 	addc	a, r7
+      000147 F5 0B            [12]  772 	mov	(_delay_time_ms + 3),a
+      000149                        773 00103$:
+                                    774 ;	main.c:58: }
+      000149 D0 D0            [24]  775 	pop	psw
+      00014B D0 04            [24]  776 	pop	ar4
+      00014D D0 05            [24]  777 	pop	ar5
+      00014F D0 06            [24]  778 	pop	ar6
+      000151 D0 07            [24]  779 	pop	ar7
+      000153 D0 E0            [24]  780 	pop	acc
+      000155 32               [24]  781 	reti
+                                    782 ;	eliminated unneeded push/pop dpl
+                                    783 ;	eliminated unneeded push/pop dph
+                                    784 ;	eliminated unneeded push/pop b
+                                    785 ;------------------------------------------------------------
+                                    786 ;Allocation info for local variables in function 'get_millis'
+                                    787 ;------------------------------------------------------------
+                                    788 ;value         Allocated to registers r4 r5 r6 r7 
+                                    789 ;------------------------------------------------------------
+                                    790 ;	main.c:60: static unsigned long int get_millis(void)
+                                    791 ;	-----------------------------------------
+                                    792 ;	 function get_millis
+                                    793 ;	-----------------------------------------
+      000156                        794 _get_millis:
+                                    795 ;	main.c:64: EA = 0;
+                                    796 ;	assignBit
+      000156 C2 AF            [12]  797 	clr	_EA
+                                    798 ;	main.c:65: value = delay_time_ms;
+      000158 AC 08            [24]  799 	mov	r4,_delay_time_ms
+      00015A AD 09            [24]  800 	mov	r5,(_delay_time_ms + 1)
+      00015C AE 0A            [24]  801 	mov	r6,(_delay_time_ms + 2)
+      00015E AF 0B            [24]  802 	mov	r7,(_delay_time_ms + 3)
+                                    803 ;	main.c:66: EA = 1;
+                                    804 ;	assignBit
+      000160 D2 AF            [12]  805 	setb	_EA
+                                    806 ;	main.c:68: return value;
+      000162 8C 82            [24]  807 	mov	dpl, r4
+      000164 8D 83            [24]  808 	mov	dph, r5
+      000166 8E F0            [24]  809 	mov	b, r6
+      000168 EF               [12]  810 	mov	a, r7
+                                    811 ;	main.c:69: }
+      000169 22               [24]  812 	ret
+                                    813 ;------------------------------------------------------------
+                                    814 ;Allocation info for local variables in function 'relay_set'
+                                    815 ;------------------------------------------------------------
+                                    816 ;state         Allocated to registers r7 
+                                    817 ;------------------------------------------------------------
+                                    818 ;	main.c:71: static void relay_set(unsigned char state)
+                                    819 ;	-----------------------------------------
+                                    820 ;	 function relay_set
+                                    821 ;	-----------------------------------------
+      00016A                        822 _relay_set:
+                                    823 ;	main.c:73: if (state)
+      00016A E5 82            [12]  824 	mov	a,dpl
+      00016C 60 06            [24]  825 	jz	00102$
+                                    826 ;	main.c:75: RELAY_PIN = 0;
+                                    827 ;	assignBit
+      00016E C2 A6            [12]  828 	clr	_P2_6
+                                    829 ;	main.c:76: relay_state = 1;
+      000170 75 2D 01         [24]  830 	mov	_relay_state,#0x01
+      000173 22               [24]  831 	ret
+      000174                        832 00102$:
+                                    833 ;	main.c:80: RELAY_PIN = 1;
+                                    834 ;	assignBit
+      000174 D2 A6            [12]  835 	setb	_P2_6
+                                    836 ;	main.c:81: relay_state = 0;
+      000176 75 2D 00         [24]  837 	mov	_relay_state,#0x00
+                                    838 ;	main.c:83: }
+      000179 22               [24]  839 	ret
+                                    840 ;------------------------------------------------------------
+                                    841 ;Allocation info for local variables in function 'buzzer_set'
+                                    842 ;------------------------------------------------------------
+                                    843 ;state         Allocated to registers r7 
+                                    844 ;------------------------------------------------------------
+                                    845 ;	main.c:85: static void buzzer_set(unsigned char state)
+                                    846 ;	-----------------------------------------
+                                    847 ;	 function buzzer_set
+                                    848 ;	-----------------------------------------
+      00017A                        849 _buzzer_set:
+                                    850 ;	main.c:87: if (state)
+      00017A E5 82            [12]  851 	mov	a,dpl
+      00017C 60 0A            [24]  852 	jz	00102$
+                                    853 ;	main.c:89: GREEN_LED_PIN = 1;
+                                    854 ;	assignBit
+      00017E D2 A0            [12]  855 	setb	_P2_0
+                                    856 ;	main.c:90: RED_LED_PIN = 0;
+                                    857 ;	assignBit
+      000180 C2 A1            [12]  858 	clr	_P2_1
+                                    859 ;	main.c:91: BUZZER_PIN = 0;
+                                    860 ;	assignBit
+      000182 C2 A7            [12]  861 	clr	_P2_7
+                                    862 ;	main.c:92: buzzer_state = 1;
+      000184 75 2E 01         [24]  863 	mov	_buzzer_state,#0x01
+      000187 22               [24]  864 	ret
+      000188                        865 00102$:
+                                    866 ;	main.c:96: RED_LED_PIN = 1;
+                                    867 ;	assignBit
+      000188 D2 A1            [12]  868 	setb	_P2_1
+                                    869 ;	main.c:97: GREEN_LED_PIN = 0;
+                                    870 ;	assignBit
+      00018A C2 A0            [12]  871 	clr	_P2_0
+                                    872 ;	main.c:98: BUZZER_PIN = 1;
+                                    873 ;	assignBit
+      00018C D2 A7            [12]  874 	setb	_P2_7
+                                    875 ;	main.c:99: buzzer_state = 0;
+      00018E 75 2E 00         [24]  876 	mov	_buzzer_state,#0x00
+                                    877 ;	main.c:101: }
+      000191 22               [24]  878 	ret
+                                    879 ;------------------------------------------------------------
+                                    880 ;Allocation info for local variables in function 'relay_button_process'
+                                    881 ;------------------------------------------------------------
+                                    882 ;sample        Allocated to registers r7 
+                                    883 ;now           Allocated to registers r3 r4 r5 r6 
+                                    884 ;------------------------------------------------------------
+                                    885 ;	main.c:103: static void relay_button_process(void)
+                                    886 ;	-----------------------------------------
+                                    887 ;	 function relay_button_process
+                                    888 ;	-----------------------------------------
+      000192                        889 _relay_button_process:
+                                    890 ;	main.c:108: sample = RELAY_BUTTON_PIN;
+      000192 A2 A2            [12]  891 	mov	c,_P2_2
+      000194 E4               [12]  892 	clr	a
+      000195 33               [12]  893 	rlc	a
+      000196 FF               [12]  894 	mov	r7,a
+                                    895 ;	main.c:109: now = get_millis();
+      000197 C0 07            [24]  896 	push	ar7
+      000199 12 01 56         [24]  897 	lcall	_get_millis
+      00019C AB 82            [24]  898 	mov	r3, dpl
+      00019E AC 83            [24]  899 	mov	r4, dph
+      0001A0 AD F0            [24]  900 	mov	r5, b
+      0001A2 FE               [12]  901 	mov	r6, a
+      0001A3 D0 07            [24]  902 	pop	ar7
+                                    903 ;	main.c:111: if (sample != button_last_sample)
+      0001A5 EF               [12]  904 	mov	a,r7
+      0001A6 B5 31 02         [24]  905 	cjne	a,_button_last_sample,00158$
+      0001A9 80 0A            [24]  906 	sjmp	00102$
+      0001AB                        907 00158$:
+                                    908 ;	main.c:113: button_last_sample = sample;
+      0001AB 8F 31            [24]  909 	mov	_button_last_sample,r7
+                                    910 ;	main.c:114: button_last_change_time = now;
+      0001AD 8B 33            [24]  911 	mov	_button_last_change_time,r3
+      0001AF 8C 34            [24]  912 	mov	(_button_last_change_time + 1),r4
+      0001B1 8D 35            [24]  913 	mov	(_button_last_change_time + 2),r5
+      0001B3 8E 36            [24]  914 	mov	(_button_last_change_time + 3),r6
+      0001B5                        915 00102$:
+                                    916 ;	main.c:117: if ((now - button_last_change_time) >= BUTTON_DEBOUNCE_MS)
+      0001B5 EB               [12]  917 	mov	a,r3
+      0001B6 C3               [12]  918 	clr	c
+      0001B7 95 33            [12]  919 	subb	a,_button_last_change_time
+      0001B9 FB               [12]  920 	mov	r3,a
+      0001BA EC               [12]  921 	mov	a,r4
+      0001BB 95 34            [12]  922 	subb	a,(_button_last_change_time + 1)
+      0001BD FC               [12]  923 	mov	r4,a
+      0001BE ED               [12]  924 	mov	a,r5
+      0001BF 95 35            [12]  925 	subb	a,(_button_last_change_time + 2)
+      0001C1 FD               [12]  926 	mov	r5,a
+      0001C2 EE               [12]  927 	mov	a,r6
+      0001C3 95 36            [12]  928 	subb	a,(_button_last_change_time + 3)
+      0001C5 FE               [12]  929 	mov	r6,a
+      0001C6 C3               [12]  930 	clr	c
+      0001C7 EB               [12]  931 	mov	a,r3
+      0001C8 94 19            [12]  932 	subb	a,#0x19
+      0001CA EC               [12]  933 	mov	a,r4
+      0001CB 94 00            [12]  934 	subb	a,#0x00
+      0001CD ED               [12]  935 	mov	a,r5
+      0001CE 94 00            [12]  936 	subb	a,#0x00
+      0001D0 EE               [12]  937 	mov	a,r6
+      0001D1 94 00            [12]  938 	subb	a,#0x00
+      0001D3 40 20            [24]  939 	jc	00114$
+                                    940 ;	main.c:119: if (button_stable_state != button_last_sample)
+      0001D5 E5 31            [12]  941 	mov	a,_button_last_sample
+      0001D7 B5 32 01         [24]  942 	cjne	a,_button_stable_state,00160$
+      0001DA 22               [24]  943 	ret
+      0001DB                        944 00160$:
+                                    945 ;	main.c:121: button_stable_state = button_last_sample;
+                                    946 ;	main.c:123: if (button_stable_state == 0)
+      0001DB E5 31            [12]  947 	mov	a,_button_last_sample
+      0001DD F5 32            [12]  948 	mov	_button_stable_state,a
+      0001DF 70 14            [24]  949 	jnz	00114$
+                                    950 ;	main.c:125: if (relay_state)
+      0001E1 E5 2D            [12]  951 	mov	a,_relay_state
+      0001E3 60 06            [24]  952 	jz	00106$
+                                    953 ;	main.c:127: relay_set(0);
+      0001E5 75 82 00         [24]  954 	mov	dpl, #0x00
+      0001E8 02 01 6A         [24]  955 	ljmp	_relay_set
+      0001EB                        956 00106$:
+                                    957 ;	main.c:131: if (!fault_active)
+      0001EB E5 2F            [12]  958 	mov	a,_fault_active
+      0001ED 70 06            [24]  959 	jnz	00114$
+                                    960 ;	main.c:133: relay_set(1);
+      0001EF 75 82 01         [24]  961 	mov	dpl, #0x01
+                                    962 ;	main.c:139: }
+      0001F2 02 01 6A         [24]  963 	ljmp	_relay_set
+      0001F5                        964 00114$:
+      0001F5 22               [24]  965 	ret
+                                    966 ;------------------------------------------------------------
+                                    967 ;Allocation info for local variables in function 'oled_clear_region'
+                                    968 ;------------------------------------------------------------
+                                    969 ;column        Allocated with name '_oled_clear_region_PARM_2'
+                                    970 ;characters    Allocated with name '_oled_clear_region_PARM_3'
+                                    971 ;page          Allocated to registers r7 
+                                    972 ;i             Allocated to registers r7 
+                                    973 ;------------------------------------------------------------
+                                    974 ;	main.c:141: static void oled_clear_region(unsigned char page,
+                                    975 ;	-----------------------------------------
+                                    976 ;	 function oled_clear_region
+                                    977 ;	-----------------------------------------
+      0001F6                        978 _oled_clear_region:
+                                    979 ;	main.c:147: oled_set_position(page, column);
+      0001F6 85 38 43         [24]  980 	mov	_oled_set_position_PARM_2,_oled_clear_region_PARM_2
+      0001F9 12 0D 01         [24]  981 	lcall	_oled_set_position
+                                    982 ;	main.c:149: for (i = 0; i < characters; i++)
+      0001FC 7F 00            [12]  983 	mov	r7,#0x00
+      0001FE                        984 00103$:
+      0001FE C3               [12]  985 	clr	c
+      0001FF EF               [12]  986 	mov	a,r7
+      000200 95 39            [12]  987 	subb	a,_oled_clear_region_PARM_3
+      000202 50 0D            [24]  988 	jnc	00105$
+                                    989 ;	main.c:150: oled_char(' ');
+      000204 75 82 20         [24]  990 	mov	dpl, #0x20
+      000207 C0 07            [24]  991 	push	ar7
+      000209 12 0E 3F         [24]  992 	lcall	_oled_char
+      00020C D0 07            [24]  993 	pop	ar7
+                                    994 ;	main.c:149: for (i = 0; i < characters; i++)
+      00020E 0F               [12]  995 	inc	r7
+      00020F 80 ED            [24]  996 	sjmp	00103$
+      000211                        997 00105$:
+                                    998 ;	main.c:151: }
+      000211 22               [24]  999 	ret
+                                   1000 ;------------------------------------------------------------
+                                   1001 ;Allocation info for local variables in function 'oled_clear_error'
+                                   1002 ;------------------------------------------------------------
+                                   1003 ;	main.c:153: static void oled_clear_error(void)
+                                   1004 ;	-----------------------------------------
+                                   1005 ;	 function oled_clear_error
+                                   1006 ;	-----------------------------------------
+      000212                       1007 _oled_clear_error:
+                                   1008 ;	main.c:155: oled_clear_region(5, 0, 21);
+      000212 75 38 00         [24] 1009 	mov	_oled_clear_region_PARM_2,#0x00
+      000215 75 39 15         [24] 1010 	mov	_oled_clear_region_PARM_3,#0x15
+      000218 75 82 05         [24] 1011 	mov	dpl, #0x05
+      00021B 12 01 F6         [24] 1012 	lcall	_oled_clear_region
+                                   1013 ;	main.c:156: oled_clear_region(7, 0, 21);
+      00021E 75 38 00         [24] 1014 	mov	_oled_clear_region_PARM_2,#0x00
+      000221 75 39 15         [24] 1015 	mov	_oled_clear_region_PARM_3,#0x15
+      000224 75 82 07         [24] 1016 	mov	dpl, #0x07
+                                   1017 ;	main.c:157: }
+      000227 02 01 F6         [24] 1018 	ljmp	_oled_clear_region
+                                   1019 ;------------------------------------------------------------
+                                   1020 ;Allocation info for local variables in function 'oled_print_field'
+                                   1021 ;------------------------------------------------------------
+                                   1022 ;comma_expected Allocated to registers r7 
+                                   1023 ;count         Allocated to registers r6 
+                                   1024 ;------------------------------------------------------------
+                                   1025 ;	main.c:159: static unsigned char oled_print_field(unsigned char comma_expected)
+                                   1026 ;	-----------------------------------------
+                                   1027 ;	 function oled_print_field
+                                   1028 ;	-----------------------------------------
+      00022A                       1029 _oled_print_field:
+      00022A AF 82            [24] 1030 	mov	r7, dpl
+                                   1031 ;	main.c:161: unsigned char count = 0;
+      00022C 7E 00            [12] 1032 	mov	r6,#0x00
+                                   1033 ;	main.c:163: if (rx_buffer[parse_index] == '\0')
+      00022E E5 30            [12] 1034 	mov	a,_parse_index
+      000230 24 0C            [12] 1035 	add	a, #_rx_buffer
+      000232 F9               [12] 1036 	mov	r1,a
+      000233 E7               [12] 1037 	mov	a,@r1
+                                   1038 ;	main.c:164: return 0;
+      000234 70 03            [24] 1039 	jnz	00106$
+      000236 F5 82            [12] 1040 	mov	dpl,a
+                                   1041 ;	main.c:166: while (rx_buffer[parse_index] != '\0' &&
+      000238 22               [24] 1042 	ret
+      000239                       1043 00106$:
+      000239 E5 30            [12] 1044 	mov	a,_parse_index
+      00023B 24 0C            [12] 1045 	add	a, #_rx_buffer
+      00023D F9               [12] 1046 	mov	r1,a
+      00023E E7               [12] 1047 	mov	a,@r1
+      00023F FD               [12] 1048 	mov	r5,a
+      000240 60 1C            [24] 1049 	jz	00108$
+                                   1050 ;	main.c:167: rx_buffer[parse_index] != ',')
+      000242 BD 2C 02         [24] 1051 	cjne	r5,#0x2c,00185$
+      000245 80 17            [24] 1052 	sjmp	00108$
+      000247                       1053 00185$:
+                                   1054 ;	main.c:169: if (count < 20)
+      000247 BE 14 00         [24] 1055 	cjne	r6,#0x14,00186$
+      00024A                       1056 00186$:
+      00024A 50 0D            [24] 1057 	jnc	00104$
+                                   1058 ;	main.c:170: oled_char(rx_buffer[parse_index]);
+      00024C 8D 82            [24] 1059 	mov	dpl, r5
+      00024E C0 07            [24] 1060 	push	ar7
+      000250 C0 06            [24] 1061 	push	ar6
+      000252 12 0E 3F         [24] 1062 	lcall	_oled_char
+      000255 D0 06            [24] 1063 	pop	ar6
+      000257 D0 07            [24] 1064 	pop	ar7
+      000259                       1065 00104$:
+                                   1066 ;	main.c:172: count++;
+      000259 0E               [12] 1067 	inc	r6
+                                   1068 ;	main.c:173: parse_index++;
+      00025A 05 30            [12] 1069 	inc	_parse_index
+      00025C 80 DB            [24] 1070 	sjmp	00106$
+      00025E                       1071 00108$:
+                                   1072 ;	main.c:176: if (count == 0)
+      00025E EE               [12] 1073 	mov	a,r6
+                                   1074 ;	main.c:177: return 0;
+      00025F 70 03            [24] 1075 	jnz	00110$
+      000261 F5 82            [12] 1076 	mov	dpl,a
+      000263 22               [24] 1077 	ret
+      000264                       1078 00110$:
+                                   1079 ;	main.c:179: if (comma_expected)
+      000264 EF               [12] 1080 	mov	a,r7
+      000265 60 14            [24] 1081 	jz	00116$
+                                   1082 ;	main.c:181: if (rx_buffer[parse_index] != ',')
+      000267 E5 30            [12] 1083 	mov	a,_parse_index
+      000269 24 0C            [12] 1084 	add	a, #_rx_buffer
+      00026B F9               [12] 1085 	mov	r1,a
+      00026C 87 07            [24] 1086 	mov	ar7,@r1
+      00026E BF 2C 02         [24] 1087 	cjne	r7,#0x2c,00190$
+      000271 80 04            [24] 1088 	sjmp	00112$
+      000273                       1089 00190$:
+                                   1090 ;	main.c:182: return 0;
+      000273 75 82 00         [24] 1091 	mov	dpl, #0x00
+      000276 22               [24] 1092 	ret
+      000277                       1093 00112$:
+                                   1094 ;	main.c:184: parse_index++;
+      000277 05 30            [12] 1095 	inc	_parse_index
+      000279 80 0C            [24] 1096 	sjmp	00117$
+      00027B                       1097 00116$:
+                                   1098 ;	main.c:188: if (rx_buffer[parse_index] != '\0')
+      00027B E5 30            [12] 1099 	mov	a,_parse_index
+      00027D 24 0C            [12] 1100 	add	a, #_rx_buffer
+      00027F F9               [12] 1101 	mov	r1,a
+      000280 E7               [12] 1102 	mov	a,@r1
+      000281 60 04            [24] 1103 	jz	00117$
+                                   1104 ;	main.c:189: return 0;
+      000283 75 82 00         [24] 1105 	mov	dpl, #0x00
+      000286 22               [24] 1106 	ret
+      000287                       1107 00117$:
+                                   1108 ;	main.c:192: return 1;
+      000287 75 82 01         [24] 1109 	mov	dpl, #0x01
+                                   1110 ;	main.c:193: }
+      00028A 22               [24] 1111 	ret
+                                   1112 ;------------------------------------------------------------
+                                   1113 ;Allocation info for local variables in function 'oled_initial_screen'
+                                   1114 ;------------------------------------------------------------
+                                   1115 ;	main.c:195: static void oled_initial_screen(void)
+                                   1116 ;	-----------------------------------------
+                                   1117 ;	 function oled_initial_screen
+                                   1118 ;	-----------------------------------------
+      00028B                       1119 _oled_initial_screen:
+                                   1120 ;	main.c:197: oled_clear();
+      00028B 12 0D 3E         [24] 1121 	lcall	_oled_clear
+                                   1122 ;	main.c:199: oled_set_position(0, 0);
+      00028E 75 43 00         [24] 1123 	mov	_oled_set_position_PARM_2,#0x00
+      000291 75 82 00         [24] 1124 	mov	dpl, #0x00
+      000294 12 0D 01         [24] 1125 	lcall	_oled_set_position
+                                   1126 ;	main.c:200: oled_string("V:--");
+      000297 90 14 0C         [24] 1127 	mov	dptr,#___str_0
+      00029A 75 F0 80         [24] 1128 	mov	b, #0x80
+      00029D 12 11 0C         [24] 1129 	lcall	_oled_string
+                                   1130 ;	main.c:202: oled_set_position(0, 66);
+      0002A0 75 43 42         [24] 1131 	mov	_oled_set_position_PARM_2,#0x42
+      0002A3 75 82 00         [24] 1132 	mov	dpl, #0x00
+      0002A6 12 0D 01         [24] 1133 	lcall	_oled_set_position
+                                   1134 ;	main.c:203: oled_string("F:--");
+      0002A9 90 14 11         [24] 1135 	mov	dptr,#___str_1
+      0002AC 75 F0 80         [24] 1136 	mov	b, #0x80
+      0002AF 12 11 0C         [24] 1137 	lcall	_oled_string
+                                   1138 ;	main.c:205: oled_set_position(1, 0);
+      0002B2 75 43 00         [24] 1139 	mov	_oled_set_position_PARM_2,#0x00
+      0002B5 75 82 01         [24] 1140 	mov	dpl, #0x01
+      0002B8 12 0D 01         [24] 1141 	lcall	_oled_set_position
+                                   1142 ;	main.c:206: oled_string("I:--");
+      0002BB 90 14 16         [24] 1143 	mov	dptr,#___str_2
+      0002BE 75 F0 80         [24] 1144 	mov	b, #0x80
+      0002C1 12 11 0C         [24] 1145 	lcall	_oled_string
+                                   1146 ;	main.c:208: oled_set_position(1, 66);
+      0002C4 75 43 42         [24] 1147 	mov	_oled_set_position_PARM_2,#0x42
+      0002C7 75 82 01         [24] 1148 	mov	dpl, #0x01
+      0002CA 12 0D 01         [24] 1149 	lcall	_oled_set_position
+                                   1150 ;	main.c:209: oled_string("E:--");
+      0002CD 90 14 1B         [24] 1151 	mov	dptr,#___str_3
+      0002D0 75 F0 80         [24] 1152 	mov	b, #0x80
+      0002D3 12 11 0C         [24] 1153 	lcall	_oled_string
+                                   1154 ;	main.c:211: oled_set_position(2, 0);
+      0002D6 75 43 00         [24] 1155 	mov	_oled_set_position_PARM_2,#0x00
+      0002D9 75 82 02         [24] 1156 	mov	dpl, #0x02
+      0002DC 12 0D 01         [24] 1157 	lcall	_oled_set_position
+                                   1158 ;	main.c:212: oled_string("P:--");
+      0002DF 90 14 20         [24] 1159 	mov	dptr,#___str_4
+      0002E2 75 F0 80         [24] 1160 	mov	b, #0x80
+      0002E5 12 11 0C         [24] 1161 	lcall	_oled_string
+                                   1162 ;	main.c:214: oled_set_position(2, 66);
+      0002E8 75 43 42         [24] 1163 	mov	_oled_set_position_PARM_2,#0x42
+      0002EB 75 82 02         [24] 1164 	mov	dpl, #0x02
+      0002EE 12 0D 01         [24] 1165 	lcall	_oled_set_position
+                                   1166 ;	main.c:215: oled_string("L:--");
+      0002F1 90 14 25         [24] 1167 	mov	dptr,#___str_5
+      0002F4 75 F0 80         [24] 1168 	mov	b, #0x80
+      0002F7 12 11 0C         [24] 1169 	lcall	_oled_string
+                                   1170 ;	main.c:217: oled_set_position(3, 0);
+      0002FA 75 43 00         [24] 1171 	mov	_oled_set_position_PARM_2,#0x00
+      0002FD 75 82 03         [24] 1172 	mov	dpl, #0x03
+      000300 12 0D 01         [24] 1173 	lcall	_oled_set_position
+                                   1174 ;	main.c:218: oled_string("PF:--");
+      000303 90 14 2A         [24] 1175 	mov	dptr,#___str_6
+      000306 75 F0 80         [24] 1176 	mov	b, #0x80
+      000309 12 11 0C         [24] 1177 	lcall	_oled_string
+                                   1178 ;	main.c:220: oled_set_position(3, 66);
+      00030C 75 43 42         [24] 1179 	mov	_oled_set_position_PARM_2,#0x42
+      00030F 75 82 03         [24] 1180 	mov	dpl, #0x03
+      000312 12 0D 01         [24] 1181 	lcall	_oled_set_position
+                                   1182 ;	main.c:221: oled_string("T:--C");
+      000315 90 14 30         [24] 1183 	mov	dptr,#___str_7
+      000318 75 F0 80         [24] 1184 	mov	b, #0x80
+      00031B 12 11 0C         [24] 1185 	lcall	_oled_string
+                                   1186 ;	main.c:223: oled_set_position(5, 0);
+      00031E 75 43 00         [24] 1187 	mov	_oled_set_position_PARM_2,#0x00
+      000321 75 82 05         [24] 1188 	mov	dpl, #0x05
+      000324 12 0D 01         [24] 1189 	lcall	_oled_set_position
+                                   1190 ;	main.c:224: oled_string("ERROR:");
+      000327 90 14 36         [24] 1191 	mov	dptr,#___str_8
+      00032A 75 F0 80         [24] 1192 	mov	b, #0x80
+      00032D 12 11 0C         [24] 1193 	lcall	_oled_string
+                                   1194 ;	main.c:226: oled_set_position(7, 0);
+      000330 75 43 00         [24] 1195 	mov	_oled_set_position_PARM_2,#0x00
+      000333 75 82 07         [24] 1196 	mov	dpl, #0x07
+      000336 12 0D 01         [24] 1197 	lcall	_oled_set_position
+                                   1198 ;	main.c:227: oled_string("NO ERROR");
+      000339 90 14 3D         [24] 1199 	mov	dptr,#___str_9
+      00033C 75 F0 80         [24] 1200 	mov	b, #0x80
+                                   1201 ;	main.c:228: }
+      00033F 02 11 0C         [24] 1202 	ljmp	_oled_string
+                                   1203 ;------------------------------------------------------------
+                                   1204 ;Allocation info for local variables in function 'process_data1'
+                                   1205 ;------------------------------------------------------------
+                                   1206 ;	main.c:230: static unsigned char process_data1(void)
+                                   1207 ;	-----------------------------------------
+                                   1208 ;	 function process_data1
+                                   1209 ;	-----------------------------------------
+      000342                       1210 _process_data1:
+                                   1211 ;	main.c:232: parse_index = 6;
+      000342 75 30 06         [24] 1212 	mov	_parse_index,#0x06
+                                   1213 ;	main.c:234: oled_clear_region(0, 0, 10);
+      000345 75 38 00         [24] 1214 	mov	_oled_clear_region_PARM_2,#0x00
+      000348 75 39 0A         [24] 1215 	mov	_oled_clear_region_PARM_3,#0x0a
+      00034B 75 82 00         [24] 1216 	mov	dpl, #0x00
+      00034E 12 01 F6         [24] 1217 	lcall	_oled_clear_region
+                                   1218 ;	main.c:235: oled_set_position(0, 0);
+      000351 75 43 00         [24] 1219 	mov	_oled_set_position_PARM_2,#0x00
+      000354 75 82 00         [24] 1220 	mov	dpl, #0x00
+      000357 12 0D 01         [24] 1221 	lcall	_oled_set_position
+                                   1222 ;	main.c:236: oled_string("V:");
+      00035A 90 14 46         [24] 1223 	mov	dptr,#___str_10
+      00035D 75 F0 80         [24] 1224 	mov	b, #0x80
+      000360 12 11 0C         [24] 1225 	lcall	_oled_string
+                                   1226 ;	main.c:238: if (!oled_print_field(1))
+      000363 75 82 01         [24] 1227 	mov	dpl, #0x01
+      000366 12 02 2A         [24] 1228 	lcall	_oled_print_field
+      000369 E5 82            [12] 1229 	mov	a, dpl
+                                   1230 ;	main.c:239: return 0;
+      00036B 70 03            [24] 1231 	jnz	00102$
+      00036D F5 82            [12] 1232 	mov	dpl,a
+      00036F 22               [24] 1233 	ret
+      000370                       1234 00102$:
+                                   1235 ;	main.c:241: oled_clear_region(1, 0, 10);
+      000370 75 38 00         [24] 1236 	mov	_oled_clear_region_PARM_2,#0x00
+      000373 75 39 0A         [24] 1237 	mov	_oled_clear_region_PARM_3,#0x0a
+      000376 75 82 01         [24] 1238 	mov	dpl, #0x01
+      000379 12 01 F6         [24] 1239 	lcall	_oled_clear_region
+                                   1240 ;	main.c:242: oled_set_position(1, 0);
+      00037C 75 43 00         [24] 1241 	mov	_oled_set_position_PARM_2,#0x00
+      00037F 75 82 01         [24] 1242 	mov	dpl, #0x01
+      000382 12 0D 01         [24] 1243 	lcall	_oled_set_position
+                                   1244 ;	main.c:243: oled_string("I:");
+      000385 90 14 49         [24] 1245 	mov	dptr,#___str_11
+      000388 75 F0 80         [24] 1246 	mov	b, #0x80
+      00038B 12 11 0C         [24] 1247 	lcall	_oled_string
+                                   1248 ;	main.c:245: if (!oled_print_field(1))
+      00038E 75 82 01         [24] 1249 	mov	dpl, #0x01
+      000391 12 02 2A         [24] 1250 	lcall	_oled_print_field
+      000394 E5 82            [12] 1251 	mov	a, dpl
+                                   1252 ;	main.c:246: return 0;
+      000396 70 03            [24] 1253 	jnz	00104$
+      000398 F5 82            [12] 1254 	mov	dpl,a
+      00039A 22               [24] 1255 	ret
+      00039B                       1256 00104$:
+                                   1257 ;	main.c:248: oled_char('A');
+      00039B 75 82 41         [24] 1258 	mov	dpl, #0x41
+      00039E 12 0E 3F         [24] 1259 	lcall	_oled_char
+                                   1260 ;	main.c:250: oled_clear_region(2, 0, 10);
+      0003A1 75 38 00         [24] 1261 	mov	_oled_clear_region_PARM_2,#0x00
+      0003A4 75 39 0A         [24] 1262 	mov	_oled_clear_region_PARM_3,#0x0a
+      0003A7 75 82 02         [24] 1263 	mov	dpl, #0x02
+      0003AA 12 01 F6         [24] 1264 	lcall	_oled_clear_region
+                                   1265 ;	main.c:251: oled_set_position(2, 0);
+      0003AD 75 43 00         [24] 1266 	mov	_oled_set_position_PARM_2,#0x00
+      0003B0 75 82 02         [24] 1267 	mov	dpl, #0x02
+      0003B3 12 0D 01         [24] 1268 	lcall	_oled_set_position
+                                   1269 ;	main.c:252: oled_string("P:");
+      0003B6 90 14 4C         [24] 1270 	mov	dptr,#___str_12
+      0003B9 75 F0 80         [24] 1271 	mov	b, #0x80
+      0003BC 12 11 0C         [24] 1272 	lcall	_oled_string
+                                   1273 ;	main.c:254: if (!oled_print_field(1))
+      0003BF 75 82 01         [24] 1274 	mov	dpl, #0x01
+      0003C2 12 02 2A         [24] 1275 	lcall	_oled_print_field
+      0003C5 E5 82            [12] 1276 	mov	a, dpl
+                                   1277 ;	main.c:255: return 0;
+      0003C7 70 03            [24] 1278 	jnz	00106$
+      0003C9 F5 82            [12] 1279 	mov	dpl,a
+      0003CB 22               [24] 1280 	ret
+      0003CC                       1281 00106$:
+                                   1282 ;	main.c:257: oled_char('W');
+      0003CC 75 82 57         [24] 1283 	mov	dpl, #0x57
+      0003CF 12 0E 3F         [24] 1284 	lcall	_oled_char
+                                   1285 ;	main.c:259: oled_clear_region(3, 0, 10);
+      0003D2 75 38 00         [24] 1286 	mov	_oled_clear_region_PARM_2,#0x00
+      0003D5 75 39 0A         [24] 1287 	mov	_oled_clear_region_PARM_3,#0x0a
+      0003D8 75 82 03         [24] 1288 	mov	dpl, #0x03
+      0003DB 12 01 F6         [24] 1289 	lcall	_oled_clear_region
+                                   1290 ;	main.c:260: oled_set_position(3, 0);
+      0003DE 75 43 00         [24] 1291 	mov	_oled_set_position_PARM_2,#0x00
+      0003E1 75 82 03         [24] 1292 	mov	dpl, #0x03
+      0003E4 12 0D 01         [24] 1293 	lcall	_oled_set_position
+                                   1294 ;	main.c:261: oled_string("PF:");
+      0003E7 90 14 4F         [24] 1295 	mov	dptr,#___str_13
+      0003EA 75 F0 80         [24] 1296 	mov	b, #0x80
+      0003ED 12 11 0C         [24] 1297 	lcall	_oled_string
+                                   1298 ;	main.c:263: if (!oled_print_field(0))
+      0003F0 75 82 00         [24] 1299 	mov	dpl, #0x00
+      0003F3 12 02 2A         [24] 1300 	lcall	_oled_print_field
+      0003F6 E5 82            [12] 1301 	mov	a, dpl
+                                   1302 ;	main.c:264: return 0;
+      0003F8 70 03            [24] 1303 	jnz	00108$
+      0003FA F5 82            [12] 1304 	mov	dpl,a
+      0003FC 22               [24] 1305 	ret
+      0003FD                       1306 00108$:
+                                   1307 ;	main.c:266: return 1;
+      0003FD 75 82 01         [24] 1308 	mov	dpl, #0x01
+                                   1309 ;	main.c:267: }
+      000400 22               [24] 1310 	ret
+                                   1311 ;------------------------------------------------------------
+                                   1312 ;Allocation info for local variables in function 'process_data2'
+                                   1313 ;------------------------------------------------------------
+                                   1314 ;	main.c:269: static unsigned char process_data2(void)
+                                   1315 ;	-----------------------------------------
+                                   1316 ;	 function process_data2
+                                   1317 ;	-----------------------------------------
+      000401                       1318 _process_data2:
+                                   1319 ;	main.c:271: parse_index = 6;
+      000401 75 30 06         [24] 1320 	mov	_parse_index,#0x06
+                                   1321 ;	main.c:273: oled_clear_region(0, 66, 10);
+      000404 75 38 42         [24] 1322 	mov	_oled_clear_region_PARM_2,#0x42
+      000407 75 39 0A         [24] 1323 	mov	_oled_clear_region_PARM_3,#0x0a
+      00040A 75 82 00         [24] 1324 	mov	dpl, #0x00
+      00040D 12 01 F6         [24] 1325 	lcall	_oled_clear_region
+                                   1326 ;	main.c:274: oled_set_position(0, 66);
+      000410 75 43 42         [24] 1327 	mov	_oled_set_position_PARM_2,#0x42
+      000413 75 82 00         [24] 1328 	mov	dpl, #0x00
+      000416 12 0D 01         [24] 1329 	lcall	_oled_set_position
+                                   1330 ;	main.c:275: oled_string("F:");
+      000419 90 14 53         [24] 1331 	mov	dptr,#___str_14
+      00041C 75 F0 80         [24] 1332 	mov	b, #0x80
+      00041F 12 11 0C         [24] 1333 	lcall	_oled_string
+                                   1334 ;	main.c:277: if (!oled_print_field(1))
+      000422 75 82 01         [24] 1335 	mov	dpl, #0x01
+      000425 12 02 2A         [24] 1336 	lcall	_oled_print_field
+      000428 E5 82            [12] 1337 	mov	a, dpl
+                                   1338 ;	main.c:278: return 0;
+      00042A 70 03            [24] 1339 	jnz	00102$
+      00042C F5 82            [12] 1340 	mov	dpl,a
+      00042E 22               [24] 1341 	ret
+      00042F                       1342 00102$:
+                                   1343 ;	main.c:280: oled_string("Hz");
+      00042F 90 14 56         [24] 1344 	mov	dptr,#___str_15
+      000432 75 F0 80         [24] 1345 	mov	b, #0x80
+      000435 12 11 0C         [24] 1346 	lcall	_oled_string
+                                   1347 ;	main.c:282: oled_clear_region(1, 66, 10);
+      000438 75 38 42         [24] 1348 	mov	_oled_clear_region_PARM_2,#0x42
+      00043B 75 39 0A         [24] 1349 	mov	_oled_clear_region_PARM_3,#0x0a
+      00043E 75 82 01         [24] 1350 	mov	dpl, #0x01
+      000441 12 01 F6         [24] 1351 	lcall	_oled_clear_region
+                                   1352 ;	main.c:283: oled_set_position(1, 66);
+      000444 75 43 42         [24] 1353 	mov	_oled_set_position_PARM_2,#0x42
+      000447 75 82 01         [24] 1354 	mov	dpl, #0x01
+      00044A 12 0D 01         [24] 1355 	lcall	_oled_set_position
+                                   1356 ;	main.c:284: oled_string("E:");
+      00044D 90 14 59         [24] 1357 	mov	dptr,#___str_16
+      000450 75 F0 80         [24] 1358 	mov	b, #0x80
+      000453 12 11 0C         [24] 1359 	lcall	_oled_string
+                                   1360 ;	main.c:286: if (!oled_print_field(1))
+      000456 75 82 01         [24] 1361 	mov	dpl, #0x01
+      000459 12 02 2A         [24] 1362 	lcall	_oled_print_field
+      00045C E5 82            [12] 1363 	mov	a, dpl
+                                   1364 ;	main.c:287: return 0;
+      00045E 70 03            [24] 1365 	jnz	00104$
+      000460 F5 82            [12] 1366 	mov	dpl,a
+      000462 22               [24] 1367 	ret
+      000463                       1368 00104$:
+                                   1369 ;	main.c:289: oled_string("kWh");
+      000463 90 14 5C         [24] 1370 	mov	dptr,#___str_17
+      000466 75 F0 80         [24] 1371 	mov	b, #0x80
+      000469 12 11 0C         [24] 1372 	lcall	_oled_string
+                                   1373 ;	main.c:291: oled_clear_region(2, 66, 10);
+      00046C 75 38 42         [24] 1374 	mov	_oled_clear_region_PARM_2,#0x42
+      00046F 75 39 0A         [24] 1375 	mov	_oled_clear_region_PARM_3,#0x0a
+      000472 75 82 02         [24] 1376 	mov	dpl, #0x02
+      000475 12 01 F6         [24] 1377 	lcall	_oled_clear_region
+                                   1378 ;	main.c:292: oled_set_position(2, 66);
+      000478 75 43 42         [24] 1379 	mov	_oled_set_position_PARM_2,#0x42
+      00047B 75 82 02         [24] 1380 	mov	dpl, #0x02
+      00047E 12 0D 01         [24] 1381 	lcall	_oled_set_position
+                                   1382 ;	main.c:293: oled_string("L:");
+      000481 90 14 60         [24] 1383 	mov	dptr,#___str_18
+      000484 75 F0 80         [24] 1384 	mov	b, #0x80
+      000487 12 11 0C         [24] 1385 	lcall	_oled_string
+                                   1386 ;	main.c:295: if (!oled_print_field(0))
+      00048A 75 82 00         [24] 1387 	mov	dpl, #0x00
+      00048D 12 02 2A         [24] 1388 	lcall	_oled_print_field
+      000490 E5 82            [12] 1389 	mov	a, dpl
+                                   1390 ;	main.c:296: return 0;
+      000492 70 03            [24] 1391 	jnz	00106$
+      000494 F5 82            [12] 1392 	mov	dpl,a
+      000496 22               [24] 1393 	ret
+      000497                       1394 00106$:
+                                   1395 ;	main.c:298: oled_char('A');
+      000497 75 82 41         [24] 1396 	mov	dpl, #0x41
+      00049A 12 0E 3F         [24] 1397 	lcall	_oled_char
+                                   1398 ;	main.c:300: return 1;
+      00049D 75 82 01         [24] 1399 	mov	dpl, #0x01
+                                   1400 ;	main.c:301: }
+      0004A0 22               [24] 1401 	ret
+                                   1402 ;------------------------------------------------------------
+                                   1403 ;Allocation info for local variables in function 'process_data3'
+                                   1404 ;------------------------------------------------------------
+                                   1405 ;	main.c:303: static unsigned char process_data3(void)
+                                   1406 ;	-----------------------------------------
+                                   1407 ;	 function process_data3
+                                   1408 ;	-----------------------------------------
+      0004A1                       1409 _process_data3:
+                                   1410 ;	main.c:305: parse_index = 6;
+      0004A1 75 30 06         [24] 1411 	mov	_parse_index,#0x06
+                                   1412 ;	main.c:307: oled_clear_region(3, 66, 10);
+      0004A4 75 38 42         [24] 1413 	mov	_oled_clear_region_PARM_2,#0x42
+      0004A7 75 39 0A         [24] 1414 	mov	_oled_clear_region_PARM_3,#0x0a
+      0004AA 75 82 03         [24] 1415 	mov	dpl, #0x03
+      0004AD 12 01 F6         [24] 1416 	lcall	_oled_clear_region
+                                   1417 ;	main.c:308: oled_set_position(3, 66);
+      0004B0 75 43 42         [24] 1418 	mov	_oled_set_position_PARM_2,#0x42
+      0004B3 75 82 03         [24] 1419 	mov	dpl, #0x03
+      0004B6 12 0D 01         [24] 1420 	lcall	_oled_set_position
+                                   1421 ;	main.c:309: oled_string("T:");
+      0004B9 90 14 63         [24] 1422 	mov	dptr,#___str_19
+      0004BC 75 F0 80         [24] 1423 	mov	b, #0x80
+      0004BF 12 11 0C         [24] 1424 	lcall	_oled_string
+                                   1425 ;	main.c:311: if (!oled_print_field(0))
+      0004C2 75 82 00         [24] 1426 	mov	dpl, #0x00
+      0004C5 12 02 2A         [24] 1427 	lcall	_oled_print_field
+      0004C8 E5 82            [12] 1428 	mov	a, dpl
+                                   1429 ;	main.c:312: return 0;
+      0004CA 70 03            [24] 1430 	jnz	00102$
+      0004CC F5 82            [12] 1431 	mov	dpl,a
+      0004CE 22               [24] 1432 	ret
+      0004CF                       1433 00102$:
+                                   1434 ;	main.c:314: oled_char('C');
+      0004CF 75 82 43         [24] 1435 	mov	dpl, #0x43
+      0004D2 12 0E 3F         [24] 1436 	lcall	_oled_char
+                                   1437 ;	main.c:316: return 1;
+      0004D5 75 82 01         [24] 1438 	mov	dpl, #0x01
+                                   1439 ;	main.c:317: }
+      0004D8 22               [24] 1440 	ret
+                                   1441 ;------------------------------------------------------------
+                                   1442 ;Allocation info for local variables in function 'process_error'
+                                   1443 ;------------------------------------------------------------
+                                   1444 ;i             Allocated to registers r7 
+                                   1445 ;is_none       Allocated to registers r7 
+                                   1446 ;------------------------------------------------------------
+                                   1447 ;	main.c:319: static unsigned char process_error(void)
+                                   1448 ;	-----------------------------------------
+                                   1449 ;	 function process_error
+                                   1450 ;	-----------------------------------------
+      0004D9                       1451 _process_error:
+                                   1452 ;	main.c:322: unsigned char is_none = 0;
+      0004D9 7F 00            [12] 1453 	mov	r7,#0x00
+                                   1454 ;	main.c:324: parse_index = 6;
+      0004DB 75 30 06         [24] 1455 	mov	_parse_index,#0x06
+                                   1456 ;	main.c:326: if (rx_buffer[parse_index] == '\0')
+      0004DE E5 12            [12] 1457 	mov	a,(_rx_buffer + 0x0006)
+      0004E0 FE               [12] 1458 	mov	r6,a
+                                   1459 ;	main.c:327: return 0;
+      0004E1 70 03            [24] 1460 	jnz	00102$
+      0004E3 F5 82            [12] 1461 	mov	dpl,a
+      0004E5 22               [24] 1462 	ret
+      0004E6                       1463 00102$:
+                                   1464 ;	main.c:329: if (rx_buffer[parse_index] == 'N' &&
+      0004E6 BE 4E 15         [24] 1465 	cjne	r6,#0x4e,00104$
+                                   1466 ;	main.c:330: rx_buffer[parse_index + 1] == 'O' &&
+      0004E9 74 4F            [12] 1467 	mov	a,#0x4f
+      0004EB B5 13 10         [24] 1468 	cjne	a,(_rx_buffer + 0x0007),00104$
+                                   1469 ;	main.c:331: rx_buffer[parse_index + 2] == 'N' &&
+      0004EE 74 4E            [12] 1470 	mov	a,#0x4e
+      0004F0 B5 14 0B         [24] 1471 	cjne	a,(_rx_buffer + 0x0008),00104$
+                                   1472 ;	main.c:332: rx_buffer[parse_index + 3] == 'E' &&
+      0004F3 74 45            [12] 1473 	mov	a,#0x45
+      0004F5 B5 15 06         [24] 1474 	cjne	a,(_rx_buffer + 0x0009),00104$
+                                   1475 ;	main.c:333: rx_buffer[parse_index + 4] == '\0')
+      0004F8 E5 16            [12] 1476 	mov	a,(_rx_buffer + 0x000a)
+      0004FA 70 02            [24] 1477 	jnz	00104$
+                                   1478 ;	main.c:335: is_none = 1;
+      0004FC 7F 01            [12] 1479 	mov	r7,#0x01
+      0004FE                       1480 00104$:
+                                   1481 ;	main.c:338: if (is_none)
+      0004FE EF               [12] 1482 	mov	a,r7
+      0004FF 60 2E            [24] 1483 	jz	00110$
+                                   1484 ;	main.c:340: fault_active = 0;
+      000501 75 2F 00         [24] 1485 	mov	_fault_active,#0x00
+                                   1486 ;	main.c:341: oled_clear_error();
+      000504 12 02 12         [24] 1487 	lcall	_oled_clear_error
+                                   1488 ;	main.c:343: oled_set_position(5, 0);
+      000507 75 43 00         [24] 1489 	mov	_oled_set_position_PARM_2,#0x00
+      00050A 75 82 05         [24] 1490 	mov	dpl, #0x05
+      00050D 12 0D 01         [24] 1491 	lcall	_oled_set_position
+                                   1492 ;	main.c:344: oled_string("ERROR:");
+      000510 90 14 36         [24] 1493 	mov	dptr,#___str_8
+      000513 75 F0 80         [24] 1494 	mov	b, #0x80
+      000516 12 11 0C         [24] 1495 	lcall	_oled_string
+                                   1496 ;	main.c:346: oled_set_position(7, 0);
+      000519 75 43 00         [24] 1497 	mov	_oled_set_position_PARM_2,#0x00
+      00051C 75 82 07         [24] 1498 	mov	dpl, #0x07
+      00051F 12 0D 01         [24] 1499 	lcall	_oled_set_position
+                                   1500 ;	main.c:347: oled_string("NO ERROR");
+      000522 90 14 3D         [24] 1501 	mov	dptr,#___str_9
+      000525 75 F0 80         [24] 1502 	mov	b, #0x80
+      000528 12 11 0C         [24] 1503 	lcall	_oled_string
+                                   1504 ;	main.c:349: return 1;
+      00052B 75 82 01         [24] 1505 	mov	dpl, #0x01
+      00052E 22               [24] 1506 	ret
+      00052F                       1507 00110$:
+                                   1508 ;	main.c:352: fault_active = 1;
+      00052F 75 2F 01         [24] 1509 	mov	_fault_active,#0x01
+                                   1510 ;	main.c:353: relay_set(0);
+      000532 75 82 00         [24] 1511 	mov	dpl, #0x00
+      000535 12 01 6A         [24] 1512 	lcall	_relay_set
+                                   1513 ;	main.c:355: oled_clear_error();
+      000538 12 02 12         [24] 1514 	lcall	_oled_clear_error
+                                   1515 ;	main.c:357: oled_set_position(5, 0);
+      00053B 75 43 00         [24] 1516 	mov	_oled_set_position_PARM_2,#0x00
+      00053E 75 82 05         [24] 1517 	mov	dpl, #0x05
+      000541 12 0D 01         [24] 1518 	lcall	_oled_set_position
+                                   1519 ;	main.c:358: oled_string("ERROR:");
+      000544 90 14 36         [24] 1520 	mov	dptr,#___str_8
+      000547 75 F0 80         [24] 1521 	mov	b, #0x80
+      00054A 12 11 0C         [24] 1522 	lcall	_oled_string
+                                   1523 ;	main.c:360: oled_set_position(7, 0);
+      00054D 75 43 00         [24] 1524 	mov	_oled_set_position_PARM_2,#0x00
+      000550 75 82 07         [24] 1525 	mov	dpl, #0x07
+      000553 12 0D 01         [24] 1526 	lcall	_oled_set_position
+                                   1527 ;	main.c:362: for (i = 0; i < 21; i++)
+      000556 7F 00            [12] 1528 	mov	r7,#0x00
+      000558                       1529 00114$:
+                                   1530 ;	main.c:364: if (rx_buffer[parse_index] == '\0')
+      000558 E5 30            [12] 1531 	mov	a,_parse_index
+      00055A 24 0C            [12] 1532 	add	a, #_rx_buffer
+      00055C F9               [12] 1533 	mov	r1,a
+      00055D E7               [12] 1534 	mov	a,@r1
+      00055E FE               [12] 1535 	mov	r6,a
+      00055F 60 11            [24] 1536 	jz	00113$
+                                   1537 ;	main.c:367: oled_char(rx_buffer[parse_index]);
+      000561 8E 82            [24] 1538 	mov	dpl, r6
+      000563 C0 07            [24] 1539 	push	ar7
+      000565 12 0E 3F         [24] 1540 	lcall	_oled_char
+      000568 D0 07            [24] 1541 	pop	ar7
+                                   1542 ;	main.c:368: parse_index++;
+      00056A 05 30            [12] 1543 	inc	_parse_index
+                                   1544 ;	main.c:362: for (i = 0; i < 21; i++)
+      00056C 0F               [12] 1545 	inc	r7
+      00056D BF 15 00         [24] 1546 	cjne	r7,#0x15,00193$
+      000570                       1547 00193$:
+      000570 40 E6            [24] 1548 	jc	00114$
+      000572                       1549 00113$:
+                                   1550 ;	main.c:371: return 1;
+      000572 75 82 01         [24] 1551 	mov	dpl, #0x01
+                                   1552 ;	main.c:372: }
+      000575 22               [24] 1553 	ret
+                                   1554 ;------------------------------------------------------------
+                                   1555 ;Allocation info for local variables in function 'process_command'
+                                   1556 ;------------------------------------------------------------
+                                   1557 ;command       Allocated to registers r5 r6 r7 
+                                   1558 ;------------------------------------------------------------
+                                   1559 ;	main.c:374: static void process_command(char *command)
+                                   1560 ;	-----------------------------------------
+                                   1561 ;	 function process_command
+                                   1562 ;	-----------------------------------------
+      000576                       1563 _process_command:
+                                   1564 ;	main.c:376: if (command[0] == 'R' &&
+      000576 AD 82            [24] 1565 	mov	r5,dpl
+      000578 AE 83            [24] 1566 	mov	r6,dph
+      00057A AF F0            [24] 1567 	mov	r7,b
+      00057C 12 13 EC         [24] 1568 	lcall	__gptrget
+      00057F FC               [12] 1569 	mov	r4,a
+      000580 BC 52 02         [24] 1570 	cjne	r4,#0x52,00651$
+      000583 80 03            [24] 1571 	sjmp	00652$
+      000585                       1572 00651$:
+      000585 02 06 D2         [24] 1573 	ljmp	00114$
+      000588                       1574 00652$:
+                                   1575 ;	main.c:377: command[1] == 'E' &&
+      000588 74 01            [12] 1576 	mov	a,#0x01
+      00058A 2D               [12] 1577 	add	a, r5
+      00058B F9               [12] 1578 	mov	r1,a
+      00058C E4               [12] 1579 	clr	a
+      00058D 3E               [12] 1580 	addc	a, r6
+      00058E FA               [12] 1581 	mov	r2,a
+      00058F 8F 03            [24] 1582 	mov	ar3,r7
+      000591 89 82            [24] 1583 	mov	dpl,r1
+      000593 8A 83            [24] 1584 	mov	dph,r2
+      000595 8B F0            [24] 1585 	mov	b,r3
+      000597 12 13 EC         [24] 1586 	lcall	__gptrget
+      00059A F9               [12] 1587 	mov	r1,a
+      00059B B9 45 02         [24] 1588 	cjne	r1,#0x45,00653$
+      00059E 80 03            [24] 1589 	sjmp	00654$
+      0005A0                       1590 00653$:
+      0005A0 02 06 D2         [24] 1591 	ljmp	00114$
+      0005A3                       1592 00654$:
+                                   1593 ;	main.c:378: command[2] == 'L' &&
+      0005A3 74 02            [12] 1594 	mov	a,#0x02
+      0005A5 2D               [12] 1595 	add	a, r5
+      0005A6 F9               [12] 1596 	mov	r1,a
+      0005A7 E4               [12] 1597 	clr	a
+      0005A8 3E               [12] 1598 	addc	a, r6
+      0005A9 FA               [12] 1599 	mov	r2,a
+      0005AA 8F 03            [24] 1600 	mov	ar3,r7
+      0005AC 89 82            [24] 1601 	mov	dpl,r1
+      0005AE 8A 83            [24] 1602 	mov	dph,r2
+      0005B0 8B F0            [24] 1603 	mov	b,r3
+      0005B2 12 13 EC         [24] 1604 	lcall	__gptrget
+      0005B5 F9               [12] 1605 	mov	r1,a
+      0005B6 B9 4C 02         [24] 1606 	cjne	r1,#0x4c,00655$
+      0005B9 80 03            [24] 1607 	sjmp	00656$
+      0005BB                       1608 00655$:
+      0005BB 02 06 D2         [24] 1609 	ljmp	00114$
+      0005BE                       1610 00656$:
+                                   1611 ;	main.c:379: command[3] == 'A' &&
+      0005BE 74 03            [12] 1612 	mov	a,#0x03
+      0005C0 2D               [12] 1613 	add	a, r5
+      0005C1 F9               [12] 1614 	mov	r1,a
+      0005C2 E4               [12] 1615 	clr	a
+      0005C3 3E               [12] 1616 	addc	a, r6
+      0005C4 FA               [12] 1617 	mov	r2,a
+      0005C5 8F 03            [24] 1618 	mov	ar3,r7
+      0005C7 89 82            [24] 1619 	mov	dpl,r1
+      0005C9 8A 83            [24] 1620 	mov	dph,r2
+      0005CB 8B F0            [24] 1621 	mov	b,r3
+      0005CD 12 13 EC         [24] 1622 	lcall	__gptrget
+      0005D0 F9               [12] 1623 	mov	r1,a
+      0005D1 B9 41 02         [24] 1624 	cjne	r1,#0x41,00657$
+      0005D4 80 03            [24] 1625 	sjmp	00658$
+      0005D6                       1626 00657$:
+      0005D6 02 06 D2         [24] 1627 	ljmp	00114$
+      0005D9                       1628 00658$:
+                                   1629 ;	main.c:380: command[4] == 'Y' &&
+      0005D9 74 04            [12] 1630 	mov	a,#0x04
+      0005DB 2D               [12] 1631 	add	a, r5
+      0005DC F9               [12] 1632 	mov	r1,a
+      0005DD E4               [12] 1633 	clr	a
+      0005DE 3E               [12] 1634 	addc	a, r6
+      0005DF FA               [12] 1635 	mov	r2,a
+      0005E0 8F 03            [24] 1636 	mov	ar3,r7
+      0005E2 89 82            [24] 1637 	mov	dpl,r1
+      0005E4 8A 83            [24] 1638 	mov	dph,r2
+      0005E6 8B F0            [24] 1639 	mov	b,r3
+      0005E8 12 13 EC         [24] 1640 	lcall	__gptrget
+      0005EB F9               [12] 1641 	mov	r1,a
+      0005EC B9 59 02         [24] 1642 	cjne	r1,#0x59,00659$
+      0005EF 80 03            [24] 1643 	sjmp	00660$
+      0005F1                       1644 00659$:
+      0005F1 02 06 D2         [24] 1645 	ljmp	00114$
+      0005F4                       1646 00660$:
+                                   1647 ;	main.c:381: command[5] == ',')
+      0005F4 74 05            [12] 1648 	mov	a,#0x05
+      0005F6 2D               [12] 1649 	add	a, r5
+      0005F7 F9               [12] 1650 	mov	r1,a
+      0005F8 E4               [12] 1651 	clr	a
+      0005F9 3E               [12] 1652 	addc	a, r6
+      0005FA FA               [12] 1653 	mov	r2,a
+      0005FB 8F 03            [24] 1654 	mov	ar3,r7
+      0005FD 89 82            [24] 1655 	mov	dpl,r1
+      0005FF 8A 83            [24] 1656 	mov	dph,r2
+      000601 8B F0            [24] 1657 	mov	b,r3
+      000603 12 13 EC         [24] 1658 	lcall	__gptrget
+      000606 F9               [12] 1659 	mov	r1,a
+      000607 B9 2C 02         [24] 1660 	cjne	r1,#0x2c,00661$
+      00060A 80 03            [24] 1661 	sjmp	00662$
+      00060C                       1662 00661$:
+      00060C 02 06 D2         [24] 1663 	ljmp	00114$
+      00060F                       1664 00662$:
+                                   1665 ;	main.c:383: if (command[6] == 'O' &&
+      00060F 74 06            [12] 1666 	mov	a,#0x06
+      000611 2D               [12] 1667 	add	a, r5
+      000612 F9               [12] 1668 	mov	r1,a
+      000613 E4               [12] 1669 	clr	a
+      000614 3E               [12] 1670 	addc	a, r6
+      000615 FA               [12] 1671 	mov	r2,a
+      000616 8F 03            [24] 1672 	mov	ar3,r7
+      000618 89 82            [24] 1673 	mov	dpl,r1
+      00061A 8A 83            [24] 1674 	mov	dph,r2
+      00061C 8B F0            [24] 1675 	mov	b,r3
+      00061E 12 13 EC         [24] 1676 	lcall	__gptrget
+      000621 F9               [12] 1677 	mov	r1,a
+      000622 E4               [12] 1678 	clr	a
+      000623 B9 4F 01         [24] 1679 	cjne	r1,#0x4f,00663$
+      000626 04               [12] 1680 	inc	a
+      000627                       1681 00663$:
+      000627 FB               [12] 1682 	mov	r3,a
+      000628 60 57            [24] 1683 	jz	00105$
+                                   1684 ;	main.c:384: command[7] == 'N' &&
+      00062A 74 07            [12] 1685 	mov	a,#0x07
+      00062C 2D               [12] 1686 	add	a, r5
+      00062D F8               [12] 1687 	mov	r0,a
+      00062E E4               [12] 1688 	clr	a
+      00062F 3E               [12] 1689 	addc	a, r6
+      000630 F9               [12] 1690 	mov	r1,a
+      000631 8F 02            [24] 1691 	mov	ar2,r7
+      000633 88 82            [24] 1692 	mov	dpl,r0
+      000635 89 83            [24] 1693 	mov	dph,r1
+      000637 8A F0            [24] 1694 	mov	b,r2
+      000639 12 13 EC         [24] 1695 	lcall	__gptrget
+      00063C F8               [12] 1696 	mov	r0,a
+      00063D B8 4E 41         [24] 1697 	cjne	r0,#0x4e,00105$
+                                   1698 ;	main.c:385: command[8] == '\0')
+      000640 74 08            [12] 1699 	mov	a,#0x08
+      000642 2D               [12] 1700 	add	a, r5
+      000643 F8               [12] 1701 	mov	r0,a
+      000644 E4               [12] 1702 	clr	a
+      000645 3E               [12] 1703 	addc	a, r6
+      000646 F9               [12] 1704 	mov	r1,a
+      000647 8F 02            [24] 1705 	mov	ar2,r7
+      000649 88 82            [24] 1706 	mov	dpl,r0
+      00064B 89 83            [24] 1707 	mov	dph,r1
+      00064D 8A F0            [24] 1708 	mov	b,r2
+      00064F 12 13 EC         [24] 1709 	lcall	__gptrget
+      000652 70 2D            [24] 1710 	jnz	00105$
+                                   1711 ;	main.c:387: if (!fault_active)
+      000654 E5 2F            [12] 1712 	mov	a,_fault_active
+      000656 70 08            [24] 1713 	jnz	00102$
+                                   1714 ;	main.c:389: relay_set(1);
+      000658 75 82 01         [24] 1715 	mov	dpl, #0x01
+      00065B 12 01 6A         [24] 1716 	lcall	_relay_set
+      00065E 80 06            [24] 1717 	sjmp	00103$
+      000660                       1718 00102$:
+                                   1719 ;	main.c:393: relay_set(0);
+      000660 75 82 00         [24] 1720 	mov	dpl, #0x00
+      000663 12 01 6A         [24] 1721 	lcall	_relay_set
+      000666                       1722 00103$:
+                                   1723 ;	main.c:397: relay_state ? "RELAY,ON\r\n" : "RELAY,OFF\r\n"
+      000666 E5 2D            [12] 1724 	mov	a,_relay_state
+      000668 60 06            [24] 1725 	jz	00183$
+      00066A 79 66            [12] 1726 	mov	r1,#___str_20
+      00066C 7A 14            [12] 1727 	mov	r2,#(___str_20 >> 8)
+      00066E 80 04            [24] 1728 	sjmp	00184$
+      000670                       1729 00183$:
+                                   1730 ;	main.c:398: );
+      000670 79 71            [12] 1731 	mov	r1,#___str_21
+      000672 7A 14            [12] 1732 	mov	r2,#(___str_21 >> 8)
+      000674                       1733 00184$:
+      000674 8A 00            [24] 1734 	mov	ar0,r2
+      000676 7A 80            [12] 1735 	mov	r2,#0x80
+      000678 89 82            [24] 1736 	mov	dpl, r1
+      00067A 88 83            [24] 1737 	mov	dph, r0
+      00067C 8A F0            [24] 1738 	mov	b, r2
+                                   1739 ;	main.c:400: return;
+      00067E 02 12 8F         [24] 1740 	ljmp	_uart_write_string
+      000681                       1741 00105$:
+                                   1742 ;	main.c:403: if (command[6] == 'O' &&
+      000681 EB               [12] 1743 	mov	a,r3
+      000682 60 4E            [24] 1744 	jz	00114$
+                                   1745 ;	main.c:404: command[7] == 'F' &&
+      000684 74 07            [12] 1746 	mov	a,#0x07
+      000686 2D               [12] 1747 	add	a, r5
+      000687 F9               [12] 1748 	mov	r1,a
+      000688 E4               [12] 1749 	clr	a
+      000689 3E               [12] 1750 	addc	a, r6
+      00068A FA               [12] 1751 	mov	r2,a
+      00068B 8F 03            [24] 1752 	mov	ar3,r7
+      00068D 89 82            [24] 1753 	mov	dpl,r1
+      00068F 8A 83            [24] 1754 	mov	dph,r2
+      000691 8B F0            [24] 1755 	mov	b,r3
+      000693 12 13 EC         [24] 1756 	lcall	__gptrget
+      000696 F9               [12] 1757 	mov	r1,a
+      000697 B9 46 38         [24] 1758 	cjne	r1,#0x46,00114$
+                                   1759 ;	main.c:405: command[8] == 'F' &&
+      00069A 74 08            [12] 1760 	mov	a,#0x08
+      00069C 2D               [12] 1761 	add	a, r5
+      00069D F9               [12] 1762 	mov	r1,a
+      00069E E4               [12] 1763 	clr	a
+      00069F 3E               [12] 1764 	addc	a, r6
+      0006A0 FA               [12] 1765 	mov	r2,a
+      0006A1 8F 03            [24] 1766 	mov	ar3,r7
+      0006A3 89 82            [24] 1767 	mov	dpl,r1
+      0006A5 8A 83            [24] 1768 	mov	dph,r2
+      0006A7 8B F0            [24] 1769 	mov	b,r3
+      0006A9 12 13 EC         [24] 1770 	lcall	__gptrget
+      0006AC F9               [12] 1771 	mov	r1,a
+      0006AD B9 46 22         [24] 1772 	cjne	r1,#0x46,00114$
+                                   1773 ;	main.c:406: command[9] == '\0')
+      0006B0 74 09            [12] 1774 	mov	a,#0x09
+      0006B2 2D               [12] 1775 	add	a, r5
+      0006B3 F9               [12] 1776 	mov	r1,a
+      0006B4 E4               [12] 1777 	clr	a
+      0006B5 3E               [12] 1778 	addc	a, r6
+      0006B6 FA               [12] 1779 	mov	r2,a
+      0006B7 8F 03            [24] 1780 	mov	ar3,r7
+      0006B9 89 82            [24] 1781 	mov	dpl,r1
+      0006BB 8A 83            [24] 1782 	mov	dph,r2
+      0006BD 8B F0            [24] 1783 	mov	b,r3
+      0006BF 12 13 EC         [24] 1784 	lcall	__gptrget
+                                   1785 ;	main.c:408: relay_set(0);
+      0006C2 70 0E            [24] 1786 	jnz	00114$
+      0006C4 F5 82            [12] 1787 	mov	dpl,a
+      0006C6 12 01 6A         [24] 1788 	lcall	_relay_set
+                                   1789 ;	main.c:410: uart_write_string("RELAY,OFF\r\n");
+      0006C9 90 14 71         [24] 1790 	mov	dptr,#___str_21
+      0006CC 75 F0 80         [24] 1791 	mov	b, #0x80
+                                   1792 ;	main.c:411: return;
+      0006CF 02 12 8F         [24] 1793 	ljmp	_uart_write_string
+      0006D2                       1794 00114$:
+                                   1795 ;	main.c:415: if (command[0] == 'B' &&
+      0006D2 BC 42 02         [24] 1796 	cjne	r4,#0x42,00677$
+      0006D5 80 03            [24] 1797 	sjmp	00678$
+      0006D7                       1798 00677$:
+      0006D7 02 08 21         [24] 1799 	ljmp	00130$
+      0006DA                       1800 00678$:
+                                   1801 ;	main.c:416: command[1] == 'U' &&
+      0006DA 74 01            [12] 1802 	mov	a,#0x01
+      0006DC 2D               [12] 1803 	add	a, r5
+      0006DD F9               [12] 1804 	mov	r1,a
+      0006DE E4               [12] 1805 	clr	a
+      0006DF 3E               [12] 1806 	addc	a, r6
+      0006E0 FA               [12] 1807 	mov	r2,a
+      0006E1 8F 03            [24] 1808 	mov	ar3,r7
+      0006E3 89 82            [24] 1809 	mov	dpl,r1
+      0006E5 8A 83            [24] 1810 	mov	dph,r2
+      0006E7 8B F0            [24] 1811 	mov	b,r3
+      0006E9 12 13 EC         [24] 1812 	lcall	__gptrget
+      0006EC F9               [12] 1813 	mov	r1,a
+      0006ED B9 55 02         [24] 1814 	cjne	r1,#0x55,00679$
+      0006F0 80 03            [24] 1815 	sjmp	00680$
+      0006F2                       1816 00679$:
+      0006F2 02 08 21         [24] 1817 	ljmp	00130$
+      0006F5                       1818 00680$:
+                                   1819 ;	main.c:417: command[2] == 'Z' &&
+      0006F5 74 02            [12] 1820 	mov	a,#0x02
+      0006F7 2D               [12] 1821 	add	a, r5
+      0006F8 F9               [12] 1822 	mov	r1,a
+      0006F9 E4               [12] 1823 	clr	a
+      0006FA 3E               [12] 1824 	addc	a, r6
+      0006FB FA               [12] 1825 	mov	r2,a
+      0006FC 8F 03            [24] 1826 	mov	ar3,r7
+      0006FE 89 82            [24] 1827 	mov	dpl,r1
+      000700 8A 83            [24] 1828 	mov	dph,r2
+      000702 8B F0            [24] 1829 	mov	b,r3
+      000704 12 13 EC         [24] 1830 	lcall	__gptrget
+      000707 F9               [12] 1831 	mov	r1,a
+      000708 B9 5A 02         [24] 1832 	cjne	r1,#0x5a,00681$
+      00070B 80 03            [24] 1833 	sjmp	00682$
+      00070D                       1834 00681$:
+      00070D 02 08 21         [24] 1835 	ljmp	00130$
+      000710                       1836 00682$:
+                                   1837 ;	main.c:418: command[3] == 'Z' &&
+      000710 74 03            [12] 1838 	mov	a,#0x03
+      000712 2D               [12] 1839 	add	a, r5
+      000713 F9               [12] 1840 	mov	r1,a
+      000714 E4               [12] 1841 	clr	a
+      000715 3E               [12] 1842 	addc	a, r6
+      000716 FA               [12] 1843 	mov	r2,a
+      000717 8F 03            [24] 1844 	mov	ar3,r7
+      000719 89 82            [24] 1845 	mov	dpl,r1
+      00071B 8A 83            [24] 1846 	mov	dph,r2
+      00071D 8B F0            [24] 1847 	mov	b,r3
+      00071F 12 13 EC         [24] 1848 	lcall	__gptrget
+      000722 F9               [12] 1849 	mov	r1,a
+      000723 B9 5A 02         [24] 1850 	cjne	r1,#0x5a,00683$
+      000726 80 03            [24] 1851 	sjmp	00684$
+      000728                       1852 00683$:
+      000728 02 08 21         [24] 1853 	ljmp	00130$
+      00072B                       1854 00684$:
+                                   1855 ;	main.c:419: command[4] == 'E' &&
+      00072B 74 04            [12] 1856 	mov	a,#0x04
+      00072D 2D               [12] 1857 	add	a, r5
+      00072E F9               [12] 1858 	mov	r1,a
+      00072F E4               [12] 1859 	clr	a
+      000730 3E               [12] 1860 	addc	a, r6
+      000731 FA               [12] 1861 	mov	r2,a
+      000732 8F 03            [24] 1862 	mov	ar3,r7
+      000734 89 82            [24] 1863 	mov	dpl,r1
+      000736 8A 83            [24] 1864 	mov	dph,r2
+      000738 8B F0            [24] 1865 	mov	b,r3
+      00073A 12 13 EC         [24] 1866 	lcall	__gptrget
+      00073D F9               [12] 1867 	mov	r1,a
+      00073E B9 45 02         [24] 1868 	cjne	r1,#0x45,00685$
+      000741 80 03            [24] 1869 	sjmp	00686$
+      000743                       1870 00685$:
+      000743 02 08 21         [24] 1871 	ljmp	00130$
+      000746                       1872 00686$:
+                                   1873 ;	main.c:420: command[5] == 'R' &&
+      000746 74 05            [12] 1874 	mov	a,#0x05
+      000748 2D               [12] 1875 	add	a, r5
+      000749 F9               [12] 1876 	mov	r1,a
+      00074A E4               [12] 1877 	clr	a
+      00074B 3E               [12] 1878 	addc	a, r6
+      00074C FA               [12] 1879 	mov	r2,a
+      00074D 8F 03            [24] 1880 	mov	ar3,r7
+      00074F 89 82            [24] 1881 	mov	dpl,r1
+      000751 8A 83            [24] 1882 	mov	dph,r2
+      000753 8B F0            [24] 1883 	mov	b,r3
+      000755 12 13 EC         [24] 1884 	lcall	__gptrget
+      000758 F9               [12] 1885 	mov	r1,a
+      000759 B9 52 02         [24] 1886 	cjne	r1,#0x52,00687$
+      00075C 80 03            [24] 1887 	sjmp	00688$
+      00075E                       1888 00687$:
+      00075E 02 08 21         [24] 1889 	ljmp	00130$
+      000761                       1890 00688$:
+                                   1891 ;	main.c:421: command[6] == ',')
+      000761 74 06            [12] 1892 	mov	a,#0x06
+      000763 2D               [12] 1893 	add	a, r5
+      000764 F9               [12] 1894 	mov	r1,a
+      000765 E4               [12] 1895 	clr	a
+      000766 3E               [12] 1896 	addc	a, r6
+      000767 FA               [12] 1897 	mov	r2,a
+      000768 8F 03            [24] 1898 	mov	ar3,r7
+      00076A 89 82            [24] 1899 	mov	dpl,r1
+      00076C 8A 83            [24] 1900 	mov	dph,r2
+      00076E 8B F0            [24] 1901 	mov	b,r3
+      000770 12 13 EC         [24] 1902 	lcall	__gptrget
+      000773 F9               [12] 1903 	mov	r1,a
+      000774 B9 2C 02         [24] 1904 	cjne	r1,#0x2c,00689$
+      000777 80 03            [24] 1905 	sjmp	00690$
+      000779                       1906 00689$:
+      000779 02 08 21         [24] 1907 	ljmp	00130$
+      00077C                       1908 00690$:
+                                   1909 ;	main.c:423: if (command[7] == 'O' &&
+      00077C 74 07            [12] 1910 	mov	a,#0x07
+      00077E 2D               [12] 1911 	add	a, r5
+      00077F F9               [12] 1912 	mov	r1,a
+      000780 E4               [12] 1913 	clr	a
+      000781 3E               [12] 1914 	addc	a, r6
+      000782 FA               [12] 1915 	mov	r2,a
+      000783 8F 03            [24] 1916 	mov	ar3,r7
+      000785 89 82            [24] 1917 	mov	dpl,r1
+      000787 8A 83            [24] 1918 	mov	dph,r2
+      000789 8B F0            [24] 1919 	mov	b,r3
+      00078B 12 13 EC         [24] 1920 	lcall	__gptrget
+      00078E F9               [12] 1921 	mov	r1,a
+      00078F E4               [12] 1922 	clr	a
+      000790 B9 4F 01         [24] 1923 	cjne	r1,#0x4f,00691$
+      000793 04               [12] 1924 	inc	a
+      000794                       1925 00691$:
+      000794 FB               [12] 1926 	mov	r3,a
+      000795 60 39            [24] 1927 	jz	00121$
+                                   1928 ;	main.c:424: command[8] == 'N' &&
+      000797 74 08            [12] 1929 	mov	a,#0x08
+      000799 2D               [12] 1930 	add	a, r5
+      00079A F8               [12] 1931 	mov	r0,a
+      00079B E4               [12] 1932 	clr	a
+      00079C 3E               [12] 1933 	addc	a, r6
+      00079D F9               [12] 1934 	mov	r1,a
+      00079E 8F 02            [24] 1935 	mov	ar2,r7
+      0007A0 88 82            [24] 1936 	mov	dpl,r0
+      0007A2 89 83            [24] 1937 	mov	dph,r1
+      0007A4 8A F0            [24] 1938 	mov	b,r2
+      0007A6 12 13 EC         [24] 1939 	lcall	__gptrget
+      0007A9 F8               [12] 1940 	mov	r0,a
+      0007AA B8 4E 23         [24] 1941 	cjne	r0,#0x4e,00121$
+                                   1942 ;	main.c:425: command[9] == '\0')
+      0007AD 74 09            [12] 1943 	mov	a,#0x09
+      0007AF 2D               [12] 1944 	add	a, r5
+      0007B0 F8               [12] 1945 	mov	r0,a
+      0007B1 E4               [12] 1946 	clr	a
+      0007B2 3E               [12] 1947 	addc	a, r6
+      0007B3 F9               [12] 1948 	mov	r1,a
+      0007B4 8F 02            [24] 1949 	mov	ar2,r7
+      0007B6 88 82            [24] 1950 	mov	dpl,r0
+      0007B8 89 83            [24] 1951 	mov	dph,r1
+      0007BA 8A F0            [24] 1952 	mov	b,r2
+      0007BC 12 13 EC         [24] 1953 	lcall	__gptrget
+      0007BF 70 0F            [24] 1954 	jnz	00121$
+                                   1955 ;	main.c:427: buzzer_set(1);
+      0007C1 75 82 01         [24] 1956 	mov	dpl, #0x01
+      0007C4 12 01 7A         [24] 1957 	lcall	_buzzer_set
+                                   1958 ;	main.c:429: uart_write_string("BUZZER,ON\r\n");
+      0007C7 90 14 7D         [24] 1959 	mov	dptr,#___str_22
+      0007CA 75 F0 80         [24] 1960 	mov	b, #0x80
+                                   1961 ;	main.c:430: return;
+      0007CD 02 12 8F         [24] 1962 	ljmp	_uart_write_string
+      0007D0                       1963 00121$:
+                                   1964 ;	main.c:433: if (command[7] == 'O' &&
+      0007D0 EB               [12] 1965 	mov	a,r3
+      0007D1 60 4E            [24] 1966 	jz	00130$
+                                   1967 ;	main.c:434: command[8] == 'F' &&
+      0007D3 74 08            [12] 1968 	mov	a,#0x08
+      0007D5 2D               [12] 1969 	add	a, r5
+      0007D6 F9               [12] 1970 	mov	r1,a
+      0007D7 E4               [12] 1971 	clr	a
+      0007D8 3E               [12] 1972 	addc	a, r6
+      0007D9 FA               [12] 1973 	mov	r2,a
+      0007DA 8F 03            [24] 1974 	mov	ar3,r7
+      0007DC 89 82            [24] 1975 	mov	dpl,r1
+      0007DE 8A 83            [24] 1976 	mov	dph,r2
+      0007E0 8B F0            [24] 1977 	mov	b,r3
+      0007E2 12 13 EC         [24] 1978 	lcall	__gptrget
+      0007E5 F9               [12] 1979 	mov	r1,a
+      0007E6 B9 46 38         [24] 1980 	cjne	r1,#0x46,00130$
+                                   1981 ;	main.c:435: command[9] == 'F' &&
+      0007E9 74 09            [12] 1982 	mov	a,#0x09
+      0007EB 2D               [12] 1983 	add	a, r5
+      0007EC F9               [12] 1984 	mov	r1,a
+      0007ED E4               [12] 1985 	clr	a
+      0007EE 3E               [12] 1986 	addc	a, r6
+      0007EF FA               [12] 1987 	mov	r2,a
+      0007F0 8F 03            [24] 1988 	mov	ar3,r7
+      0007F2 89 82            [24] 1989 	mov	dpl,r1
+      0007F4 8A 83            [24] 1990 	mov	dph,r2
+      0007F6 8B F0            [24] 1991 	mov	b,r3
+      0007F8 12 13 EC         [24] 1992 	lcall	__gptrget
+      0007FB F9               [12] 1993 	mov	r1,a
+      0007FC B9 46 22         [24] 1994 	cjne	r1,#0x46,00130$
+                                   1995 ;	main.c:436: command[10] == '\0')
+      0007FF 74 0A            [12] 1996 	mov	a,#0x0a
+      000801 2D               [12] 1997 	add	a, r5
+      000802 F9               [12] 1998 	mov	r1,a
+      000803 E4               [12] 1999 	clr	a
+      000804 3E               [12] 2000 	addc	a, r6
+      000805 FA               [12] 2001 	mov	r2,a
+      000806 8F 03            [24] 2002 	mov	ar3,r7
+      000808 89 82            [24] 2003 	mov	dpl,r1
+      00080A 8A 83            [24] 2004 	mov	dph,r2
+      00080C 8B F0            [24] 2005 	mov	b,r3
+      00080E 12 13 EC         [24] 2006 	lcall	__gptrget
+                                   2007 ;	main.c:438: buzzer_set(0);
+      000811 70 0E            [24] 2008 	jnz	00130$
+      000813 F5 82            [12] 2009 	mov	dpl,a
+      000815 12 01 7A         [24] 2010 	lcall	_buzzer_set
+                                   2011 ;	main.c:440: uart_write_string("BUZZER,OFF\r\n");
+      000818 90 14 89         [24] 2012 	mov	dptr,#___str_23
+      00081B 75 F0 80         [24] 2013 	mov	b, #0x80
+                                   2014 ;	main.c:441: return;
+      00081E 02 12 8F         [24] 2015 	ljmp	_uart_write_string
+      000821                       2016 00130$:
+                                   2017 ;	main.c:445: if (command[0] == 'S' &&
+      000821 BC 53 02         [24] 2018 	cjne	r4,#0x53,00703$
+      000824 80 03            [24] 2019 	sjmp	00704$
+      000826                       2020 00703$:
+      000826 02 09 0F         [24] 2021 	ljmp	00138$
+      000829                       2022 00704$:
+                                   2023 ;	main.c:446: command[1] == 'T' &&
+      000829 74 01            [12] 2024 	mov	a,#0x01
+      00082B 2D               [12] 2025 	add	a, r5
+      00082C F9               [12] 2026 	mov	r1,a
+      00082D E4               [12] 2027 	clr	a
+      00082E 3E               [12] 2028 	addc	a, r6
+      00082F FA               [12] 2029 	mov	r2,a
+      000830 8F 03            [24] 2030 	mov	ar3,r7
+      000832 89 82            [24] 2031 	mov	dpl,r1
+      000834 8A 83            [24] 2032 	mov	dph,r2
+      000836 8B F0            [24] 2033 	mov	b,r3
+      000838 12 13 EC         [24] 2034 	lcall	__gptrget
+      00083B F9               [12] 2035 	mov	r1,a
+      00083C B9 54 02         [24] 2036 	cjne	r1,#0x54,00705$
+      00083F 80 03            [24] 2037 	sjmp	00706$
+      000841                       2038 00705$:
+      000841 02 09 0F         [24] 2039 	ljmp	00138$
+      000844                       2040 00706$:
+                                   2041 ;	main.c:447: command[2] == 'A' &&
+      000844 74 02            [12] 2042 	mov	a,#0x02
+      000846 2D               [12] 2043 	add	a, r5
+      000847 F9               [12] 2044 	mov	r1,a
+      000848 E4               [12] 2045 	clr	a
+      000849 3E               [12] 2046 	addc	a, r6
+      00084A FA               [12] 2047 	mov	r2,a
+      00084B 8F 03            [24] 2048 	mov	ar3,r7
+      00084D 89 82            [24] 2049 	mov	dpl,r1
+      00084F 8A 83            [24] 2050 	mov	dph,r2
+      000851 8B F0            [24] 2051 	mov	b,r3
+      000853 12 13 EC         [24] 2052 	lcall	__gptrget
+      000856 F9               [12] 2053 	mov	r1,a
+      000857 B9 41 02         [24] 2054 	cjne	r1,#0x41,00707$
+      00085A 80 03            [24] 2055 	sjmp	00708$
+      00085C                       2056 00707$:
+      00085C 02 09 0F         [24] 2057 	ljmp	00138$
+      00085F                       2058 00708$:
+                                   2059 ;	main.c:448: command[3] == 'T' &&
+      00085F 74 03            [12] 2060 	mov	a,#0x03
+      000861 2D               [12] 2061 	add	a, r5
+      000862 F9               [12] 2062 	mov	r1,a
+      000863 E4               [12] 2063 	clr	a
+      000864 3E               [12] 2064 	addc	a, r6
+      000865 FA               [12] 2065 	mov	r2,a
+      000866 8F 03            [24] 2066 	mov	ar3,r7
+      000868 89 82            [24] 2067 	mov	dpl,r1
+      00086A 8A 83            [24] 2068 	mov	dph,r2
+      00086C 8B F0            [24] 2069 	mov	b,r3
+      00086E 12 13 EC         [24] 2070 	lcall	__gptrget
+      000871 F9               [12] 2071 	mov	r1,a
+      000872 B9 54 02         [24] 2072 	cjne	r1,#0x54,00709$
+      000875 80 03            [24] 2073 	sjmp	00710$
+      000877                       2074 00709$:
+      000877 02 09 0F         [24] 2075 	ljmp	00138$
+      00087A                       2076 00710$:
+                                   2077 ;	main.c:449: command[4] == 'U' &&
+      00087A 74 04            [12] 2078 	mov	a,#0x04
+      00087C 2D               [12] 2079 	add	a, r5
+      00087D F9               [12] 2080 	mov	r1,a
+      00087E E4               [12] 2081 	clr	a
+      00087F 3E               [12] 2082 	addc	a, r6
+      000880 FA               [12] 2083 	mov	r2,a
+      000881 8F 03            [24] 2084 	mov	ar3,r7
+      000883 89 82            [24] 2085 	mov	dpl,r1
+      000885 8A 83            [24] 2086 	mov	dph,r2
+      000887 8B F0            [24] 2087 	mov	b,r3
+      000889 12 13 EC         [24] 2088 	lcall	__gptrget
+      00088C F9               [12] 2089 	mov	r1,a
+      00088D B9 55 02         [24] 2090 	cjne	r1,#0x55,00711$
+      000890 80 02            [24] 2091 	sjmp	00712$
+      000892                       2092 00711$:
+      000892 80 7B            [24] 2093 	sjmp	00138$
+      000894                       2094 00712$:
+                                   2095 ;	main.c:450: command[5] == 'S' &&
+      000894 74 05            [12] 2096 	mov	a,#0x05
+      000896 2D               [12] 2097 	add	a, r5
+      000897 F9               [12] 2098 	mov	r1,a
+      000898 E4               [12] 2099 	clr	a
+      000899 3E               [12] 2100 	addc	a, r6
+      00089A FA               [12] 2101 	mov	r2,a
+      00089B 8F 03            [24] 2102 	mov	ar3,r7
+      00089D 89 82            [24] 2103 	mov	dpl,r1
+      00089F 8A 83            [24] 2104 	mov	dph,r2
+      0008A1 8B F0            [24] 2105 	mov	b,r3
+      0008A3 12 13 EC         [24] 2106 	lcall	__gptrget
+      0008A6 F9               [12] 2107 	mov	r1,a
+      0008A7 B9 53 65         [24] 2108 	cjne	r1,#0x53,00138$
+                                   2109 ;	main.c:451: command[6] == '\0')
+      0008AA 74 06            [12] 2110 	mov	a,#0x06
+      0008AC 2D               [12] 2111 	add	a, r5
+      0008AD F9               [12] 2112 	mov	r1,a
+      0008AE E4               [12] 2113 	clr	a
+      0008AF 3E               [12] 2114 	addc	a, r6
+      0008B0 FA               [12] 2115 	mov	r2,a
+      0008B1 8F 03            [24] 2116 	mov	ar3,r7
+      0008B3 89 82            [24] 2117 	mov	dpl,r1
+      0008B5 8A 83            [24] 2118 	mov	dph,r2
+      0008B7 8B F0            [24] 2119 	mov	b,r3
+      0008B9 12 13 EC         [24] 2120 	lcall	__gptrget
+      0008BC 70 51            [24] 2121 	jnz	00138$
+                                   2122 ;	main.c:453: uart_write_string("STATUS,RELAY=");
+      0008BE 90 14 96         [24] 2123 	mov	dptr,#___str_24
+      0008C1 75 F0 80         [24] 2124 	mov	b, #0x80
+      0008C4 12 12 8F         [24] 2125 	lcall	_uart_write_string
+                                   2126 ;	main.c:454: uart_write_string(relay_state ? "ON" : "OFF");
+      0008C7 E5 2D            [12] 2127 	mov	a,_relay_state
+      0008C9 60 06            [24] 2128 	jz	00185$
+      0008CB 7A A4            [12] 2129 	mov	r2,#___str_25
+      0008CD 7B 14            [12] 2130 	mov	r3,#(___str_25 >> 8)
+      0008CF 80 04            [24] 2131 	sjmp	00186$
+      0008D1                       2132 00185$:
+      0008D1 7A A7            [12] 2133 	mov	r2,#___str_26
+      0008D3 7B 14            [12] 2134 	mov	r3,#(___str_26 >> 8)
+      0008D5                       2135 00186$:
+      0008D5 8B 01            [24] 2136 	mov	ar1,r3
+      0008D7 7B 80            [12] 2137 	mov	r3,#0x80
+      0008D9 8A 82            [24] 2138 	mov	dpl, r2
+      0008DB 89 83            [24] 2139 	mov	dph, r1
+      0008DD 8B F0            [24] 2140 	mov	b, r3
+      0008DF 12 12 8F         [24] 2141 	lcall	_uart_write_string
+                                   2142 ;	main.c:455: uart_write_string(",BUZZER=");
+      0008E2 90 14 AB         [24] 2143 	mov	dptr,#___str_27
+      0008E5 75 F0 80         [24] 2144 	mov	b, #0x80
+      0008E8 12 12 8F         [24] 2145 	lcall	_uart_write_string
+                                   2146 ;	main.c:456: uart_write_string(buzzer_state ? "ON" : "OFF");
+      0008EB E5 2E            [12] 2147 	mov	a,_buzzer_state
+      0008ED 60 06            [24] 2148 	jz	00187$
+      0008EF 7A A4            [12] 2149 	mov	r2,#___str_25
+      0008F1 7B 14            [12] 2150 	mov	r3,#(___str_25 >> 8)
+      0008F3 80 04            [24] 2151 	sjmp	00188$
+      0008F5                       2152 00187$:
+      0008F5 7A A7            [12] 2153 	mov	r2,#___str_26
+      0008F7 7B 14            [12] 2154 	mov	r3,#(___str_26 >> 8)
+      0008F9                       2155 00188$:
+      0008F9 8B 01            [24] 2156 	mov	ar1,r3
+      0008FB 7B 80            [12] 2157 	mov	r3,#0x80
+      0008FD 8A 82            [24] 2158 	mov	dpl, r2
+      0008FF 89 83            [24] 2159 	mov	dph, r1
+      000901 8B F0            [24] 2160 	mov	b, r3
+      000903 12 12 8F         [24] 2161 	lcall	_uart_write_string
+                                   2162 ;	main.c:457: uart_write_string("\r\n");
+      000906 90 14 B4         [24] 2163 	mov	dptr,#___str_28
+      000909 75 F0 80         [24] 2164 	mov	b, #0x80
+                                   2165 ;	main.c:459: return;
+      00090C 02 12 8F         [24] 2166 	ljmp	_uart_write_string
+      00090F                       2167 00138$:
+                                   2168 ;	main.c:462: if (command[0] == 'D' &&
+      00090F E4               [12] 2169 	clr	a
+      000910 BC 44 01         [24] 2170 	cjne	r4,#0x44,00718$
+      000913 04               [12] 2171 	inc	a
+      000914                       2172 00718$:
+      000914 FB               [12] 2173 	mov	r3,a
+      000915 70 03            [24] 2174 	jnz	00720$
+      000917 02 09 99         [24] 2175 	ljmp	00148$
+      00091A                       2176 00720$:
+                                   2177 ;	main.c:463: command[1] == 'A' &&
+      00091A 74 01            [12] 2178 	mov	a,#0x01
+      00091C 2D               [12] 2179 	add	a, r5
+      00091D F8               [12] 2180 	mov	r0,a
+      00091E E4               [12] 2181 	clr	a
+      00091F 3E               [12] 2182 	addc	a, r6
+      000920 F9               [12] 2183 	mov	r1,a
+      000921 8F 02            [24] 2184 	mov	ar2,r7
+      000923 88 82            [24] 2185 	mov	dpl,r0
+      000925 89 83            [24] 2186 	mov	dph,r1
+      000927 8A F0            [24] 2187 	mov	b,r2
+      000929 12 13 EC         [24] 2188 	lcall	__gptrget
+      00092C F8               [12] 2189 	mov	r0,a
+      00092D B8 41 69         [24] 2190 	cjne	r0,#0x41,00148$
+                                   2191 ;	main.c:464: command[2] == 'T' &&
+      000930 74 02            [12] 2192 	mov	a,#0x02
+      000932 2D               [12] 2193 	add	a, r5
+      000933 F8               [12] 2194 	mov	r0,a
+      000934 E4               [12] 2195 	clr	a
+      000935 3E               [12] 2196 	addc	a, r6
+      000936 F9               [12] 2197 	mov	r1,a
+      000937 8F 02            [24] 2198 	mov	ar2,r7
+      000939 88 82            [24] 2199 	mov	dpl,r0
+      00093B 89 83            [24] 2200 	mov	dph,r1
+      00093D 8A F0            [24] 2201 	mov	b,r2
+      00093F 12 13 EC         [24] 2202 	lcall	__gptrget
+      000942 F8               [12] 2203 	mov	r0,a
+      000943 B8 54 53         [24] 2204 	cjne	r0,#0x54,00148$
+                                   2205 ;	main.c:465: command[3] == 'A' &&
+      000946 74 03            [12] 2206 	mov	a,#0x03
+      000948 2D               [12] 2207 	add	a, r5
+      000949 F8               [12] 2208 	mov	r0,a
+      00094A E4               [12] 2209 	clr	a
+      00094B 3E               [12] 2210 	addc	a, r6
+      00094C F9               [12] 2211 	mov	r1,a
+      00094D 8F 02            [24] 2212 	mov	ar2,r7
+      00094F 88 82            [24] 2213 	mov	dpl,r0
+      000951 89 83            [24] 2214 	mov	dph,r1
+      000953 8A F0            [24] 2215 	mov	b,r2
+      000955 12 13 EC         [24] 2216 	lcall	__gptrget
+      000958 F8               [12] 2217 	mov	r0,a
+      000959 B8 41 3D         [24] 2218 	cjne	r0,#0x41,00148$
+                                   2219 ;	main.c:466: command[4] == '1' &&
+      00095C 74 04            [12] 2220 	mov	a,#0x04
+      00095E 2D               [12] 2221 	add	a, r5
+      00095F F8               [12] 2222 	mov	r0,a
+      000960 E4               [12] 2223 	clr	a
+      000961 3E               [12] 2224 	addc	a, r6
+      000962 F9               [12] 2225 	mov	r1,a
+      000963 8F 02            [24] 2226 	mov	ar2,r7
+      000965 88 82            [24] 2227 	mov	dpl,r0
+      000967 89 83            [24] 2228 	mov	dph,r1
+      000969 8A F0            [24] 2229 	mov	b,r2
+      00096B 12 13 EC         [24] 2230 	lcall	__gptrget
+      00096E F8               [12] 2231 	mov	r0,a
+      00096F B8 31 27         [24] 2232 	cjne	r0,#0x31,00148$
+                                   2233 ;	main.c:467: command[5] == ',')
+      000972 74 05            [12] 2234 	mov	a,#0x05
+      000974 2D               [12] 2235 	add	a, r5
+      000975 F8               [12] 2236 	mov	r0,a
+      000976 E4               [12] 2237 	clr	a
+      000977 3E               [12] 2238 	addc	a, r6
+      000978 F9               [12] 2239 	mov	r1,a
+      000979 8F 02            [24] 2240 	mov	ar2,r7
+      00097B 88 82            [24] 2241 	mov	dpl,r0
+      00097D 89 83            [24] 2242 	mov	dph,r1
+      00097F 8A F0            [24] 2243 	mov	b,r2
+      000981 12 13 EC         [24] 2244 	lcall	__gptrget
+      000984 F8               [12] 2245 	mov	r0,a
+      000985 B8 2C 11         [24] 2246 	cjne	r0,#0x2c,00148$
+                                   2247 ;	main.c:469: if (process_data1())
+      000988 12 03 42         [24] 2248 	lcall	_process_data1
+      00098B E5 82            [12] 2249 	mov	a, dpl
+      00098D 60 09            [24] 2250 	jz	00146$
+                                   2251 ;	main.c:470: uart_write_string("ACK,DATA1\r\n");
+      00098F 90 14 B7         [24] 2252 	mov	dptr,#___str_29
+      000992 75 F0 80         [24] 2253 	mov	b, #0x80
+                                   2254 ;	main.c:472: return;
+      000995 02 12 8F         [24] 2255 	ljmp	_uart_write_string
+      000998                       2256 00146$:
+      000998 22               [24] 2257 	ret
+      000999                       2258 00148$:
+                                   2259 ;	main.c:475: if (command[0] == 'D' &&
+      000999 EB               [12] 2260 	mov	a,r3
+      00099A 70 03            [24] 2261 	jnz	00732$
+      00099C 02 0A 1E         [24] 2262 	ljmp	00157$
+      00099F                       2263 00732$:
+                                   2264 ;	main.c:476: command[1] == 'A' &&
+      00099F 74 01            [12] 2265 	mov	a,#0x01
+      0009A1 2D               [12] 2266 	add	a, r5
+      0009A2 F8               [12] 2267 	mov	r0,a
+      0009A3 E4               [12] 2268 	clr	a
+      0009A4 3E               [12] 2269 	addc	a, r6
+      0009A5 F9               [12] 2270 	mov	r1,a
+      0009A6 8F 02            [24] 2271 	mov	ar2,r7
+      0009A8 88 82            [24] 2272 	mov	dpl,r0
+      0009AA 89 83            [24] 2273 	mov	dph,r1
+      0009AC 8A F0            [24] 2274 	mov	b,r2
+      0009AE 12 13 EC         [24] 2275 	lcall	__gptrget
+      0009B1 F8               [12] 2276 	mov	r0,a
+      0009B2 B8 41 69         [24] 2277 	cjne	r0,#0x41,00157$
+                                   2278 ;	main.c:477: command[2] == 'T' &&
+      0009B5 74 02            [12] 2279 	mov	a,#0x02
+      0009B7 2D               [12] 2280 	add	a, r5
+      0009B8 F8               [12] 2281 	mov	r0,a
+      0009B9 E4               [12] 2282 	clr	a
+      0009BA 3E               [12] 2283 	addc	a, r6
+      0009BB F9               [12] 2284 	mov	r1,a
+      0009BC 8F 02            [24] 2285 	mov	ar2,r7
+      0009BE 88 82            [24] 2286 	mov	dpl,r0
+      0009C0 89 83            [24] 2287 	mov	dph,r1
+      0009C2 8A F0            [24] 2288 	mov	b,r2
+      0009C4 12 13 EC         [24] 2289 	lcall	__gptrget
+      0009C7 F8               [12] 2290 	mov	r0,a
+      0009C8 B8 54 53         [24] 2291 	cjne	r0,#0x54,00157$
+                                   2292 ;	main.c:478: command[3] == 'A' &&
+      0009CB 74 03            [12] 2293 	mov	a,#0x03
+      0009CD 2D               [12] 2294 	add	a, r5
+      0009CE F8               [12] 2295 	mov	r0,a
+      0009CF E4               [12] 2296 	clr	a
+      0009D0 3E               [12] 2297 	addc	a, r6
+      0009D1 F9               [12] 2298 	mov	r1,a
+      0009D2 8F 02            [24] 2299 	mov	ar2,r7
+      0009D4 88 82            [24] 2300 	mov	dpl,r0
+      0009D6 89 83            [24] 2301 	mov	dph,r1
+      0009D8 8A F0            [24] 2302 	mov	b,r2
+      0009DA 12 13 EC         [24] 2303 	lcall	__gptrget
+      0009DD F8               [12] 2304 	mov	r0,a
+      0009DE B8 41 3D         [24] 2305 	cjne	r0,#0x41,00157$
+                                   2306 ;	main.c:479: command[4] == '2' &&
+      0009E1 74 04            [12] 2307 	mov	a,#0x04
+      0009E3 2D               [12] 2308 	add	a, r5
+      0009E4 F8               [12] 2309 	mov	r0,a
+      0009E5 E4               [12] 2310 	clr	a
+      0009E6 3E               [12] 2311 	addc	a, r6
+      0009E7 F9               [12] 2312 	mov	r1,a
+      0009E8 8F 02            [24] 2313 	mov	ar2,r7
+      0009EA 88 82            [24] 2314 	mov	dpl,r0
+      0009EC 89 83            [24] 2315 	mov	dph,r1
+      0009EE 8A F0            [24] 2316 	mov	b,r2
+      0009F0 12 13 EC         [24] 2317 	lcall	__gptrget
+      0009F3 F8               [12] 2318 	mov	r0,a
+      0009F4 B8 32 27         [24] 2319 	cjne	r0,#0x32,00157$
+                                   2320 ;	main.c:480: command[5] == ',')
+      0009F7 74 05            [12] 2321 	mov	a,#0x05
+      0009F9 2D               [12] 2322 	add	a, r5
+      0009FA F8               [12] 2323 	mov	r0,a
+      0009FB E4               [12] 2324 	clr	a
+      0009FC 3E               [12] 2325 	addc	a, r6
+      0009FD F9               [12] 2326 	mov	r1,a
+      0009FE 8F 02            [24] 2327 	mov	ar2,r7
+      000A00 88 82            [24] 2328 	mov	dpl,r0
+      000A02 89 83            [24] 2329 	mov	dph,r1
+      000A04 8A F0            [24] 2330 	mov	b,r2
+      000A06 12 13 EC         [24] 2331 	lcall	__gptrget
+      000A09 F8               [12] 2332 	mov	r0,a
+      000A0A B8 2C 11         [24] 2333 	cjne	r0,#0x2c,00157$
+                                   2334 ;	main.c:482: if (process_data2())
+      000A0D 12 04 01         [24] 2335 	lcall	_process_data2
+      000A10 E5 82            [12] 2336 	mov	a, dpl
+      000A12 60 09            [24] 2337 	jz	00155$
+                                   2338 ;	main.c:483: uart_write_string("ACK,DATA2\r\n");
+      000A14 90 14 C3         [24] 2339 	mov	dptr,#___str_30
+      000A17 75 F0 80         [24] 2340 	mov	b, #0x80
+                                   2341 ;	main.c:485: return;
+      000A1A 02 12 8F         [24] 2342 	ljmp	_uart_write_string
+      000A1D                       2343 00155$:
+      000A1D 22               [24] 2344 	ret
+      000A1E                       2345 00157$:
+                                   2346 ;	main.c:488: if (command[0] == 'D' &&
+      000A1E EB               [12] 2347 	mov	a,r3
+      000A1F 70 03            [24] 2348 	jnz	00744$
+      000A21 02 0A A3         [24] 2349 	ljmp	00166$
+      000A24                       2350 00744$:
+                                   2351 ;	main.c:489: command[1] == 'A' &&
+      000A24 74 01            [12] 2352 	mov	a,#0x01
+      000A26 2D               [12] 2353 	add	a, r5
+      000A27 F9               [12] 2354 	mov	r1,a
+      000A28 E4               [12] 2355 	clr	a
+      000A29 3E               [12] 2356 	addc	a, r6
+      000A2A FA               [12] 2357 	mov	r2,a
+      000A2B 8F 03            [24] 2358 	mov	ar3,r7
+      000A2D 89 82            [24] 2359 	mov	dpl,r1
+      000A2F 8A 83            [24] 2360 	mov	dph,r2
+      000A31 8B F0            [24] 2361 	mov	b,r3
+      000A33 12 13 EC         [24] 2362 	lcall	__gptrget
+      000A36 F9               [12] 2363 	mov	r1,a
+      000A37 B9 41 69         [24] 2364 	cjne	r1,#0x41,00166$
+                                   2365 ;	main.c:490: command[2] == 'T' &&
+      000A3A 74 02            [12] 2366 	mov	a,#0x02
+      000A3C 2D               [12] 2367 	add	a, r5
+      000A3D F9               [12] 2368 	mov	r1,a
+      000A3E E4               [12] 2369 	clr	a
+      000A3F 3E               [12] 2370 	addc	a, r6
+      000A40 FA               [12] 2371 	mov	r2,a
+      000A41 8F 03            [24] 2372 	mov	ar3,r7
+      000A43 89 82            [24] 2373 	mov	dpl,r1
+      000A45 8A 83            [24] 2374 	mov	dph,r2
+      000A47 8B F0            [24] 2375 	mov	b,r3
+      000A49 12 13 EC         [24] 2376 	lcall	__gptrget
+      000A4C F9               [12] 2377 	mov	r1,a
+      000A4D B9 54 53         [24] 2378 	cjne	r1,#0x54,00166$
+                                   2379 ;	main.c:491: command[3] == 'A' &&
+      000A50 74 03            [12] 2380 	mov	a,#0x03
+      000A52 2D               [12] 2381 	add	a, r5
+      000A53 F9               [12] 2382 	mov	r1,a
+      000A54 E4               [12] 2383 	clr	a
+      000A55 3E               [12] 2384 	addc	a, r6
+      000A56 FA               [12] 2385 	mov	r2,a
+      000A57 8F 03            [24] 2386 	mov	ar3,r7
+      000A59 89 82            [24] 2387 	mov	dpl,r1
+      000A5B 8A 83            [24] 2388 	mov	dph,r2
+      000A5D 8B F0            [24] 2389 	mov	b,r3
+      000A5F 12 13 EC         [24] 2390 	lcall	__gptrget
+      000A62 F9               [12] 2391 	mov	r1,a
+      000A63 B9 41 3D         [24] 2392 	cjne	r1,#0x41,00166$
+                                   2393 ;	main.c:492: command[4] == '3' &&
+      000A66 74 04            [12] 2394 	mov	a,#0x04
+      000A68 2D               [12] 2395 	add	a, r5
+      000A69 F9               [12] 2396 	mov	r1,a
+      000A6A E4               [12] 2397 	clr	a
+      000A6B 3E               [12] 2398 	addc	a, r6
+      000A6C FA               [12] 2399 	mov	r2,a
+      000A6D 8F 03            [24] 2400 	mov	ar3,r7
+      000A6F 89 82            [24] 2401 	mov	dpl,r1
+      000A71 8A 83            [24] 2402 	mov	dph,r2
+      000A73 8B F0            [24] 2403 	mov	b,r3
+      000A75 12 13 EC         [24] 2404 	lcall	__gptrget
+      000A78 F9               [12] 2405 	mov	r1,a
+      000A79 B9 33 27         [24] 2406 	cjne	r1,#0x33,00166$
+                                   2407 ;	main.c:493: command[5] == ',')
+      000A7C 74 05            [12] 2408 	mov	a,#0x05
+      000A7E 2D               [12] 2409 	add	a, r5
+      000A7F F9               [12] 2410 	mov	r1,a
+      000A80 E4               [12] 2411 	clr	a
+      000A81 3E               [12] 2412 	addc	a, r6
+      000A82 FA               [12] 2413 	mov	r2,a
+      000A83 8F 03            [24] 2414 	mov	ar3,r7
+      000A85 89 82            [24] 2415 	mov	dpl,r1
+      000A87 8A 83            [24] 2416 	mov	dph,r2
+      000A89 8B F0            [24] 2417 	mov	b,r3
+      000A8B 12 13 EC         [24] 2418 	lcall	__gptrget
+      000A8E F9               [12] 2419 	mov	r1,a
+      000A8F B9 2C 11         [24] 2420 	cjne	r1,#0x2c,00166$
+                                   2421 ;	main.c:495: if (process_data3())
+      000A92 12 04 A1         [24] 2422 	lcall	_process_data3
+      000A95 E5 82            [12] 2423 	mov	a, dpl
+      000A97 60 09            [24] 2424 	jz	00164$
+                                   2425 ;	main.c:496: uart_write_string("ACK,DATA3\r\n");
+      000A99 90 14 CF         [24] 2426 	mov	dptr,#___str_31
+      000A9C 75 F0 80         [24] 2427 	mov	b, #0x80
+                                   2428 ;	main.c:498: return;
+      000A9F 02 12 8F         [24] 2429 	ljmp	_uart_write_string
+      000AA2                       2430 00164$:
+      000AA2 22               [24] 2431 	ret
+      000AA3                       2432 00166$:
+                                   2433 ;	main.c:501: if (command[0] == 'E' &&
+      000AA3 BC 45 02         [24] 2434 	cjne	r4,#0x45,00756$
+      000AA6 80 01            [24] 2435 	sjmp	00757$
+      000AA8                       2436 00756$:
+      000AA8 22               [24] 2437 	ret
+      000AA9                       2438 00757$:
+                                   2439 ;	main.c:502: command[1] == 'R' &&
+      000AA9 74 01            [12] 2440 	mov	a,#0x01
+      000AAB 2D               [12] 2441 	add	a, r5
+      000AAC FA               [12] 2442 	mov	r2,a
+      000AAD E4               [12] 2443 	clr	a
+      000AAE 3E               [12] 2444 	addc	a, r6
+      000AAF FB               [12] 2445 	mov	r3,a
+      000AB0 8F 04            [24] 2446 	mov	ar4,r7
+      000AB2 8A 82            [24] 2447 	mov	dpl,r2
+      000AB4 8B 83            [24] 2448 	mov	dph,r3
+      000AB6 8C F0            [24] 2449 	mov	b,r4
+      000AB8 12 13 EC         [24] 2450 	lcall	__gptrget
+      000ABB FA               [12] 2451 	mov	r2,a
+      000ABC BA 52 02         [24] 2452 	cjne	r2,#0x52,00758$
+      000ABF 80 01            [24] 2453 	sjmp	00759$
+      000AC1                       2454 00758$:
+      000AC1 22               [24] 2455 	ret
+      000AC2                       2456 00759$:
+                                   2457 ;	main.c:503: command[2] == 'R' &&
+      000AC2 74 02            [12] 2458 	mov	a,#0x02
+      000AC4 2D               [12] 2459 	add	a, r5
+      000AC5 FA               [12] 2460 	mov	r2,a
+      000AC6 E4               [12] 2461 	clr	a
+      000AC7 3E               [12] 2462 	addc	a, r6
+      000AC8 FB               [12] 2463 	mov	r3,a
+      000AC9 8F 04            [24] 2464 	mov	ar4,r7
+      000ACB 8A 82            [24] 2465 	mov	dpl,r2
+      000ACD 8B 83            [24] 2466 	mov	dph,r3
+      000ACF 8C F0            [24] 2467 	mov	b,r4
+      000AD1 12 13 EC         [24] 2468 	lcall	__gptrget
+      000AD4 FA               [12] 2469 	mov	r2,a
+      000AD5 BA 52 50         [24] 2470 	cjne	r2,#0x52,00181$
+                                   2471 ;	main.c:504: command[3] == 'O' &&
+      000AD8 74 03            [12] 2472 	mov	a,#0x03
+      000ADA 2D               [12] 2473 	add	a, r5
+      000ADB FA               [12] 2474 	mov	r2,a
+      000ADC E4               [12] 2475 	clr	a
+      000ADD 3E               [12] 2476 	addc	a, r6
+      000ADE FB               [12] 2477 	mov	r3,a
+      000ADF 8F 04            [24] 2478 	mov	ar4,r7
+      000AE1 8A 82            [24] 2479 	mov	dpl,r2
+      000AE3 8B 83            [24] 2480 	mov	dph,r3
+      000AE5 8C F0            [24] 2481 	mov	b,r4
+      000AE7 12 13 EC         [24] 2482 	lcall	__gptrget
+      000AEA FA               [12] 2483 	mov	r2,a
+      000AEB BA 4F 3A         [24] 2484 	cjne	r2,#0x4f,00181$
+                                   2485 ;	main.c:505: command[4] == 'R' &&
+      000AEE 74 04            [12] 2486 	mov	a,#0x04
+      000AF0 2D               [12] 2487 	add	a, r5
+      000AF1 FA               [12] 2488 	mov	r2,a
+      000AF2 E4               [12] 2489 	clr	a
+      000AF3 3E               [12] 2490 	addc	a, r6
+      000AF4 FB               [12] 2491 	mov	r3,a
+      000AF5 8F 04            [24] 2492 	mov	ar4,r7
+      000AF7 8A 82            [24] 2493 	mov	dpl,r2
+      000AF9 8B 83            [24] 2494 	mov	dph,r3
+      000AFB 8C F0            [24] 2495 	mov	b,r4
+      000AFD 12 13 EC         [24] 2496 	lcall	__gptrget
+      000B00 FA               [12] 2497 	mov	r2,a
+      000B01 BA 52 24         [24] 2498 	cjne	r2,#0x52,00181$
+                                   2499 ;	main.c:506: command[5] == ',')
+      000B04 74 05            [12] 2500 	mov	a,#0x05
+      000B06 2D               [12] 2501 	add	a, r5
+      000B07 FD               [12] 2502 	mov	r5,a
+      000B08 E4               [12] 2503 	clr	a
+      000B09 3E               [12] 2504 	addc	a, r6
+      000B0A FE               [12] 2505 	mov	r6,a
+      000B0B 8D 82            [24] 2506 	mov	dpl,r5
+      000B0D 8E 83            [24] 2507 	mov	dph,r6
+      000B0F 8F F0            [24] 2508 	mov	b,r7
+      000B11 12 13 EC         [24] 2509 	lcall	__gptrget
+      000B14 FD               [12] 2510 	mov	r5,a
+      000B15 BD 2C 10         [24] 2511 	cjne	r5,#0x2c,00181$
+                                   2512 ;	main.c:508: if (process_error())
+      000B18 12 04 D9         [24] 2513 	lcall	_process_error
+      000B1B E5 82            [12] 2514 	mov	a, dpl
+      000B1D 60 09            [24] 2515 	jz	00173$
+                                   2516 ;	main.c:509: uart_write_string("ACK,ERROR\r\n");
+      000B1F 90 14 DB         [24] 2517 	mov	dptr,#___str_32
+      000B22 75 F0 80         [24] 2518 	mov	b, #0x80
+      000B25 12 12 8F         [24] 2519 	lcall	_uart_write_string
+      000B28                       2520 00173$:
+                                   2521 ;	main.c:511: return;
+      000B28                       2522 00181$:
+                                   2523 ;	main.c:513: }
+      000B28 22               [24] 2524 	ret
+                                   2525 ;------------------------------------------------------------
+                                   2526 ;Allocation info for local variables in function 'uart_receive_process'
+                                   2527 ;------------------------------------------------------------
+                                   2528 ;data          Allocated with name '_uart_receive_process_data_10000_132'
+                                   2529 ;------------------------------------------------------------
+                                   2530 ;	main.c:515: static void uart_receive_process(void)
+                                   2531 ;	-----------------------------------------
+                                   2532 ;	 function uart_receive_process
+                                   2533 ;	-----------------------------------------
+      000B29                       2534 _uart_receive_process:
+                                   2535 ;	main.c:519: if (!uart_read_byte(&data))
+      000B29 90 00 3A         [24] 2536 	mov	dptr,#_uart_receive_process_data_10000_132
+      000B2C 75 F0 40         [24] 2537 	mov	b, #0x40
+      000B2F 12 12 C6         [24] 2538 	lcall	_uart_read_byte
+      000B32 E5 82            [12] 2539 	mov	a, dpl
+      000B34 70 01            [24] 2540 	jnz	00102$
+                                   2541 ;	main.c:520: return;
+      000B36 22               [24] 2542 	ret
+      000B37                       2543 00102$:
+                                   2544 ;	main.c:522: if (data == '\r' || data == '\n')
+      000B37 74 0D            [12] 2545 	mov	a,#0x0d
+      000B39 B5 3A 02         [24] 2546 	cjne	a,_uart_receive_process_data_10000_132,00161$
+      000B3C 80 05            [24] 2547 	sjmp	00105$
+      000B3E                       2548 00161$:
+      000B3E 74 0A            [12] 2549 	mov	a,#0x0a
+      000B40 B5 3A 18         [24] 2550 	cjne	a,_uart_receive_process_data_10000_132,00106$
+      000B43                       2551 00105$:
+                                   2552 ;	main.c:524: if (rx_length > 0)
+      000B43 E5 2C            [12] 2553 	mov	a,_rx_length
+      000B45 60 13            [24] 2554 	jz	00104$
+                                   2555 ;	main.c:526: rx_buffer[rx_length] = '\0';
+      000B47 E5 2C            [12] 2556 	mov	a,_rx_length
+      000B49 24 0C            [12] 2557 	add	a, #_rx_buffer
+      000B4B F8               [12] 2558 	mov	r0,a
+      000B4C 76 00            [12] 2559 	mov	@r0,#0x00
+                                   2560 ;	main.c:528: process_command((char *)rx_buffer);
+      000B4E 90 00 0C         [24] 2561 	mov	dptr,#_rx_buffer
+      000B51 75 F0 40         [24] 2562 	mov	b, #0x40
+      000B54 12 05 76         [24] 2563 	lcall	_process_command
+                                   2564 ;	main.c:530: rx_length = 0;
+      000B57 75 2C 00         [24] 2565 	mov	_rx_length,#0x00
+      000B5A                       2566 00104$:
+                                   2567 ;	main.c:533: return;
+      000B5A 22               [24] 2568 	ret
+      000B5B                       2569 00106$:
+                                   2570 ;	main.c:536: if (data == 8 || data == 127)
+      000B5B 74 08            [12] 2571 	mov	a,#0x08
+      000B5D B5 3A 02         [24] 2572 	cjne	a,_uart_receive_process_data_10000_132,00165$
+      000B60 80 05            [24] 2573 	sjmp	00110$
+      000B62                       2574 00165$:
+      000B62 74 7F            [12] 2575 	mov	a,#0x7f
+      000B64 B5 3A 07         [24] 2576 	cjne	a,_uart_receive_process_data_10000_132,00111$
+      000B67                       2577 00110$:
+                                   2578 ;	main.c:538: if (rx_length > 0)
+      000B67 E5 2C            [12] 2579 	mov	a,_rx_length
+      000B69 60 02            [24] 2580 	jz	00109$
+                                   2581 ;	main.c:539: rx_length--;
+      000B6B 15 2C            [12] 2582 	dec	_rx_length
+      000B6D                       2583 00109$:
+                                   2584 ;	main.c:541: return;
+      000B6D 22               [24] 2585 	ret
+      000B6E                       2586 00111$:
+                                   2587 ;	main.c:544: if (rx_length < RX_BUFFER_SIZE - 1)
+      000B6E 74 E1            [12] 2588 	mov	a,#0x100 - 0x1f
+      000B70 25 2C            [12] 2589 	add	a,_rx_length
+      000B72 40 0B            [24] 2590 	jc	00114$
+                                   2591 ;	main.c:546: rx_buffer[rx_length++] = data;
+      000B74 AF 2C            [24] 2592 	mov	r7,_rx_length
+      000B76 05 2C            [12] 2593 	inc	_rx_length
+      000B78 EF               [12] 2594 	mov	a,r7
+      000B79 24 0C            [12] 2595 	add	a, #_rx_buffer
+      000B7B F8               [12] 2596 	mov	r0,a
+      000B7C A6 3A            [24] 2597 	mov	@r0,_uart_receive_process_data_10000_132
+      000B7E 22               [24] 2598 	ret
+      000B7F                       2599 00114$:
+                                   2600 ;	main.c:550: rx_length = 0;
+      000B7F 75 2C 00         [24] 2601 	mov	_rx_length,#0x00
+                                   2602 ;	main.c:552: }
+      000B82 22               [24] 2603 	ret
+                                   2604 ;------------------------------------------------------------
+                                   2605 ;Allocation info for local variables in function 'main'
+                                   2606 ;------------------------------------------------------------
+                                   2607 ;uart_status   Allocated to registers 
+                                   2608 ;------------------------------------------------------------
+                                   2609 ;	main.c:554: void main(void)
+                                   2610 ;	-----------------------------------------
+                                   2611 ;	 function main
+                                   2612 ;	-----------------------------------------
+      000B83                       2613 _main:
+                                   2614 ;	main.c:558: EA = 0;
+                                   2615 ;	assignBit
+      000B83 C2 AF            [12] 2616 	clr	_EA
+                                   2617 ;	main.c:560: RELAY_PIN = 1;
+                                   2618 ;	assignBit
+      000B85 D2 A6            [12] 2619 	setb	_P2_6
+                                   2620 ;	main.c:561: BUZZER_PIN = 1;
+                                   2621 ;	assignBit
+      000B87 D2 A7            [12] 2622 	setb	_P2_7
+                                   2623 ;	main.c:562: RED_LED_PIN = 1;
+                                   2624 ;	assignBit
+      000B89 D2 A1            [12] 2625 	setb	_P2_1
+                                   2626 ;	main.c:563: GREEN_LED_PIN = 0;
+                                   2627 ;	assignBit
+      000B8B C2 A0            [12] 2628 	clr	_P2_0
+                                   2629 ;	main.c:565: RELAY_BUTTON_PIN = 1;
+                                   2630 ;	assignBit
+      000B8D D2 A2            [12] 2631 	setb	_P2_2
+                                   2632 ;	main.c:567: relay_state = 0;
+      000B8F 75 2D 00         [24] 2633 	mov	_relay_state,#0x00
+                                   2634 ;	main.c:568: buzzer_state = 0;
+      000B92 75 2E 00         [24] 2635 	mov	_buzzer_state,#0x00
+                                   2636 ;	main.c:569: fault_active = 0;
+      000B95 75 2F 00         [24] 2637 	mov	_fault_active,#0x00
+                                   2638 ;	main.c:571: button_last_sample = 1;
+      000B98 75 31 01         [24] 2639 	mov	_button_last_sample,#0x01
+                                   2640 ;	main.c:572: button_stable_state = 1;
+      000B9B 75 32 01         [24] 2641 	mov	_button_stable_state,#0x01
+                                   2642 ;	main.c:574: timer0_init();
+      000B9E 12 0B F0         [24] 2643 	lcall	_timer0_init
+                                   2644 ;	main.c:576: EA = 1;
+                                   2645 ;	assignBit
+      000BA1 D2 AF            [12] 2646 	setb	_EA
+                                   2647 ;	main.c:578: oled_init();
+      000BA3 12 0D 90         [24] 2648 	lcall	_oled_init
+                                   2649 ;	main.c:579: oled_initial_screen();
+      000BA6 12 02 8B         [24] 2650 	lcall	_oled_initial_screen
+                                   2651 ;	main.c:581: uart_status = uart_init(9600);
+      000BA9 90 25 80         [24] 2652 	mov	dptr,#0x2580
+      000BAC E4               [12] 2653 	clr	a
+      000BAD F5 F0            [12] 2654 	mov	b,a
+      000BAF 12 11 86         [24] 2655 	lcall	_uart_init
+      000BB2 E5 82            [12] 2656 	mov	a, dpl
+                                   2657 ;	main.c:583: if (!uart_status)
+      000BB4 70 29            [24] 2658 	jnz	00105$
+                                   2659 ;	main.c:585: oled_clear();
+      000BB6 12 0D 3E         [24] 2660 	lcall	_oled_clear
+                                   2661 ;	main.c:586: oled_set_position(0, 0);
+      000BB9 75 43 00         [24] 2662 	mov	_oled_set_position_PARM_2,#0x00
+      000BBC 75 82 00         [24] 2663 	mov	dpl, #0x00
+      000BBF 12 0D 01         [24] 2664 	lcall	_oled_set_position
+                                   2665 ;	main.c:587: oled_string("UART INIT FAILED");
+      000BC2 90 14 E7         [24] 2666 	mov	dptr,#___str_33
+      000BC5 75 F0 80         [24] 2667 	mov	b, #0x80
+      000BC8 12 11 0C         [24] 2668 	lcall	_oled_string
+                                   2669 ;	main.c:589: relay_set(0);
+      000BCB 75 82 00         [24] 2670 	mov	dpl, #0x00
+      000BCE 12 01 6A         [24] 2671 	lcall	_relay_set
+                                   2672 ;	main.c:590: buzzer_set(0);
+      000BD1 75 82 00         [24] 2673 	mov	dpl, #0x00
+      000BD4 12 01 7A         [24] 2674 	lcall	_buzzer_set
+                                   2675 ;	main.c:592: while (1)
+      000BD7                       2676 00102$:
+                                   2677 ;	main.c:594: relay_button_process();
+      000BD7 12 01 92         [24] 2678 	lcall	_relay_button_process
+                                   2679 ;	main.c:595: uart_receive_process();
+      000BDA 12 0B 29         [24] 2680 	lcall	_uart_receive_process
+      000BDD 80 F8            [24] 2681 	sjmp	00102$
+      000BDF                       2682 00105$:
+                                   2683 ;	main.c:599: uart_write_string("UART READY\r\n");
+      000BDF 90 14 F8         [24] 2684 	mov	dptr,#___str_34
+      000BE2 75 F0 80         [24] 2685 	mov	b, #0x80
+      000BE5 12 12 8F         [24] 2686 	lcall	_uart_write_string
+                                   2687 ;	main.c:601: while (1)
+      000BE8                       2688 00107$:
+                                   2689 ;	main.c:603: relay_button_process();
+      000BE8 12 01 92         [24] 2690 	lcall	_relay_button_process
+                                   2691 ;	main.c:604: uart_receive_process();
+      000BEB 12 0B 29         [24] 2692 	lcall	_uart_receive_process
+                                   2693 ;	main.c:606: }
+      000BEE 80 F8            [24] 2694 	sjmp	00107$
+                                   2695 	.area CSEG    (CODE)
+                                   2696 	.area CONST   (CODE)
+                                   2697 	.area CONST   (CODE)
+      00140C                       2698 ___str_0:
+      00140C 56 3A 2D 2D           2699 	.ascii "V:--"
+      001410 00                    2700 	.db 0x00
+                                   2701 	.area CSEG    (CODE)
+                                   2702 	.area CONST   (CODE)
+      001411                       2703 ___str_1:
+      001411 46 3A 2D 2D           2704 	.ascii "F:--"
+      001415 00                    2705 	.db 0x00
+                                   2706 	.area CSEG    (CODE)
+                                   2707 	.area CONST   (CODE)
+      001416                       2708 ___str_2:
+      001416 49 3A 2D 2D           2709 	.ascii "I:--"
+      00141A 00                    2710 	.db 0x00
+                                   2711 	.area CSEG    (CODE)
+                                   2712 	.area CONST   (CODE)
+      00141B                       2713 ___str_3:
+      00141B 45 3A 2D 2D           2714 	.ascii "E:--"
+      00141F 00                    2715 	.db 0x00
+                                   2716 	.area CSEG    (CODE)
+                                   2717 	.area CONST   (CODE)
+      001420                       2718 ___str_4:
+      001420 50 3A 2D 2D           2719 	.ascii "P:--"
+      001424 00                    2720 	.db 0x00
+                                   2721 	.area CSEG    (CODE)
+                                   2722 	.area CONST   (CODE)
+      001425                       2723 ___str_5:
+      001425 4C 3A 2D 2D           2724 	.ascii "L:--"
+      001429 00                    2725 	.db 0x00
+                                   2726 	.area CSEG    (CODE)
+                                   2727 	.area CONST   (CODE)
+      00142A                       2728 ___str_6:
+      00142A 50 46 3A 2D 2D        2729 	.ascii "PF:--"
+      00142F 00                    2730 	.db 0x00
+                                   2731 	.area CSEG    (CODE)
+                                   2732 	.area CONST   (CODE)
+      001430                       2733 ___str_7:
+      001430 54 3A 2D 2D 43        2734 	.ascii "T:--C"
+      001435 00                    2735 	.db 0x00
+                                   2736 	.area CSEG    (CODE)
+                                   2737 	.area CONST   (CODE)
+      001436                       2738 ___str_8:
+      001436 45 52 52 4F 52 3A     2739 	.ascii "ERROR:"
+      00143C 00                    2740 	.db 0x00
+                                   2741 	.area CSEG    (CODE)
+                                   2742 	.area CONST   (CODE)
+      00143D                       2743 ___str_9:
+      00143D 4E 4F 20 45 52 52 4F  2744 	.ascii "NO ERROR"
              52
-      00121A 00                    2311 	.db 0x00
-                                   2312 	.area CSEG    (CODE)
-                                   2313 	.area CONST   (CODE)
-      00121B                       2314 ___str_9:
-      00121B 56 3A                 2315 	.ascii "V:"
-      00121D 00                    2316 	.db 0x00
-                                   2317 	.area CSEG    (CODE)
-                                   2318 	.area CONST   (CODE)
-      00121E                       2319 ___str_10:
-      00121E 49 3A                 2320 	.ascii "I:"
-      001220 00                    2321 	.db 0x00
-                                   2322 	.area CSEG    (CODE)
-                                   2323 	.area CONST   (CODE)
-      001221                       2324 ___str_11:
-      001221 50 3A                 2325 	.ascii "P:"
-      001223 00                    2326 	.db 0x00
-                                   2327 	.area CSEG    (CODE)
-                                   2328 	.area CONST   (CODE)
-      001224                       2329 ___str_12:
-      001224 50 46 3A              2330 	.ascii "PF:"
-      001227 00                    2331 	.db 0x00
-                                   2332 	.area CSEG    (CODE)
-                                   2333 	.area CONST   (CODE)
-      001228                       2334 ___str_13:
-      001228 46 3A                 2335 	.ascii "F:"
-      00122A 00                    2336 	.db 0x00
-                                   2337 	.area CSEG    (CODE)
-                                   2338 	.area CONST   (CODE)
-      00122B                       2339 ___str_14:
-      00122B 48 7A                 2340 	.ascii "Hz"
-      00122D 00                    2341 	.db 0x00
-                                   2342 	.area CSEG    (CODE)
-                                   2343 	.area CONST   (CODE)
-      00122E                       2344 ___str_15:
-      00122E 45 3A                 2345 	.ascii "E:"
-      001230 00                    2346 	.db 0x00
-                                   2347 	.area CSEG    (CODE)
-                                   2348 	.area CONST   (CODE)
-      001231                       2349 ___str_16:
-      001231 6B 57 68              2350 	.ascii "kWh"
-      001234 00                    2351 	.db 0x00
-                                   2352 	.area CSEG    (CODE)
-                                   2353 	.area CONST   (CODE)
-      001235                       2354 ___str_17:
-      001235 4C 3A                 2355 	.ascii "L:"
-      001237 00                    2356 	.db 0x00
-                                   2357 	.area CSEG    (CODE)
-                                   2358 	.area CONST   (CODE)
-      001238                       2359 ___str_18:
-      001238 55 4E 4B 4E 4F 57 4E  2360 	.ascii "UNKNOWN ERROR"
-             20 45 52 52 4F 52
-      001245 00                    2361 	.db 0x00
-                                   2362 	.area CSEG    (CODE)
-                                   2363 	.area CONST   (CODE)
-      001246                       2364 ___str_19:
-      001246 52 45 4C 41 59 2C 4F  2365 	.ascii "RELAY,ON"
+      001445 00                    2745 	.db 0x00
+                                   2746 	.area CSEG    (CODE)
+                                   2747 	.area CONST   (CODE)
+      001446                       2748 ___str_10:
+      001446 56 3A                 2749 	.ascii "V:"
+      001448 00                    2750 	.db 0x00
+                                   2751 	.area CSEG    (CODE)
+                                   2752 	.area CONST   (CODE)
+      001449                       2753 ___str_11:
+      001449 49 3A                 2754 	.ascii "I:"
+      00144B 00                    2755 	.db 0x00
+                                   2756 	.area CSEG    (CODE)
+                                   2757 	.area CONST   (CODE)
+      00144C                       2758 ___str_12:
+      00144C 50 3A                 2759 	.ascii "P:"
+      00144E 00                    2760 	.db 0x00
+                                   2761 	.area CSEG    (CODE)
+                                   2762 	.area CONST   (CODE)
+      00144F                       2763 ___str_13:
+      00144F 50 46 3A              2764 	.ascii "PF:"
+      001452 00                    2765 	.db 0x00
+                                   2766 	.area CSEG    (CODE)
+                                   2767 	.area CONST   (CODE)
+      001453                       2768 ___str_14:
+      001453 46 3A                 2769 	.ascii "F:"
+      001455 00                    2770 	.db 0x00
+                                   2771 	.area CSEG    (CODE)
+                                   2772 	.area CONST   (CODE)
+      001456                       2773 ___str_15:
+      001456 48 7A                 2774 	.ascii "Hz"
+      001458 00                    2775 	.db 0x00
+                                   2776 	.area CSEG    (CODE)
+                                   2777 	.area CONST   (CODE)
+      001459                       2778 ___str_16:
+      001459 45 3A                 2779 	.ascii "E:"
+      00145B 00                    2780 	.db 0x00
+                                   2781 	.area CSEG    (CODE)
+                                   2782 	.area CONST   (CODE)
+      00145C                       2783 ___str_17:
+      00145C 6B 57 68              2784 	.ascii "kWh"
+      00145F 00                    2785 	.db 0x00
+                                   2786 	.area CSEG    (CODE)
+                                   2787 	.area CONST   (CODE)
+      001460                       2788 ___str_18:
+      001460 4C 3A                 2789 	.ascii "L:"
+      001462 00                    2790 	.db 0x00
+                                   2791 	.area CSEG    (CODE)
+                                   2792 	.area CONST   (CODE)
+      001463                       2793 ___str_19:
+      001463 54 3A                 2794 	.ascii "T:"
+      001465 00                    2795 	.db 0x00
+                                   2796 	.area CSEG    (CODE)
+                                   2797 	.area CONST   (CODE)
+      001466                       2798 ___str_20:
+      001466 52 45 4C 41 59 2C 4F  2799 	.ascii "RELAY,ON"
              4E
-      00124E 0D                    2366 	.db 0x0d
-      00124F 0A                    2367 	.db 0x0a
-      001250 00                    2368 	.db 0x00
-                                   2369 	.area CSEG    (CODE)
-                                   2370 	.area CONST   (CODE)
-      001251                       2371 ___str_20:
-      001251 52 45 4C 41 59 2C 4F  2372 	.ascii "RELAY,OFF"
+      00146E 0D                    2800 	.db 0x0d
+      00146F 0A                    2801 	.db 0x0a
+      001470 00                    2802 	.db 0x00
+                                   2803 	.area CSEG    (CODE)
+                                   2804 	.area CONST   (CODE)
+      001471                       2805 ___str_21:
+      001471 52 45 4C 41 59 2C 4F  2806 	.ascii "RELAY,OFF"
              46 46
-      00125A 0D                    2373 	.db 0x0d
-      00125B 0A                    2374 	.db 0x0a
-      00125C 00                    2375 	.db 0x00
-                                   2376 	.area CSEG    (CODE)
-                                   2377 	.area CONST   (CODE)
-      00125D                       2378 ___str_21:
-      00125D 42 55 5A 5A 45 52 2C  2379 	.ascii "BUZZER,ON"
+      00147A 0D                    2807 	.db 0x0d
+      00147B 0A                    2808 	.db 0x0a
+      00147C 00                    2809 	.db 0x00
+                                   2810 	.area CSEG    (CODE)
+                                   2811 	.area CONST   (CODE)
+      00147D                       2812 ___str_22:
+      00147D 42 55 5A 5A 45 52 2C  2813 	.ascii "BUZZER,ON"
              4F 4E
-      001266 0D                    2380 	.db 0x0d
-      001267 0A                    2381 	.db 0x0a
-      001268 00                    2382 	.db 0x00
-                                   2383 	.area CSEG    (CODE)
-                                   2384 	.area CONST   (CODE)
-      001269                       2385 ___str_22:
-      001269 42 55 5A 5A 45 52 2C  2386 	.ascii "BUZZER,OFF"
+      001486 0D                    2814 	.db 0x0d
+      001487 0A                    2815 	.db 0x0a
+      001488 00                    2816 	.db 0x00
+                                   2817 	.area CSEG    (CODE)
+                                   2818 	.area CONST   (CODE)
+      001489                       2819 ___str_23:
+      001489 42 55 5A 5A 45 52 2C  2820 	.ascii "BUZZER,OFF"
              4F 46 46
-      001273 0D                    2387 	.db 0x0d
-      001274 0A                    2388 	.db 0x0a
-      001275 00                    2389 	.db 0x00
-                                   2390 	.area CSEG    (CODE)
-                                   2391 	.area CONST   (CODE)
-      001276                       2392 ___str_23:
-      001276 53 54 41 54 55 53 2C  2393 	.ascii "STATUS,RELAY="
+      001493 0D                    2821 	.db 0x0d
+      001494 0A                    2822 	.db 0x0a
+      001495 00                    2823 	.db 0x00
+                                   2824 	.area CSEG    (CODE)
+                                   2825 	.area CONST   (CODE)
+      001496                       2826 ___str_24:
+      001496 53 54 41 54 55 53 2C  2827 	.ascii "STATUS,RELAY="
              52 45 4C 41 59 3D
-      001283 00                    2394 	.db 0x00
-                                   2395 	.area CSEG    (CODE)
-                                   2396 	.area CONST   (CODE)
-      001284                       2397 ___str_24:
-      001284 4F 4E                 2398 	.ascii "ON"
-      001286 00                    2399 	.db 0x00
-                                   2400 	.area CSEG    (CODE)
-                                   2401 	.area CONST   (CODE)
-      001287                       2402 ___str_25:
-      001287 4F 46 46              2403 	.ascii "OFF"
-      00128A 00                    2404 	.db 0x00
-                                   2405 	.area CSEG    (CODE)
-                                   2406 	.area CONST   (CODE)
-      00128B                       2407 ___str_26:
-      00128B 2C 42 55 5A 5A 45 52  2408 	.ascii ",BUZZER="
+      0014A3 00                    2828 	.db 0x00
+                                   2829 	.area CSEG    (CODE)
+                                   2830 	.area CONST   (CODE)
+      0014A4                       2831 ___str_25:
+      0014A4 4F 4E                 2832 	.ascii "ON"
+      0014A6 00                    2833 	.db 0x00
+                                   2834 	.area CSEG    (CODE)
+                                   2835 	.area CONST   (CODE)
+      0014A7                       2836 ___str_26:
+      0014A7 4F 46 46              2837 	.ascii "OFF"
+      0014AA 00                    2838 	.db 0x00
+                                   2839 	.area CSEG    (CODE)
+                                   2840 	.area CONST   (CODE)
+      0014AB                       2841 ___str_27:
+      0014AB 2C 42 55 5A 5A 45 52  2842 	.ascii ",BUZZER="
              3D
-      001293 00                    2409 	.db 0x00
-                                   2410 	.area CSEG    (CODE)
-                                   2411 	.area CONST   (CODE)
-      001294                       2412 ___str_27:
-      001294 0D                    2413 	.db 0x0d
-      001295 0A                    2414 	.db 0x0a
-      001296 00                    2415 	.db 0x00
-                                   2416 	.area CSEG    (CODE)
-                                   2417 	.area CONST   (CODE)
-      001297                       2418 ___str_28:
-      001297 55 41 52 54 20 49 4E  2419 	.ascii "UART INIT FAILED"
+      0014B3 00                    2843 	.db 0x00
+                                   2844 	.area CSEG    (CODE)
+                                   2845 	.area CONST   (CODE)
+      0014B4                       2846 ___str_28:
+      0014B4 0D                    2847 	.db 0x0d
+      0014B5 0A                    2848 	.db 0x0a
+      0014B6 00                    2849 	.db 0x00
+                                   2850 	.area CSEG    (CODE)
+                                   2851 	.area CONST   (CODE)
+      0014B7                       2852 ___str_29:
+      0014B7 41 43 4B 2C 44 41 54  2853 	.ascii "ACK,DATA1"
+             41 31
+      0014C0 0D                    2854 	.db 0x0d
+      0014C1 0A                    2855 	.db 0x0a
+      0014C2 00                    2856 	.db 0x00
+                                   2857 	.area CSEG    (CODE)
+                                   2858 	.area CONST   (CODE)
+      0014C3                       2859 ___str_30:
+      0014C3 41 43 4B 2C 44 41 54  2860 	.ascii "ACK,DATA2"
+             41 32
+      0014CC 0D                    2861 	.db 0x0d
+      0014CD 0A                    2862 	.db 0x0a
+      0014CE 00                    2863 	.db 0x00
+                                   2864 	.area CSEG    (CODE)
+                                   2865 	.area CONST   (CODE)
+      0014CF                       2866 ___str_31:
+      0014CF 41 43 4B 2C 44 41 54  2867 	.ascii "ACK,DATA3"
+             41 33
+      0014D8 0D                    2868 	.db 0x0d
+      0014D9 0A                    2869 	.db 0x0a
+      0014DA 00                    2870 	.db 0x00
+                                   2871 	.area CSEG    (CODE)
+                                   2872 	.area CONST   (CODE)
+      0014DB                       2873 ___str_32:
+      0014DB 41 43 4B 2C 45 52 52  2874 	.ascii "ACK,ERROR"
+             4F 52
+      0014E4 0D                    2875 	.db 0x0d
+      0014E5 0A                    2876 	.db 0x0a
+      0014E6 00                    2877 	.db 0x00
+                                   2878 	.area CSEG    (CODE)
+                                   2879 	.area CONST   (CODE)
+      0014E7                       2880 ___str_33:
+      0014E7 55 41 52 54 20 49 4E  2881 	.ascii "UART INIT FAILED"
              49 54 20 46 41 49 4C
              45 44
-      0012A7 00                    2420 	.db 0x00
-                                   2421 	.area CSEG    (CODE)
-                                   2422 	.area CONST   (CODE)
-      0012A8                       2423 ___str_29:
-      0012A8 55 41 52 54 20 52 45  2424 	.ascii "UART READY"
+      0014F7 00                    2882 	.db 0x00
+                                   2883 	.area CSEG    (CODE)
+                                   2884 	.area CONST   (CODE)
+      0014F8                       2885 ___str_34:
+      0014F8 55 41 52 54 20 52 45  2886 	.ascii "UART READY"
              41 44 59
-      0012B2 0D                    2425 	.db 0x0d
-      0012B3 0A                    2426 	.db 0x0a
-      0012B4 00                    2427 	.db 0x00
-                                   2428 	.area CSEG    (CODE)
-                                   2429 	.area XINIT   (CODE)
-                                   2430 	.area CABS    (ABS,CODE)
+      001502 0D                    2887 	.db 0x0d
+      001503 0A                    2888 	.db 0x0a
+      001504 00                    2889 	.db 0x00
+                                   2890 	.area CSEG    (CODE)
+                                   2891 	.area XINIT   (CODE)
+                                   2892 	.area CABS    (ABS,CODE)

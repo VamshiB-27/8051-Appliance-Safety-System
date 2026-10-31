@@ -8,7 +8,10 @@
 #define BUZZER_PIN P2_7
 #define RED_LED_PIN P2_1
 #define GREEN_LED_PIN P2_0
+#define RELAY_BUTTON_PIN P2_2
+
 #define RX_BUFFER_SIZE 32
+#define BUTTON_DEBOUNCE_MS 25
 
 volatile unsigned long int delay_time_ms = 0;
 
@@ -16,7 +19,12 @@ static unsigned char rx_buffer[RX_BUFFER_SIZE];
 static unsigned char rx_length = 0;
 static unsigned char relay_state = 0;
 static unsigned char buzzer_state = 0;
+static unsigned char fault_active = 0;
 static unsigned char parse_index = 0;
+
+static unsigned char button_last_sample = 1;
+static unsigned char button_stable_state = 1;
+static unsigned long int button_last_change_time = 0;
 
 void delay_us(unsigned int value)
 {
@@ -46,6 +54,87 @@ void timer0_isr(void) __interrupt(1)
     {
         count = 0;
         delay_time_ms++;
+    }
+}
+
+static unsigned long int get_millis(void)
+{
+    unsigned long int value;
+
+    EA = 0;
+    value = delay_time_ms;
+    EA = 1;
+
+    return value;
+}
+
+static void relay_set(unsigned char state)
+{
+    if (state)
+    {
+        RELAY_PIN = 0;
+        relay_state = 1;
+    }
+    else
+    {
+        RELAY_PIN = 1;
+        relay_state = 0;
+    }
+}
+
+static void buzzer_set(unsigned char state)
+{
+    if (state)
+    {
+        GREEN_LED_PIN = 1;
+        RED_LED_PIN = 0;
+        BUZZER_PIN = 0;
+        buzzer_state = 1;
+    }
+    else
+    {
+        RED_LED_PIN = 1;
+        GREEN_LED_PIN = 0;
+        BUZZER_PIN = 1;
+        buzzer_state = 0;
+    }
+}
+
+static void relay_button_process(void)
+{
+    unsigned char sample;
+    unsigned long int now;
+
+    sample = RELAY_BUTTON_PIN;
+    now = get_millis();
+
+    if (sample != button_last_sample)
+    {
+        button_last_sample = sample;
+        button_last_change_time = now;
+    }
+
+    if ((now - button_last_change_time) >= BUTTON_DEBOUNCE_MS)
+    {
+        if (button_stable_state != button_last_sample)
+        {
+            button_stable_state = button_last_sample;
+
+            if (button_stable_state == 0)
+            {
+                if (relay_state)
+                {
+                    relay_set(0);
+                }
+                else
+                {
+                    if (!fault_active)
+                    {
+                        relay_set(1);
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -94,6 +183,11 @@ static unsigned char oled_print_field(unsigned char comma_expected)
 
         parse_index++;
     }
+    else
+    {
+        if (rx_buffer[parse_index] != '\0')
+            return 0;
+    }
 
     return 1;
 }
@@ -123,6 +217,9 @@ static void oled_initial_screen(void)
     oled_set_position(3, 0);
     oled_string("PF:--");
 
+    oled_set_position(3, 66);
+    oled_string("T:--C");
+
     oled_set_position(5, 0);
     oled_string("ERROR:");
 
@@ -130,7 +227,7 @@ static void oled_initial_screen(void)
     oled_string("NO ERROR");
 }
 
-static void process_data1(void)
+static unsigned char process_data1(void)
 {
     parse_index = 6;
 
@@ -139,14 +236,14 @@ static void process_data1(void)
     oled_string("V:");
 
     if (!oled_print_field(1))
-        return;
+        return 0;
 
     oled_clear_region(1, 0, 10);
     oled_set_position(1, 0);
     oled_string("I:");
 
     if (!oled_print_field(1))
-        return;
+        return 0;
 
     oled_char('A');
 
@@ -155,7 +252,7 @@ static void process_data1(void)
     oled_string("P:");
 
     if (!oled_print_field(1))
-        return;
+        return 0;
 
     oled_char('W');
 
@@ -163,10 +260,13 @@ static void process_data1(void)
     oled_set_position(3, 0);
     oled_string("PF:");
 
-    oled_print_field(0);
+    if (!oled_print_field(0))
+        return 0;
+
+    return 1;
 }
 
-static void process_data2(void)
+static unsigned char process_data2(void)
 {
     parse_index = 6;
 
@@ -175,7 +275,7 @@ static void process_data2(void)
     oled_string("F:");
 
     if (!oled_print_field(1))
-        return;
+        return 0;
 
     oled_string("Hz");
 
@@ -184,7 +284,7 @@ static void process_data2(void)
     oled_string("E:");
 
     if (!oled_print_field(1))
-        return;
+        return 0;
 
     oled_string("kWh");
 
@@ -193,23 +293,38 @@ static void process_data2(void)
     oled_string("L:");
 
     if (!oled_print_field(0))
-        return;
+        return 0;
 
     oled_char('A');
+
+    return 1;
 }
 
-static void process_error(void)
+static unsigned char process_data3(void)
+{
+    parse_index = 6;
+
+    oled_clear_region(3, 66, 10);
+    oled_set_position(3, 66);
+    oled_string("T:");
+
+    if (!oled_print_field(0))
+        return 0;
+
+    oled_char('C');
+
+    return 1;
+}
+
+static unsigned char process_error(void)
 {
     unsigned char i;
+    unsigned char is_none = 0;
 
     parse_index = 6;
 
-    oled_clear_error();
-
-    oled_set_position(5, 0);
-    oled_string("ERROR:");
-
-    oled_set_position(7, 0);
+    if (rx_buffer[parse_index] == '\0')
+        return 0;
 
     if (rx_buffer[parse_index] == 'N' &&
         rx_buffer[parse_index + 1] == 'O' &&
@@ -217,15 +332,32 @@ static void process_error(void)
         rx_buffer[parse_index + 3] == 'E' &&
         rx_buffer[parse_index + 4] == '\0')
     {
-        oled_string("NO ERROR");
-        return;
+        is_none = 1;
     }
 
-    if (rx_buffer[parse_index] == '\0')
+    if (is_none)
     {
-        oled_string("UNKNOWN ERROR");
-        return;
+        fault_active = 0;
+        oled_clear_error();
+
+        oled_set_position(5, 0);
+        oled_string("ERROR:");
+
+        oled_set_position(7, 0);
+        oled_string("NO ERROR");
+
+        return 1;
     }
+
+    fault_active = 1;
+    relay_set(0);
+
+    oled_clear_error();
+
+    oled_set_position(5, 0);
+    oled_string("ERROR:");
+
+    oled_set_position(7, 0);
 
     for (i = 0; i < 21; i++)
     {
@@ -235,6 +367,8 @@ static void process_error(void)
         oled_char(rx_buffer[parse_index]);
         parse_index++;
     }
+
+    return 1;
 }
 
 static void process_command(char *command)
@@ -250,10 +384,19 @@ static void process_command(char *command)
             command[7] == 'N' &&
             command[8] == '\0')
         {
-            RELAY_PIN = 0;
-            relay_state = 1;
+            if (!fault_active)
+            {
+                relay_set(1);
+            }
+            else
+            {
+                relay_set(0);
+            }
 
-            uart_write_string("RELAY,ON\r\n");
+            uart_write_string(
+                relay_state ? "RELAY,ON\r\n" : "RELAY,OFF\r\n"
+            );
+
             return;
         }
 
@@ -262,8 +405,7 @@ static void process_command(char *command)
             command[8] == 'F' &&
             command[9] == '\0')
         {
-            RELAY_PIN = 1;
-            relay_state = 0;
+            relay_set(0);
 
             uart_write_string("RELAY,OFF\r\n");
             return;
@@ -282,10 +424,7 @@ static void process_command(char *command)
             command[8] == 'N' &&
             command[9] == '\0')
         {
-            GREEN_LED_PIN = 1;
-            RED_LED_PIN = 0;
-            BUZZER_PIN = 0;
-            buzzer_state = 1;
+            buzzer_set(1);
 
             uart_write_string("BUZZER,ON\r\n");
             return;
@@ -296,10 +435,7 @@ static void process_command(char *command)
             command[9] == 'F' &&
             command[10] == '\0')
         {
-            RED_LED_PIN = 1;
-            GREEN_LED_PIN = 0;
-            BUZZER_PIN = 1;
-            buzzer_state = 0;
+            buzzer_set(0);
 
             uart_write_string("BUZZER,OFF\r\n");
             return;
@@ -330,7 +466,9 @@ static void process_command(char *command)
         command[4] == '1' &&
         command[5] == ',')
     {
-        process_data1();
+        if (process_data1())
+            uart_write_string("ACK,DATA1\r\n");
+
         return;
     }
 
@@ -341,7 +479,22 @@ static void process_command(char *command)
         command[4] == '2' &&
         command[5] == ',')
     {
-        process_data2();
+        if (process_data2())
+            uart_write_string("ACK,DATA2\r\n");
+
+        return;
+    }
+
+    if (command[0] == 'D' &&
+        command[1] == 'A' &&
+        command[2] == 'T' &&
+        command[3] == 'A' &&
+        command[4] == '3' &&
+        command[5] == ',')
+    {
+        if (process_data3())
+            uart_write_string("ACK,DATA3\r\n");
+
         return;
     }
 
@@ -352,7 +505,9 @@ static void process_command(char *command)
         command[4] == 'R' &&
         command[5] == ',')
     {
-        process_error();
+        if (process_error())
+            uart_write_string("ACK,ERROR\r\n");
+
         return;
     }
 }
@@ -404,10 +559,17 @@ void main(void)
 
     RELAY_PIN = 1;
     BUZZER_PIN = 1;
+    RED_LED_PIN = 1;
     GREEN_LED_PIN = 0;
+
+    RELAY_BUTTON_PIN = 1;
 
     relay_state = 0;
     buzzer_state = 0;
+    fault_active = 0;
+
+    button_last_sample = 1;
+    button_stable_state = 1;
 
     timer0_init();
 
@@ -424,16 +586,21 @@ void main(void)
         oled_set_position(0, 0);
         oled_string("UART INIT FAILED");
 
-        RELAY_PIN = 1;
-        BUZZER_PIN = 1;
+        relay_set(0);
+        buzzer_set(0);
 
-        while (1);
+        while (1)
+        {
+            relay_button_process();
+            uart_receive_process();
+        }
     }
 
     uart_write_string("UART READY\r\n");
 
     while (1)
     {
+        relay_button_process();
         uart_receive_process();
     }
 }
