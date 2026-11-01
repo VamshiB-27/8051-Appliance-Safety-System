@@ -1,13 +1,13 @@
 #ifndef SECRETS_H
 #define SECRETS_H
 
-#define WIFI_SSID "IITDH-PC-Wireless"
-#define WIFI_IDENTITY "EC24BT008"
-#define WIFI_PASSWORD "Vamshi6268*"
+#define WIFI_SSID ""
+#define WIFI_IDENTITY ""
+#define WIFI_PASSWORD ""
 
-#define MQTT_HOST "broker.emqx.io"
+#define MQTT_HOST ""
 #define MQTT_PORT 1883
-#define MQTT_TOPIC "appliance/AP001/telemetry"
-#define DEVICE_ID "AP001"
+#define MQTT_TOPIC ""
+#define DEVICE_ID ""
 
 #endif
