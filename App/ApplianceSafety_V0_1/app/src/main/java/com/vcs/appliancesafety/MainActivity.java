@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "APPLIANCE_SAFETY_STATE";
 
     private TextView tvConnectionStatus;
+    private TextView tvLastDeviceResponse;
     private TextView tvVoltage;
     private TextView tvCurrent;
     private TextView tvRealPower;
@@ -48,12 +49,18 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvFrequency;
     private TextView tvLeakageCurrent;
     private TextView tvLoadState;
+    private TextView tvRelayState;
+    private TextView tvBuzzerState;
+    private TextView tvTemperature;
     private TextView tvFaultStatus;
     private TextView tvLastUpdated;
 
     private Button btnTurnOn;
     private Button btnTurnOff;
     private Button btnRequestStatus;
+    private Button btnBuzzerOn;
+    private Button btnBuzzerOff;
+    private Button btnClearFault;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
 
@@ -111,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                         "MQTT CONNECTED",
                         Color.rgb(8, 125, 66)
                 );
+                setControlButtonsEnabled(true);
 
                 NotificationManagerCompat.from(MainActivity.this)
                         .cancel(NOTIFICATION_CONNECTION_ID);
@@ -128,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
                             "MQTT CONNECTED",
                             Color.rgb(8, 125, 66)
                     );
+                    setControlButtonsEnabled(true);
 
                     NotificationManagerCompat.from(MainActivity.this)
                             .cancel(NOTIFICATION_CONNECTION_ID);
@@ -138,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
                             "MQTT RECONNECTING",
                             Color.rgb(150, 95, 0)
                     );
+                    setControlButtonsEnabled(false);
                     tvLastUpdated.setText(status);
                 }
                 return;
@@ -176,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
                         "MQTT ERROR",
                         Color.rgb(190, 55, 45)
                 );
+                setControlButtonsEnabled(false);
 
                 if (awaitingStatusRequest
                         && message != null
@@ -241,16 +252,29 @@ public class MainActivity extends AppCompatActivity {
         btnTurnOn.setEnabled(false);
         btnTurnOff.setEnabled(false);
         btnRequestStatus.setEnabled(true);
+        setControlButtonsEnabled(false);
 
         btnRequestStatus.setOnClickListener(
                 view -> requestDeviceStatus()
         );
+
+        btnTurnOn.setOnClickListener(view ->
+                sendDeviceCommand("RELAY,ON"));
+        btnTurnOff.setOnClickListener(view ->
+                sendDeviceCommand("RELAY,OFF"));
+        btnBuzzerOn.setOnClickListener(view ->
+                sendDeviceCommand("BUZZER,ON"));
+        btnBuzzerOff.setOnClickListener(view ->
+                sendDeviceCommand("BUZZER,OFF"));
+        btnClearFault.setOnClickListener(view ->
+                sendDeviceCommand("FAULT,CLEAR"));
 
         startMqttForegroundService();
     }
 
     private void initializeViews() {
         tvConnectionStatus = findViewById(R.id.tvConnectionStatus);
+        tvLastDeviceResponse = findViewById(R.id.tvLastDeviceResponse);
         tvVoltage = findViewById(R.id.tvVoltage);
         tvCurrent = findViewById(R.id.tvCurrent);
         tvRealPower = findViewById(R.id.tvRealPower);
@@ -259,12 +283,18 @@ public class MainActivity extends AppCompatActivity {
         tvFrequency = findViewById(R.id.tvFrequency);
         tvLeakageCurrent = findViewById(R.id.tvLeakageCurrent);
         tvLoadState = findViewById(R.id.tvLoadState);
+        tvRelayState = findViewById(R.id.tvRelayState);
+        tvBuzzerState = findViewById(R.id.tvBuzzerState);
+        tvTemperature = findViewById(R.id.tvTemperature);
         tvFaultStatus = findViewById(R.id.tvFaultStatus);
         tvLastUpdated = findViewById(R.id.tvLastUpdated);
 
         btnTurnOn = findViewById(R.id.btnTurnOn);
         btnTurnOff = findViewById(R.id.btnTurnOff);
         btnRequestStatus = findViewById(R.id.btnRequestStatus);
+        btnBuzzerOn = findViewById(R.id.btnBuzzerOn);
+        btnBuzzerOff = findViewById(R.id.btnBuzzerOff);
+        btnClearFault = findViewById(R.id.btnClearFault);
     }
 
     private void startMqttForegroundService() {
@@ -331,6 +361,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void sendDeviceCommand(String command) {
+        Intent serviceIntent = new Intent(
+                this,
+                MqttForegroundService.class
+        );
+        serviceIntent.setAction(MqttForegroundService.ACTION_SEND_COMMAND);
+        serviceIntent.putExtra(MqttForegroundService.EXTRA_COMMAND, command);
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                ContextCompat.startForegroundService(this, serviceIntent);
+            } else {
+                startService(serviceIntent);
+            }
+            tvLastUpdated.setText("Sending command: " + command);
+        } catch (Exception error) {
+            tvLastUpdated.setText(
+                    "Command failed: " + safeText(error.getMessage())
+            );
+        }
+    }
+
     private void displayTelemetry(String payload) {
         try {
             ApplianceTelemetry telemetry = TelemetryParser.parse(payload);
@@ -351,9 +403,18 @@ public class MainActivity extends AppCompatActivity {
         tvPowerFactor.setText("--");
         tvFrequency.setText("-- Hz");
         tvLeakageCurrent.setText("-- mA");
-        tvLoadState.setText("Waiting for device status");
+        tvLoadState.setText("Waiting for relay status");
+        tvRelayState.setText("UNKNOWN");
+        tvRelayState.setTextColor(Color.rgb(38, 50, 71));
+        tvRelayState.setBackgroundColor(Color.WHITE);
+        tvBuzzerState.setText("UNKNOWN");
+        tvBuzzerState.setTextColor(Color.rgb(38, 50, 71));
+        tvBuzzerState.setBackgroundColor(Color.WHITE);
+        tvTemperature.setText("-- °C");
         tvFaultStatus.setText("No telemetry received yet");
-        tvLastUpdated.setText("Waiting for MQTT telemetry...");
+        tvFaultStatus.setTextColor(Color.rgb(104, 115, 134));
+        tvLastUpdated.setText("Waiting for device data...");
+        tvLastDeviceResponse.setText("Last device response: --:--:--");
     }
 
     private void updateDashboard(ApplianceTelemetry telemetry) {
@@ -365,19 +426,40 @@ public class MainActivity extends AppCompatActivity {
         tvFrequency.setText(format(telemetry.frequency, 2, " Hz"));
         tvLeakageCurrent.setText(format(telemetry.leakageCurrent, 2, " mA"));
 
-        tvLoadState.setText(
-                "Reported load state: " + safeText(telemetry.loadState)
-        );
+        tvTemperature.setText(format(telemetry.temperature, 1, " °C"));
+
+        if (telemetry.relayKnown) {
+            setOutputState(tvRelayState, telemetry.relayOn, "RELAY");
+            tvLoadState.setText(
+                    "Relay state: " + (telemetry.relayOn ? "ON" : "OFF")
+            );
+        } else {
+            tvRelayState.setText("UNKNOWN");
+            tvRelayState.setTextColor(Color.rgb(38, 50, 71));
+            tvRelayState.setBackgroundColor(Color.WHITE);
+            tvLoadState.setText("Relay state not reported by ESP32");
+        }
+
+        if (telemetry.buzzerKnown) {
+            setOutputState(tvBuzzerState, telemetry.buzzerOn, "BUZZER");
+        } else {
+            tvBuzzerState.setText("UNKNOWN");
+            tvBuzzerState.setTextColor(Color.rgb(38, 50, 71));
+            tvBuzzerState.setBackgroundColor(Color.WHITE);
+        }
 
         String fault = safeText(telemetry.fault);
-        tvFaultStatus.setText("Reported fault: " + fault);
+        tvFaultStatus.setText("FAULT: " + fault);
 
         if (isNormalFaultState(fault)) {
             tvFaultStatus.setTextColor(Color.rgb(8, 125, 66));
+            tvFaultStatus.setBackgroundColor(Color.rgb(221, 247, 231));
         } else if ("Not reported".equalsIgnoreCase(fault)) {
             tvFaultStatus.setTextColor(Color.rgb(104, 115, 134));
+            tvFaultStatus.setBackgroundColor(Color.rgb(238, 241, 245));
         } else {
-            tvFaultStatus.setTextColor(Color.rgb(190, 55, 45));
+            tvFaultStatus.setTextColor(Color.rgb(190, 35, 35));
+            tvFaultStatus.setBackgroundColor(Color.rgb(255, 230, 230));
         }
 
         String time = new SimpleDateFormat(
@@ -385,13 +467,37 @@ public class MainActivity extends AppCompatActivity {
                 Locale.getDefault()
         ).format(new Date(telemetry.receivedAt));
 
-        String dataType = telemetry.simulated
-                ? "SIMULATED TEST DATA"
-                : "DEVICE-REPORTED DATA";
+        tvLastDeviceResponse.setText("Last device response: " + time);
+        tvLastUpdated.setText("Device data received at " + time);
+    }
 
-        tvLastUpdated.setText(
-                dataType + " | Last message: " + time
-        );
+    private void setOutputState(
+            TextView view,
+            boolean isOn,
+            String label) {
+
+        view.setText(label + ": " + (isOn ? "ON" : "OFF"));
+        view.setBackgroundColor(Color.WHITE);
+
+        if ("RELAY".equals(label)) {
+            view.setTextColor(
+                    isOn ? Color.rgb(25, 118, 210)
+                            : Color.rgb(126, 87, 194)
+            );
+        } else {
+            view.setTextColor(
+                    isOn ? Color.rgb(211, 47, 47)
+                            : Color.rgb(25, 118, 210)
+            );
+        }
+    }
+
+    private void updateLastDeviceResponseTime(long timestamp) {
+        String time = new SimpleDateFormat(
+                "HH:mm:ss",
+                Locale.getDefault()
+        ).format(new Date(timestamp));
+        tvLastDeviceResponse.setText("Last device response: " + time);
     }
 
     private void handleFaultNotification(String faultValue) {
@@ -538,6 +644,15 @@ public class MainActivity extends AppCompatActivity {
                 ? "Unknown" : value;
     }
 
+    private void setControlButtonsEnabled(boolean enabled) {
+        btnTurnOn.setEnabled(enabled);
+        btnTurnOff.setEnabled(enabled);
+        btnBuzzerOn.setEnabled(enabled);
+        btnBuzzerOff.setEnabled(enabled);
+        btnClearFault.setEnabled(enabled);
+        btnRequestStatus.setEnabled(enabled && !awaitingStatusRequest);
+    }
+
     private void setConnectionStatus(String text, int textColor) {
         tvConnectionStatus.setText(text);
         tvConnectionStatus.setTextColor(textColor);
@@ -551,15 +666,12 @@ public class MainActivity extends AppCompatActivity {
                 MqttForegroundService.ACTION_SERVICE_EVENT
         );
 
-        if (Build.VERSION.SDK_INT >= 33) {
-            registerReceiver(
-                    serviceReceiver,
-                    filter,
-                    Context.RECEIVER_NOT_EXPORTED
-            );
-        } else {
-            registerReceiver(serviceReceiver, filter);
-        }
+        ContextCompat.registerReceiver(
+                this,
+                serviceReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+        );
 
         receiverRegistered = true;
 
@@ -570,6 +682,15 @@ public class MainActivity extends AppCompatActivity {
 
         if (lastPayload != null) {
             displayTelemetry(lastPayload);
+
+            long lastReceivedAt = getSharedPreferences(
+                    PREFS_NAME,
+                    MODE_PRIVATE
+            ).getLong("last_received_at", 0L);
+
+            if (lastReceivedAt > 0L) {
+                updateLastDeviceResponseTime(lastReceivedAt);
+            }
         }
     }
 

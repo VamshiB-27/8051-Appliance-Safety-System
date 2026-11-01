@@ -35,6 +35,9 @@ public class MqttForegroundService extends Service {
 
     public static final String ACTION_REQUEST_STATUS =
             "com.vcs.appliancesafety.ACTION_REQUEST_STATUS";
+    public static final String ACTION_SEND_COMMAND =
+            "com.vcs.appliancesafety.ACTION_SEND_COMMAND";
+    public static final String EXTRA_COMMAND = "command";
     public static final String ACTION_SERVICE_EVENT =
             "com.vcs.appliancesafety.ACTION_SERVICE_EVENT";
     public static final String EXTRA_EVENT = "event";
@@ -52,7 +55,8 @@ public class MqttForegroundService extends Service {
     private MqttAsyncClient mqttClient;
     private boolean stopping;
     private final Handler retryHandler = new Handler(Looper.getMainLooper());
-    private boolean pendingStatusRequest;
+    private final java.util.ArrayDeque<String> pendingCommands =
+            new java.util.ArrayDeque<>();
     private boolean connecting;
     private boolean subscriptionInProgress;
     private String previousFault = "";
@@ -68,10 +72,17 @@ public class MqttForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null
-                && ACTION_REQUEST_STATUS.equals(intent.getAction())) {
-            pendingStatusRequest = true;
-            publishQueuedStatusRequestIfReady();
+        if (intent != null) {
+            if (ACTION_REQUEST_STATUS.equals(intent.getAction())) {
+                sendCommand("STATUS");
+            } else if (ACTION_SEND_COMMAND.equals(intent.getAction())) {
+                String command = intent.getStringExtra(EXTRA_COMMAND);
+                if (isAllowedCommand(command)) {
+                    sendCommand(command);
+                } else {
+                    broadcastEvent("ERROR", "Rejected unknown device command");
+                }
+            }
         }
 
         return START_STICKY;
@@ -256,7 +267,7 @@ public class MqttForegroundService extends Service {
                                     "Monitoring AP001 telemetry"
                             );
 
-                            publishQueuedStatusRequestIfReady();
+                            publishNextQueuedCommand();
                         }
 
                         @Override
@@ -293,43 +304,60 @@ public class MqttForegroundService extends Service {
         }
     }
 
-    private void publishQueuedStatusRequestIfReady() {
-        if (!pendingStatusRequest || stopping
-                || mqttClient == null
-                || !mqttClient.isConnected()
-                || subscriptionInProgress) {
+    private boolean isAllowedCommand(String command) {
+        return "STATUS".equals(command)
+                || "RELAY,ON".equals(command)
+                || "RELAY,OFF".equals(command)
+                || "BUZZER,ON".equals(command)
+                || "BUZZER,OFF".equals(command)
+                || "FAULT,CLEAR".equals(command);
+    }
+
+    private void sendCommand(String command) {
+        if (!isAllowedCommand(command)) {
+            broadcastEvent("ERROR", "Rejected unknown device command");
             return;
         }
 
-        pendingStatusRequest = false;
-        publishStatusRequest();
-    }
-
-    private void publishStatusRequest() {
-        if (mqttClient == null || !mqttClient.isConnected()) {
-            pendingStatusRequest = true;
-
+        if (stopping || mqttClient == null
+                || !mqttClient.isConnected()
+                || subscriptionInProgress) {
+            pendingCommands.remove(command);
+            pendingCommands.addLast(command);
             broadcastEvent(
                     "REQUEST_QUEUED",
-                    "MQTT is connecting; status request queued"
+                    command + " queued until MQTT is connected"
             );
+            return;
+        }
 
+        publishCommand(command);
+    }
+
+    private void publishNextQueuedCommand() {
+        if (stopping || mqttClient == null
+                || !mqttClient.isConnected()
+                || subscriptionInProgress
+                || pendingCommands.isEmpty()) {
+            return;
+        }
+
+        String command = pendingCommands.removeFirst();
+        publishCommand(command);
+    }
+
+    private void publishCommand(String command) {
+        if (mqttClient == null || !mqttClient.isConnected()) {
+            pendingCommands.addFirst(command);
+            broadcastEvent("REQUEST_QUEUED", "MQTT unavailable; command queued");
             return;
         }
 
         try {
-            JSONObject command = new JSONObject();
-            command.put("id", "AP001");
-            command.put("command", "REQUEST_STATUS");
-
-            String requestId = UUID.randomUUID().toString();
-            command.put("request_id", requestId);
-
             MqttMessage message = new MqttMessage(
-                    command.toString().getBytes(StandardCharsets.UTF_8)
+                    command.getBytes(StandardCharsets.UTF_8)
             );
-
-            message.setQos(0);
+            message.setQos(1);
             message.setRetained(false);
 
             mqttClient.publish(
@@ -340,42 +368,40 @@ public class MqttForegroundService extends Service {
                         @Override
                         public void onSuccess(IMqttToken token) {
                             broadcastEvent(
-                                    "REQUEST_SENT",
-                                    "Status request published to MQTT; waiting for device response"
+                                    "COMMAND_SENT",
+                                    "Command sent: " + command
                             );
-
                             updateServiceNotification(
-                                    "Status request published to MQTT"
+                                    "Last command sent: " + command
                             );
+                            if ("STATUS".equals(command)) {
+                                broadcastEvent(
+                                        "REQUEST_SENT",
+                                        "STATUS command sent; waiting for device telemetry"
+                                );
+                            }
+                            publishNextQueuedCommand();
                         }
 
                         @Override
                         public void onFailure(
                                 IMqttToken token,
                                 Throwable error) {
-                            pendingStatusRequest = true;
-
+                            pendingCommands.addFirst(command);
                             broadcastEvent(
                                     "ERROR",
-                                    "Status request publish failed: "
+                                    "Command publish failed (" + command + "): "
                                             + errorMessage(error)
                             );
-
-                            updateServiceNotification(
-                                    "Status request publish failed"
-                            );
-
                             scheduleReconnect();
                         }
                     }
             );
-
         } catch (Exception error) {
-            pendingStatusRequest = true;
-
+            pendingCommands.addFirst(command);
             broadcastEvent(
                     "ERROR",
-                    "Could not create status request: "
+                    "Could not publish command " + command + ": "
                             + errorMessage(error)
             );
         }
@@ -518,6 +544,7 @@ public class MqttForegroundService extends Service {
     public void onDestroy() {
         stopping = true;
         retryHandler.removeCallbacksAndMessages(null);
+        pendingCommands.clear();
 
         if (mqttClient != null) {
             try {
